@@ -1,1 +1,1 @@
-En aca se alojara todo el codigo fuente
+Aquí se alojara todo el código fuente/principal.
