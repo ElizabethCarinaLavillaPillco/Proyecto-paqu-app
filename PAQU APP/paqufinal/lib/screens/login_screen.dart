@@ -364,9 +364,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: _buildSocialButton(
             icon: 'assets/icons/facebook.png',
             text: 'Facebook',
-            onPressed: () {
-              // TODO: Implementar login con Facebook
-            },
+            onPressed: _handleFacebookLogin,
           ),
         ),
       ],
@@ -473,6 +471,46 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         content: Text(
           'Verifica tus credenciales e intenta nuevamente.',
+          style: GoogleFonts.comicNeue(
+            fontSize: 16.sp,
+            color: AppTheme.textSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Entendido',
+              style: GoogleFonts.comicNeue(
+                fontSize: 16.sp,
+                color: AppTheme.primaryColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleFacebookLogin() async {
+    // Placeholder: solo conecta el botón; lógica de Facebook se implementará después
+    // Mostramos un aviso temporal para confirmar el click
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        title: Text(
+          'Facebook',
+          style: GoogleFonts.patrickHand(
+            fontSize: 20.sp,
+            color: AppTheme.textPrimary,
+          ),
+        ),
+        content: Text(
+          'El inicio de sesión con Facebook se configurará a continuación.',
           style: GoogleFonts.comicNeue(
             fontSize: 16.sp,
             color: AppTheme.textSecondary,
