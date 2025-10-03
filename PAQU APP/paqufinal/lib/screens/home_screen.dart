@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:paqufinal/screens/goal_selection_screen.dart';
+import 'package:paqufinal/models/life_model.dart';
+import 'package:paqufinal/services/life_service.dart';
+import 'package:paqufinal/widgets/lives_header.dart';
+import 'package:paqufinal/widgets/no_lives_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,6 +15,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _slideAnimation;
+
+  final LifeService _lifeService = LifeService();
+  final String _currentUserId = 'user_temp_123'; // Temporal hasta auth
 
   @override
   void initState() {
@@ -36,6 +42,88 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
 
     _animationController.forward();
+
+    // Inicializar vidas si es primera vez
+    _initializeLives();
+  }
+
+  Future<void> _initializeLives() async {
+    try {
+      await _lifeService.initializeUserLives(_currentUserId);
+    } catch (e) {
+      print('Error initializing lives: $e');
+    }
+  }
+
+  void _showNoLivesDialog(UserLives lives) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => NoLivesDialog(
+        timeUntilRecharge: lives.timeUntilFullRecharge,
+        diamonds: lives.diamonds,
+        onWatchAd: () {
+          Navigator.pop(context);
+          _watchAdForLife();
+        },
+        onUseDiamonds: () {
+          Navigator.pop(context);
+          _useDiamondsForLives();
+        },
+        onWait: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  Future<void> _watchAdForLife() async {
+    // Simular anuncio
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Anuncio visto - +1 vida'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    
+    // Aquí integrarías tu SDK de anuncios
+    await _lifeService.addDiamonds(_currentUserId, 1); // Recompensa temporal
+  }
+
+  Future<void> _useDiamondsForLives() async {
+    try {
+      await _lifeService.rechargeWithDiamonds(_currentUserId, 10);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('¡5 vidas recargadas!'),
+          backgroundColor: Colors.purple,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _simulateLesson() async {
+    final success = await _lifeService.useLife(_currentUserId);
+    
+    if (!success) {
+      // Mostrar diálogo de sin vidas
+      final livesDoc = await _lifeService.getUserLives(_currentUserId).first;
+      _showNoLivesDialog(livesDoc);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('¡Lección comenzada! Vidas restantes: ${(await _lifeService.getUserLives(_currentUserId).first).currentLives - 1}'),
+          backgroundColor: Colors.blue,
+        ),
+      );
+    }
   }
 
   @override
@@ -44,61 +132,58 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
-  void _navigateToGoalSelection() {
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const GoalSelectionScreen(isFirstTime: false),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(1.0, 0.0);
-          const end = Offset.zero;
-          const curve = Curves.easeInOut;
-          
-          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-          var offsetAnimation = animation.drive(tween);
-
-          return SlideTransition(
-            position: offsetAnimation,
-            child: child,
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 500),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[900],
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header con animación
-              _buildHeader(),
-              const SizedBox(height: 40),
-              
-              // Tarjeta de progreso actual
-              _buildProgressCard(),
-              const SizedBox(height: 30),
-              
-              // Estadísticas
-              _buildStatsGrid(),
-              const SizedBox(height: 40),
-              
-              // Botón para nueva meta
-              _buildNewGoalButton(),
-            ],
-          ),
+        child: StreamBuilder<UserLives>(
+          stream: _lifeService.getUserLives(_currentUserId),
+          builder: (context, snapshot) {
+            final lives = snapshot.data ?? UserLives(
+              userId: _currentUserId,
+              currentLives: 5,
+              maxLives: 5,
+              lastLifeUpdate: DateTime.now(),
+              diamonds: 0,
+            );
+
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  // Header con vidas
+                  LivesHeader(
+                    lives: lives,
+                    onLivesTap: () {
+                      if (lives.currentLives < lives.maxLives) {
+                        _showNoLivesDialog(lives);
+                      }
+                    },
+                    onDiamondsTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Tienes ${lives.diamonds} diamantes'),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Contenido principal
+                  Expanded(
+                    child: _buildMainContent(lives),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildMainContent(UserLives lives) {
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
@@ -119,249 +204,77 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Tu progreso de hoy',
+                  'Elige una lección para comenzar',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[400],
                   ),
                 ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+                const SizedBox(height: 40),
 
-  Widget _buildProgressCard() {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(_slideAnimation.value, 0),
-          child: Opacity(
-            opacity: _fadeAnimation.value,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue.shade800, Colors.purple.shade800],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blue.withOpacity(0.3),
-                    blurRadius: 20,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    'Meta Actual',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white.withOpacity(0.8),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    '15 min/día',
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  LinearProgressIndicator(
-                    value: 0.6, // Esto vendrá de Firebase después
-                    backgroundColor: Colors.white.withOpacity(0.2),
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Día 12/21',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                        ),
+                // Botón de lección de ejemplo
+                GestureDetector(
+                  onTap: _simulateLesson,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.blue.shade800, Colors.purple.shade800],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      Text(
-                        '60% completado',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStatsGrid() {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return Opacity(
-          opacity: _fadeAnimation.value,
-          child: Row(
-            children: [
-              Expanded(
-                child: _buildStatCard(
-                  title: 'Minutos Hoy',
-                  value: '9',
-                  subtitle: '/15 min',
-                  color: Colors.green,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildStatCard(
-                  title: 'Racha Actual',
-                  value: '5',
-                  subtitle: 'días',
-                  color: Colors.orange,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStatCard({
-    required String title,
-    required String value,
-    required String subtitle,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.grey[800],
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[400],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[500],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNewGoalButton() {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(0, _slideAnimation.value),
-          child: Opacity(
-            opacity: _fadeAnimation.value,
-            child: GestureDetector(
-              onTap: _navigateToGoalSelection,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                decoration: BoxDecoration(
-                  color: Colors.grey[800],
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.blue.shade400, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.blue.withOpacity(0.2),
-                      blurRadius: 15,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Nueva Meta',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Actualizar objetivos',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[400],
-                          ),
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.blue.withOpacity(0.3),
+                          blurRadius: 20,
+                          spreadRadius: 2,
                         ),
                       ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade600,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.school, color: Colors.white, size: 30),
+                            const SizedBox(width: 15),
+                            Text(
+                              'Lección 1: Saludos',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 15),
+                        Text(
+                          'Aprende los saludos básicos en Quechua',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.heart_broken, color: Colors.white, size: 16),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Usa 1 vida',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         );
