@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="backgroundColor">#F9F7F0</color>
+
+    <!-- Texto -->
+    <color name="primaryText">#2C3E50</color>
+    <color name="secondaryText">#5D3F6A</color>
+
+    <!-- Colores principales -->
+    <color name="primary">#FFC107</color>   <!-- Amarillo -->
+    <color name="accent">#E74C3C</color>   <!-- Rojo -->
+    <color name="purple">#5D3F6A</color>
+    <color name="blueDark">#2C3E50</color>
+    <color name="beige">#F9F7F0</color>
+
+    <!-- Colores para categorías (pueden servir más adelante) -->
+    <color name="grammar">#3498DB</color>
+    <color name="vocabulary">#2ECC71</color>
+    <color name="culture">#9B59B6</color>
+    <color name="conversation">#E67E22</color>
+    <color name="exercises">#1ABC9C</color>
+
+    <color name="morado">#FFC107</color>   <!-- Amarillo -->
+    <color name="naranja">#E74C3C</color>
+</resources>
