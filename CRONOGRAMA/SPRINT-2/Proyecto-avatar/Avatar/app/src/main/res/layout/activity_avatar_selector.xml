@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
+    android:padding="16dp">
+
+    <!-- Título -->
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Elige tu Avatar"
+        android:textSize="24sp"
+        android:fontFamily="@font/comic_neue"
+        android:textColor="@color/primaryText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"/>
+
+    <!-- RecyclerView en forma de carrusel -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerAvatars"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtTitle"
+        android:layout_marginTop="40dp"
+        android:clipToPadding="false"
+        android:paddingStart="60dp"
+        android:paddingEnd="60dp"/>
+
+    <!-- Texto del seleccionado -->
+    <TextView
+        android:id="@+id/txtSelected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Avatar seleccionado: ninguno"
+        android:layout_below="@id/recyclerAvatars"
+        android:layout_marginTop="32dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/comic_neue"
+        android:textColor="@color/secondaryText"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>
