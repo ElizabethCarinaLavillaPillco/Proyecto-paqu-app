@@ -29,10 +29,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  final List<String> _nacionalidades = [
-    'Peruana', 'Argentina', 'Boliviana', 'Chilena', 'Colombiana', 
-    'Ecuatoriana', 'Española', 'Mexicana', 'Otro'
-  ];
 
   @override
   Widget build(BuildContext context) {
