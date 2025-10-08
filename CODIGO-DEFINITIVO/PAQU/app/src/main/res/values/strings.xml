@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">PAQU</string>
+
+    <string name="facebook_app_id">4161986464122328</string>
+    <string name="fb_login_protocol_scheme">fb4161986464122328</string>
+    <string name="facebook_client_token">e0385ef93917f2720594488c9e7a8d0b</string>
+
+    <string name="default_web_client_id">694441156563977.apps.googleusercontent.com</string>
+
+
+</resources>

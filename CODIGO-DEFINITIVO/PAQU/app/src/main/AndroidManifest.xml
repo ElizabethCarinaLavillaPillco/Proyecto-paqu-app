@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/logopaqu"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/logopaqu"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.PAQU"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".ejercicio9"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicioPausa"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio8"
+            android:exported="false" />
+        <activity
+            android:name=".ejericicio7"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio6"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio5"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio4"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio3"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio2"
+            android:exported="false" />
+        <activity
+            android:name=".LeccionAcabadaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PoliticasPrivacidadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TerminosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SugerenciasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CentroAyudaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PrivacidadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notificacionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditarPerfilActivity"
+            android:exported="false" />
+        <activity
+            android:name=".preferenciasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".configuracionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".diccionarioActivity"
+            android:exported="false" />
+        <activity
+            android:name=".perfilActivity"
+            android:exported="false" />
+        <activity
+            android:name=".loginFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio1"
+            android:exported="true" />
+        <activity
+            android:name=".homeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".logeocompletoActivity"
+            android:exported="true" />
+        <activity
+            android:name=".registroActivity"
+            android:exported="true" />
+        <activity
+            android:name=".CargaseguidaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CargaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".profileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token" />
+    </application>
+
+</manifest>

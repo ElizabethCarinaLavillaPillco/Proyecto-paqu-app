@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "295208276357",
+    "project_id": "paqu-df872",
+    "storage_bucket": "paqu-df872.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:295208276357:android:e572979788bab666cb34ec",
+        "android_client_info": {
+          "package_name": "com.example.paqu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "295208276357-g0rrh63rs9q3ruebet5hs8hh17v0gb0q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCu760BR-aDDtpXuTAJaq1UeMb3bMarEuI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "295208276357-g0rrh63rs9q3ruebet5hs8hh17v0gb0q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
