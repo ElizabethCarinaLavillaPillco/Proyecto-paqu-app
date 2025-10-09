@@ -47,7 +47,7 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     //lottiefiles
-    implementation ("com.airbnb.android:lottie:3.4.0")
+    implementation ("com.airbnb.android:lottie:6.4.0")
 
     //facebook
     implementation ("com.facebook.android:facebook-android-sdk:12.3.0")
@@ -78,7 +78,7 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.9.3")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
-
+    implementation ("com.tbuonomo:dotsindicator:5.0")
 
 
 }

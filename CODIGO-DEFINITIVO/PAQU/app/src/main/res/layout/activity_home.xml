@@ -1,16 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
 
+  <!-- Cabecera superior -->
+  <LinearLayout
+      android:id="@+id/header"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
+      android:background="@drawable/progress_bar_lila"
+      android:orientation="horizontal"
+      android:padding="16dp">
+
+    <!-- Idioma (Bandera quechua) -->
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_weight="1"
+        android:src="@drawable/cuscoicon"
+        android:contentDescription="Idioma Quechua" />
+
+    <!-- Días de racha -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+      <ImageView
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:src="@drawable/fuegoicono"
+          android:contentDescription="Racha" />
+
+      <TextView
+          android:id="@+id/streakDays"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="0"
+          android:textColor="@color/white"
+          android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- Diamantes -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+      <ImageView
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:src="@drawable/diamanteicon"
+          android:contentDescription="Diamantes" />
+
+      <TextView
+          android:id="@+id/diamondsCount"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="4dp"
+          android:text="0"
+          android:textColor="@color/white"
+          android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- Vidas -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+      <ImageView
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:src="@drawable/corazonicon"
+          android:contentDescription="Vidas" />
+
+      <TextView
+          android:id="@+id/livesCount"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="4dp"
+          android:text="5"
+          android:textColor="@color/white"
+          android:textSize="16sp" />
+    </LinearLayout>
+  </LinearLayout>
+
   <!-- Contenido principal -->
+
+      <!-- Sección 1: Saludos -->
+  <androidx.cardview.widget.CardView
+      android:id="@+id/stickySection"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/header"
+      android:layout_marginBottom="16dp"
+      app:cardCornerRadius="8dp"
+      app:cardElevation="4dp">
+
+    <LinearLayout
+        android:id="@+id/sectionContent"
+        android:layout_width="411dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/progress_bar_lila"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Sección 1: Saludos"
+          android:textColor="@color/black"
+          android:textSize="20sp"
+          android:textStyle="bold" />
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:text="Aprende los saludos básicos en Quechua"
+          android:textColor="@color/black"
+          android:textSize="16sp" />
+
+      <ProgressBar
+          android:id="@+id/sectionProgressBar"
+          style="?android:attr/progressBarStyleHorizontal"
+          android:layout_width="match_parent"
+          android:layout_height="10dp"
+          android:layout_marginTop="8dp"
+          android:progress="0"
+          android:progressDrawable="@color/morado" />
+
+    </LinearLayout>
+  </androidx.cardview.widget.CardView>
 
       <!-- ScrollView para el contenido desplazable -->
   <ScrollView
       android:id="@+id/mainScrollView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:layout_above="@+id/bottomNavigation"
+      android:layout_below="@id/stickySection"
       android:background="@color/white"
       android:fillViewport="true">
 
@@ -20,6 +159,12 @@
         android:orientation="vertical"
         android:paddingTop="16dp">
 
+      <!-- Niveles (camino como Duolingo) -->
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          android:padding="16dp">
 
 
         <!-- Nivel 1 -->
@@ -27,10 +172,40 @@
             android:id="@+id/level1Card"
             layout="@layout/item_level" />
 
+        <!-- Nivel 2 -->
+        <include
+            android:id="@+id/level2Card"
+            layout="@layout/item_level" />
 
+        <!-- Nivel 3 -->
+        <include
+            android:id="@+id/level3Card"
+            layout="@layout/item_level" />
 
+        <!-- Nivel 4 -->
+        <include
+            android:id="@+id/level4Card"
+            layout="@layout/item_level" />
+
+        <!-- Nivel 5 -->
+        <include
+            android:id="@+id/level5Card"
+            layout="@layout/item_level" />
+
+        <!-- Nivel 6 -->
+        <include
+            android:id="@+id/level6Card"
+            layout="@layout/item_level" />
       </LinearLayout>
+    </LinearLayout>
   </ScrollView>
 
-
+  <!-- Barra de navegación inferior -->
+  <com.google.android.material.bottomnavigation.BottomNavigationView
+      android:id="@+id/bottomNavigation"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:background="@color/white"
+      app:menu="@menu/bottom_nav_menu" />
 </RelativeLayout>

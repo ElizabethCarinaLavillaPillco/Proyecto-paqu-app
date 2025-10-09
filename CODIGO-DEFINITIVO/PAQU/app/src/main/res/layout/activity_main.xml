@@ -21,7 +21,7 @@
         app:layout_constraintWidth_percent="0.4"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/animation_llama"
+        app:lottie_rawRes="@raw/splash"
         app:lottie_url="REPLACE_JSON_URL"
         tools:ignore="MissingConstraints" />
 

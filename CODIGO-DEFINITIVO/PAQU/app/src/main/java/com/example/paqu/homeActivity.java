@@ -252,6 +252,10 @@
             }
         }
         @Override
+        protected int getSelectedNavItemId() {
+            return R.id.nav_home;
+        }
+        @Override
         protected void onResume() {
             super.onResume();
             updateUserData();     // ← Asegúrate de que esta línea esté aquí

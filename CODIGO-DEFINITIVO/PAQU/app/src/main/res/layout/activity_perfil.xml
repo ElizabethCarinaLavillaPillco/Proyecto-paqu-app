@@ -54,6 +54,15 @@
             android:padding="16dp">
 
             <!-- Nombre de usuario -->
+            <Button
+                android:id="@+id/EscojeAvatar"
+                android:layout_width="311dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Escoje tu avatar"
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/tvUsuario"
                 android:layout_width="wrap_content"
