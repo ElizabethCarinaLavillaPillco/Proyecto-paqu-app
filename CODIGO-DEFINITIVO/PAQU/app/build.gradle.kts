@@ -54,9 +54,10 @@ dependencies {
     implementation ("com.facebook.android:facebook-login:latest.release")
 
     //Firebase platform auth
-    implementation(platform("com.google.firebase:firebase-bom:33.14.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation ("com.google.firebase:firebase-auth:22.3.1")
     implementation ("com.google.firebase:firebase-database:20.3.0")
+    implementation("com.google.firebase:firebase-analytics")
 
 
     // Google Sign-In

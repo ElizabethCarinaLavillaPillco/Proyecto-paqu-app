@@ -2,6 +2,7 @@ package com.example.paqu;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -53,6 +54,8 @@ public class registroActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro);
+        // Verificación temporal
+        verificarConfiguracionGoogle();
 
         // Inicialización de vistas
         btnIngresarApp = findViewById(R.id.btnIngresarApp);
@@ -80,7 +83,19 @@ public class registroActivity extends AppCompatActivity {
         });
     }
 
+    private void verificarConfiguracionGoogle() {
+        try {
+            String clientId = getString(R.string.default_web_client_id);
+            Log.d("GOOGLE_CONFIG", "✅ Client ID: " + clientId);
+            Log.d("GOOGLE_CONFIG", "✅ SHA-1 en google-services.json: a9d51cb7dd9867ca27487504712a25710f2bbcb2");
 
+            if (clientId.equals("507103280595-9d5ca90anqs9vs4qhf63roaulbhg0d6f.apps.googleusercontent.com")) {
+                Log.d("GOOGLE_CONFIG", "✅ TODO CONFIGURADO CORRECTAMENTE");
+            }
+        } catch (Exception e) {
+            Log.e("GOOGLE_CONFIG", "❌ Error: " + e.getMessage());
+        }
+    }
     private void registrarUsuario() {
         String nombre = txtNombre.getText().toString().trim();
         String edad = txtEdad.getText().toString().trim();
@@ -186,17 +201,26 @@ public class registroActivity extends AppCompatActivity {
     }
 
     private void configurarLoginGoogle() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+        try {
+            Log.d("GOOGLE_DEBUG", "🔧 Configurando Google Sign-In...");
 
-        googleSignInClient = GoogleSignIn.getClient(this, gso);
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
 
-        btnGoogle.setOnClickListener(v -> {
-            Intent signInIntent = googleSignInClient.getSignInIntent();
-            startActivityForResult(signInIntent, RC_SIGN_IN);
-        });
+            googleSignInClient = GoogleSignIn.getClient(this, gso);
+            Log.d("GOOGLE_DEBUG", "✅ Google Sign-In configurado");
+
+            btnGoogle.setOnClickListener(v -> {
+                Log.d("GOOGLE_DEBUG", "🎯 Botón Google presionado");
+                Intent signInIntent = googleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            });
+
+        } catch (Exception e) {
+            Log.e("GOOGLE_DEBUG", "❌ Error: " + e.getMessage());
+        }
     }
 
     private void configurarLoginFacebook() {
