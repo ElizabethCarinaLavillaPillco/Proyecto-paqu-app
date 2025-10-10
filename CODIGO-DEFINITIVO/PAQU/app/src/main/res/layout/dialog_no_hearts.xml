@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/dialog_background"
+    android:gravity="center">
+
+    <!-- Animación Lottie llorando -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieCrying"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:lottie_fileName="crying_llama.json"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="¡Te quedaste sin vidas!"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Puedes usar diamantes para continuar"
+        android:textSize="16sp"
+        android:textColor="@color/grey"
+        android:textAlignment="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Información de costo -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/info_box_background"
+        android:padding="16dp"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5 ❤️ = 100 💎"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/morado"/>
+    </LinearLayout>
+
+    <!-- Diamantes disponibles -->
+    <TextView
+        android:id="@+id/tvAvailableDiamonds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tienes: 0 💎"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Botón Usar Diamantes -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnUseDiamonds"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="USAR DIAMANTES"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="30dp"
+        android:backgroundTint="@color/morado"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Botón Terminar -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnEndLesson"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="TERMINAR"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="30dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/grey"
+        android:textColor="@color/grey"
+        style="@style/Widget.Material3.Button.OutlinedButton"/>
+
+</LinearLayout>

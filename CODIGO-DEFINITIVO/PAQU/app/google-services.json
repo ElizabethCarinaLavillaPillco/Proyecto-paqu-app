@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:295208276357:android:e572979788bab666cb34ec",
         "android_client_info": {
-          "package_name": "com.example.paqu"
+          "package_name": "com.example.paquultimo"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "295208276357-jaep80gopunguigjde8rnka76buasddm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.paqu",
+            "package_name": "com.example.paquultimo",
             "certificate_hash": "da06b5afd767dc8719bb98d953b97c5915608c7b"
           }
         },

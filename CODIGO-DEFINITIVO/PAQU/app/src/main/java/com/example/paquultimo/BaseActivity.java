@@ -1,19 +1,33 @@
+// BaseActivity.java
 package com.example.paquultimo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class BaseActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutResourceId());
+        // Eliminamos setContentView aquí, cada actividad hija lo manejará
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setupBottomNavigation();
+    }
+
+    private void setupBottomNavigation() {
         bottomNav = findViewById(R.id.bottomNavigation);
         if (bottomNav != null) {
             bottomNav.setOnNavigationItemSelectedListener(navListener);
@@ -21,9 +35,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    protected abstract int getLayoutResourceId();
     protected abstract int getSelectedNavItemId();
 
+    // En BaseActivity
+    private final Map<Integer, Class<?>> navigationMap = new HashMap<Integer, Class<?>>() {{
+        put(R.id.nav_home, homeActivity.class);
+        put(R.id.nav_dictionary, diccionarioActivity.class);
+        put(R.id.nav_minijuegos, MiniJuegosActivity.class);
+        put(R.id.nav_profile, perfilActivity.class);
+    }};
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -31,24 +51,15 @@ public abstract class BaseActivity extends AppCompatActivity {
                     int id = item.getItemId();
 
                     if (id == getSelectedNavItemId()) {
-                        return true; // Ya estamos en esta actividad
+                        return true;
                     }
 
-                    switch (id) {
-                        case R.id.nav_home:
-                            startActivity(new Intent(BaseActivity.this, homeActivity.class)
-                                    .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                            break;
-                        case R.id.nav_dictionary:
-                            startActivity(new Intent(BaseActivity.this, diccionarioActivity.class)
-                                    .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                            break;
-                        case R.id.nav_profile:
-                            startActivity(new Intent(BaseActivity.this, perfilActivity.class)
-                                    .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                            break;
+                    Class<?> targetActivity = navigationMap.get(id);
+                    if (targetActivity != null) {
+                        startActivity(new Intent(BaseActivity.this, targetActivity)
+                                .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                        overridePendingTransition(0, 0);
                     }
-                    overridePendingTransition(0, 0);
                     return true;
                 }
             };

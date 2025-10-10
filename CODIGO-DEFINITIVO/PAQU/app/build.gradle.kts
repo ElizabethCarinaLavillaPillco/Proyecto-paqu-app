@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.paqu"
+    namespace = "com.example.paquultimo"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.paqu"
+        applicationId = "com.example.paquultimo"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -49,12 +49,21 @@ dependencies {
     //lottiefiles
     implementation ("com.airbnb.android:lottie:6.4.0")
 
+    //nasa
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
+    // Lifecycle components
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+
+
     //facebook
     implementation ("com.facebook.android:facebook-android-sdk:12.3.0")
     implementation ("com.facebook.android:facebook-login:latest.release")
 
     //Firebase platform auth
-    implementation(platform("com.google.firebase:firebase-bom:33.14.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation ("com.google.firebase:firebase-auth:22.3.1")
     implementation ("com.google.firebase:firebase-database:20.3.0")
 

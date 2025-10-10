@@ -26,61 +26,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ejercicio9"
+            android:name=".MiniJuegosActivity"
             android:exported="false" />
         <activity
-            android:name=".ejercicioPausa"
+            android:name=".activities.LessonResultActivity"
             android:exported="false" />
         <activity
-            android:name=".ejercicio8"
-            android:exported="false" />
-        <activity
-            android:name=".ejericicio7"
-            android:exported="false" />
-        <activity
-            android:name=".ejercicio6"
-            android:exported="false" />
-        <activity
-            android:name=".ejercicio5"
-            android:exported="false" />
-        <activity
-            android:name=".ejercicio4"
-            android:exported="false" />
-        <activity
-            android:name=".ejercicio3"
-            android:exported="false" />
-        <activity
-            android:name=".ejercicio2"
-            android:exported="false" />
-        <activity
-            android:name=".LeccionAcabadaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PoliticasPrivacidadActivity"
-            android:exported="false" />
-        <activity
-            android:name=".TerminosActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SugerenciasActivity"
-            android:exported="false" />
-        <activity
-            android:name=".CentroAyudaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PrivacidadActivity"
-            android:exported="false" />
-        <activity
-            android:name=".notificacionesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EditarPerfilActivity"
-            android:exported="false" />
-        <activity
-            android:name=".preferenciasActivity"
-            android:exported="false" />
-        <activity
-            android:name=".configuracionActivity"
+            android:name=".TimeAttackActivity"
             android:exported="false" />
         <activity
             android:name=".diccionarioActivity"
