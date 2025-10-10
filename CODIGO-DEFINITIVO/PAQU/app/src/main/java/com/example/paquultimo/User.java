@@ -1,4 +1,4 @@
-package com.example.paqu;
+package com.example.paquultimo;
 
 public class User {
     private String nombre;

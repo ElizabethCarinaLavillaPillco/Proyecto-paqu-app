@@ -12,11 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-<<<<<<< HEAD:CODIGO-DEFINITIVO/PAQU/app/src/main/java/com/example/paquultimo/perfilActivity.java
-=======
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
->>>>>>> cceefd0682b9a7ebb02102a91f71f5bbe0cffd38:CODIGO-DEFINITIVO/PAQU/app/src/main/java/com/example/paqu/perfilActivity.java
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
