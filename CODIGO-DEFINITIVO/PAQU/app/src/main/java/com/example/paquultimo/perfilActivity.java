@@ -3,6 +3,7 @@ package com.example.paquultimo;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -11,6 +12,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+<<<<<<< HEAD:CODIGO-DEFINITIVO/PAQU/app/src/main/java/com/example/paquultimo/perfilActivity.java
+=======
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+>>>>>>> cceefd0682b9a7ebb02102a91f71f5bbe0cffd38:CODIGO-DEFINITIVO/PAQU/app/src/main/java/com/example/paqu/perfilActivity.java
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -76,37 +82,76 @@ public class perfilActivity extends BaseActivity {
             }
         });
 
-        FirebaseUser user = firebaseAuth.getCurrentUser(); // ✅ Obtener el usuario
+        FirebaseUser user = firebaseAuth.getCurrentUser();
 
+        // VERIFICACIÓN TEMPORAL CON LOGS
         if (user != null) {
+            Log.d("FIREBASE_DEBUG", "✅ Usuario autenticado");
+            Log.d("FIREBASE_DEBUG", "📧 Email: " + user.getEmail());
+            Log.d("FIREBASE_DEBUG", "🆔 UID: " + user.getUid());
+            Log.d("FIREBASE_DEBUG", "👤 Display Name: " + user.getDisplayName());
+
             String nombre = user.getDisplayName();
 
             if (nombre != null && !nombre.isEmpty()) {
                 tvUsuario.setText(nombre);
                 tvDescripcion.setText(nombre + " se unió en " + getFechaFormateada(user));
+                Log.d("FIREBASE_DEBUG", "✅ Usando Display Name: " + nombre);
             } else {
                 String uid = user.getUid();
+                Log.d("FIREBASE_DEBUG", "🔍 Buscando usuario en BD con UID: " + uid);
+
                 databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             String nombreDB = snapshot.child("nombre").getValue(String.class);
                             if (nombreDB != null) {
                                 tvUsuario.setText(nombreDB);
                                 tvDescripcion.setText(nombreDB + " se unió en " + getFechaFormateada(user));
+                                Log.d("FIREBASE_DEBUG", "✅ Nombre encontrado en BD: " + nombreDB);
                             } else {
-                                tvUsuario.setText("Usuario");
-                                tvDescripcion.setText("Usuario se unió en " + getFechaFormateada(user));
+                                // Si no hay nombre en BD, usar el email
+                                String email = user.getEmail();
+                                String nombreUsuario = (email != null) ? email.split("@")[0] : "Usuario";
+                                tvUsuario.setText(nombreUsuario);
+                                tvDescripcion.setText(nombreUsuario + " se unió en " + getFechaFormateada(user));
+                                Log.d("FIREBASE_DEBUG", "ℹ️ Usando email como nombre: " + nombreUsuario);
+
+                                // Crear usuario en Firebase si no existe
+                                crearUsuarioEnFirebase(uid, user, nombreUsuario);
                             }
+                        } else {
+                            // Si el usuario no existe en la BD
+                            String email = user.getEmail();
+                            String nombreUsuario = (email != null) ? email.split("@")[0] : "Usuario";
+                            tvUsuario.setText(nombreUsuario);
+                            tvDescripcion.setText(nombreUsuario + " se unió en " + getFechaFormateada(user));
+                            Log.d("FIREBASE_DEBUG", "📝 Creando nuevo usuario en BD: " + nombreUsuario);
+
+                            crearUsuarioEnFirebase(uid, user, nombreUsuario);
                         }
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) {
-                        Toast.makeText(perfilActivity.this, "Error al cargar nombre", Toast.LENGTH_SHORT).show();
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("FIREBASE_DEBUG", "❌ Error BD: " + error.getMessage());
+                        Toast.makeText(perfilActivity.this, "Error al cargar datos del usuario", Toast.LENGTH_SHORT).show();
+
+                        // Fallback: usar email como nombre
+                        String email = user.getEmail();
+                        String nombreUsuario = (email != null) ? email.split("@")[0] : "Usuario";
+                        tvUsuario.setText(nombreUsuario);
+                        tvDescripcion.setText(nombreUsuario + " se unió en " + getFechaFormateada(user));
                     }
                 });
             }
+        } else {
+            Log.d("FIREBASE_DEBUG", "❌ NO hay usuario autenticado");
+            // Manejar cuando no hay usuario autenticado
+            tvUsuario.setText("Invitado");
+            tvDescripcion.setText("Inicia sesión para personalizar tu perfil");
+            btnEscojeAvatar.setEnabled(false);
         }
 
         // Obtener SharedPreferences
@@ -148,11 +193,33 @@ public class perfilActivity extends BaseActivity {
         });
     }
 
+    // Método para crear usuario en Firebase si no existe
+    private void crearUsuarioEnFirebase(String uid, FirebaseUser user, String nombreUsuario) {
+        DatabaseReference userRef = databaseReference.child(uid);
+
+        // Crear objeto usuario
+        User usuario = new User();
+        usuario.setNombre(nombreUsuario);
+        usuario.setEmail(user.getEmail());
+        usuario.setSeguidores(0);
+        usuario.setSiguiendo(0);
+        usuario.setAvatar(R.drawable.llamaparaperifl); // Avatar por defecto
+
+        userRef.setValue(usuario)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FIREBASE_DEBUG", "✅ Usuario creado en BD: " + nombreUsuario);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FIREBASE_DEBUG", "❌ Error al crear usuario: " + e.getMessage());
+                });
+    }
+
     // Método para cargar el avatar guardado
     private void cargarAvatarGuardado() {
         SharedPreferences prefs = getSharedPreferences("avatar_prefs", MODE_PRIVATE);
         int avatarResId = prefs.getInt("selected_avatar", R.drawable.llamaparaperifl);
         imageViewAvatar.setImageResource(avatarResId);
+        Log.d("FIREBASE_DEBUG", "🖼️ Avatar cargado: " + avatarResId);
     }
 
     // Recibir el resultado de avatarActivity
@@ -164,8 +231,9 @@ public class perfilActivity extends BaseActivity {
             if (data != null) {
                 int selectedAvatar = data.getIntExtra("selected_avatar", R.drawable.llamaparaperifl);
                 imageViewAvatar.setImageResource(selectedAvatar);
+                Log.d("FIREBASE_DEBUG", "🖼️ Nuevo avatar seleccionado: " + selectedAvatar);
 
-                // Opcional: Guardar también en Firebase
+                // Guardar también en Firebase
                 guardarAvatarEnFirebase(selectedAvatar);
             }
         }
@@ -177,9 +245,10 @@ public class perfilActivity extends BaseActivity {
             String userId = user.getUid();
             databaseReference.child(userId).child("avatar").setValue(avatarResId)
                     .addOnSuccessListener(aVoid -> {
-                        // Toast opcional: Toast.makeText(this, "Avatar actualizado en Firebase", Toast.LENGTH_SHORT).show();
+                        Log.d("FIREBASE_DEBUG", "✅ Avatar guardado en Firebase: " + avatarResId);
                     })
                     .addOnFailureListener(e -> {
+                        Log.e("FIREBASE_DEBUG", "❌ Error al guardar avatar en Firebase: " + e.getMessage());
                         Toast.makeText(this, "Error al guardar avatar en Firebase", Toast.LENGTH_SHORT).show();
                     });
         }
@@ -188,7 +257,7 @@ public class perfilActivity extends BaseActivity {
     private String getFechaFormateada(FirebaseUser user) {
         long creationTimestamp = user.getMetadata().getCreationTimestamp();
         Date creationDate = new Date(creationTimestamp);
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", new Locale("es", "ES"));
         return sdf.format(creationDate);
     }
 

@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             FirebaseAuth auth = FirebaseAuth.getInstance();
             if (auth.getCurrentUser() != null) {
-                // Ir al perfil si está autenticado
-                startActivity(new Intent(MainActivity.this, profileActivity.class));
+                // ✅ CORREGIDO: Ir al HOME si está autenticado
+                startActivity(new Intent(MainActivity.this, homeActivity.class));
             } else {
                 // Ir al login si no lo está
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));

@@ -30,9 +30,9 @@ public class loginFormActivity extends AppCompatActivity {
         // Inicializar Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        // Verificar si ya hay un usuario logueado
+        // ✅ CORREGIDO: Verificar si ya hay un usuario logueado (sin verificación de email)
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null && currentUser.isEmailVerified()) {
+        if(currentUser != null) {
             startActivity(new Intent(this, homeActivity.class));
             finish();
             return;
@@ -60,7 +60,7 @@ public class loginFormActivity extends AppCompatActivity {
         String email = etEmail.getText().toString();
         String password = etPassword.getText().toString();
 
-        // Validaciones
+        // Validaciones...
         if(email.isEmpty()) {
             etEmail.setError("Email es requerido");
             etEmail.requestFocus();
@@ -85,6 +85,9 @@ public class loginFormActivity extends AppCompatActivity {
             return;
         }
 
+        // Mostrar loading
+        btnIngresar.setEnabled(false);
+        btnIngresar.setText("CARGANDO...");
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
@@ -92,12 +95,13 @@ public class loginFormActivity extends AppCompatActivity {
                     btnIngresar.setText("INGRESAR");
 
                     if (task.isSuccessful()) {
+                        // ✅ CORREGIDO: Ir directamente a homeActivity
                         Intent i = new Intent(loginFormActivity.this, homeActivity.class);
                         startActivity(i);
-
+                        finish(); // Importante: finalizar esta actividad
                     } else {
                         Toast.makeText(loginFormActivity.this,
-                                "Credenciales incorrectas", // Mensaje más amigable
+                                "Credenciales incorrectas",
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -107,9 +111,9 @@ public class loginFormActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Verificar si el usuario ya está logueado al iniciar la actividad
+        // ✅ CORREGIDO: Verificar si el usuario ya está logueado al iniciar la actividad
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null && currentUser.isEmailVerified()) {
+        if(currentUser != null) {
             startActivity(new Intent(this, homeActivity.class));
             finish();
         }
