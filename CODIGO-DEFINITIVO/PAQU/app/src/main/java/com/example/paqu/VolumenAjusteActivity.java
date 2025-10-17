@@ -231,7 +231,6 @@ public class VolumenAjusteActivity extends AppCompatActivity {
                 musicaEjemplo.release();
             }
 
-            // Usa un audio de fondo que tengas (ej: R.raw.musica_fondo)
             // Si no tienes, comenta esta línea
             musicaEjemplo = MediaPlayer.create(this, R.raw.voz_buenos_dias); // Temporal
 
