@@ -1,209 +1,223 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".configuracionActivity">
+    android:fillViewport="true"
+    android:background="@color/white">
 
-    <TextView
-        android:id="@+id/textView17"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Configuración"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:context=".configuracionActivity"
+        android:paddingBottom="30dp">
 
-    <TextView
-        android:id="@+id/textView18"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Cuenta"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.078"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView17" />
+        <!-- Header -->
+        <TextView
+            android:id="@+id/textView17"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:fontFamily="@font/fredoka_one"
+            android:text="Configuración"
+            android:textColor="@color/morado"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnPreferencias"
-        android:layout_width="350dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Preferencias"
-        android:textSize="14sp"
-        app:icon="@android:drawable/ic_menu_send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView18" />
+        <TextView
+            android:id="@+id/tvOk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/fredoka_one"
+            android:text="✓"
+            android:textColor="#4CAF50"
+            android:textSize="24sp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnPerfil"
-        android:layout_width="350dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="9dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Perfil"
-        android:textSize="14sp"
-        app:icon="@android:drawable/ic_menu_send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.508"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPreferencias" />
+        <!-- Sección: Cuenta -->
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/fredoka_one"
+            android:text="👤 Cuenta"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
-    <Button
-        android:id="@+id/btnNotificaciones"
-        android:layout_width="350dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="12dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Notificaciones"
-        app:icon="@android:drawable/ic_menu_send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPerfil" />
+        <Button
+            android:id="@+id/btnPreferencias"
+            style="@style/ConfigButton"
+            android:layout_marginTop="12dp"
+            android:text="⚙️  Preferencias"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView18" />
 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Accesibilidad"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.065"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnNotificaciones" />
+        <Button
+            android:id="@+id/btnPerfil"
+            style="@style/ConfigButton"
+            android:layout_marginTop="10dp"
+            android:text="👤  Mi Perfil"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnPreferencias" />
 
-    <Button
-        android:id="@+id/btnTamanioFuente"
-        android:layout_width="350dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Tamaño de Fuente"
-        app:icon="@android:drawable/ic_menu_send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text" />
+        <Button
+            android:id="@+id/btnNotificaciones"
+            style="@style/ConfigButton"
+            android:layout_marginTop="10dp"
+            android:text="🔔  Notificaciones"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnPerfil" />
 
-    <TextView
-        android:id="@+id/text5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Soporte"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.065"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnTamanioFuente" />
+        <!-- Sección: Accesibilidad -->
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/fredoka_one"
+            android:text="♿ Accesibilidad"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnNotificaciones" />
 
-    <Button
-        android:id="@+id/btnAPrivacidad"
-        android:layout_width="350dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Ajustes de privacidad"
-        app:icon="@android:drawable/ic_menu_send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.508"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text5" />
+        <Button
+            android:id="@+id/btnTamanioFuente"
+            style="@style/ConfigButton"
+            android:layout_marginTop="12dp"
+            android:text="🔤  Tamaño de Fuente"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text" />
 
-    <Button
-        android:id="@+id/btnCentroAyuda"
-        android:layout_width="350dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Centro de ayuda"
-        app:icon="@android:drawable/ic_menu_send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.508"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnAPrivacidad" />
+        <Button
+            android:id="@+id/btnVolumen"
+            style="@style/ConfigButton"
+            android:layout_marginTop="10dp"
+            android:text="🔊  Control de Volumen"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnTamanioFuente" />
 
-    <Button
-        android:id="@+id/btnSugerencias"
-        android:layout_width="350dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Sugerencias"
-        app:icon="@android:drawable/ic_menu_send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.508"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnCentroAyuda" />
+        <!-- Sección: Soporte -->
+        <TextView
+            android:id="@+id/text5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/fredoka_one"
+            android:text="💬 Soporte"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnVolumen" />
 
-    <TextView
-        android:id="@+id/tvCerrarSesion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Cerrar Sesión"
-        android:textColor="#F24C4C"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnSugerencias" />
+        <Button
+            android:id="@+id/btnAPrivacidad"
+            style="@style/ConfigButton"
+            android:layout_marginTop="12dp"
+            android:text="🔒  Ajustes de Privacidad"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text5" />
 
-    <TextView
-        android:id="@+id/tvPoliticaPrivacidad"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="POLÍTICA DE PRIVACIDAD"
-        android:textColor="@color/morado"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.131"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCerrarSesion" />
+        <Button
+            android:id="@+id/btnCentroAyuda"
+            style="@style/ConfigButton"
+            android:layout_marginTop="10dp"
+            android:text="❓  Centro de Ayuda"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnAPrivacidad" />
 
-    <TextView
-        android:id="@+id/tvTerminos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="TÉRMINOS"
-        android:textColor="@color/morado"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.091"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCerrarSesion" />
+        <Button
+            android:id="@+id/btnSugerencias"
+            style="@style/ConfigButton"
+            android:layout_marginTop="10dp"
+            android:text="💡  Sugerencias"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnCentroAyuda" />
 
-    <TextView
-        android:id="@+id/tvOk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="OK"
-        android:textColor="#009688"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.652"
-        app:layout_constraintStart_toEndOf="@+id/textView17"
-        app:layout_constraintTop_toTopOf="parent" />
+        <!-- Cerrar Sesión -->
+        <TextView
+            android:id="@+id/tvCerrarSesion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/fredoka_one"
+            android:text="🚪 Cerrar Sesión"
+            android:textColor="#F44336"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnSugerencias" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Footer -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvCerrarSesion">
+
+            <TextView
+                android:id="@+id/tvPoliticaPrivacidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/fredoka_one"
+                android:text="Privacidad"
+                android:textColor="@color/morado"
+                android:textSize="12sp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" • "
+                android:textColor="#999"
+                android:paddingHorizontal="4dp" />
+
+            <TextView
+                android:id="@+id/tvTerminos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/fredoka_one"
+                android:text="Términos"
+                android:textColor="@color/morado"
+                android:textSize="12sp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

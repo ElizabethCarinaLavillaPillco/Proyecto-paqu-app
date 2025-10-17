@@ -16,18 +16,24 @@ public class ejercicio1 extends AppCompatActivity {
 
     long tiempoInicio;
     LinearLayout optionTantaWawa, optionChusaqchakuy, optionWinaypaq, optionSamay;
-    Button checkButton, saltar;
+    Button checkButton;
     String correctAnswer = "Allin p'unchay";
     String selectedAnswer = "";
 
     MediaPlayer audioPlayer, optionPlayer;
-    long vidasActuales = 5; // 👈 agrega esto
+    long vidasActuales = 5;
     TextView vidasCount;
+
+    // 🔊 Audio Manager
+    AudioManager audioManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ejercicio1);
+
+        // 🔊 Inicializar AudioManager
+        audioManager = AudioManager.getInstance(this);
 
         // 🔢 Número de ejercicio actual
         int ejercicio = 1;
@@ -36,18 +42,16 @@ public class ejercicio1 extends AppCompatActivity {
         ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setProgress(ejercicio * 20);
 
-
         vidasCount = findViewById(R.id.livesCount);
-        vidasActuales = getIntent().getLongExtra("vidas", 5); // recibe vidas del login o pantalla anterior
+        vidasActuales = getIntent().getLongExtra("vidas", 5);
         vidasCount.setText(String.valueOf(vidasActuales));
 
         if (vidasActuales <= 0) {
             Toast.makeText(this, "😢 Sin vidas. Intenta más tarde.", Toast.LENGTH_LONG).show();
             startActivity(new Intent(this, MainActivity.class));
             finish();
+            return;
         }
-
-
 
         // 🕓 Tiempo de inicio
         tiempoInicio = System.currentTimeMillis();
@@ -62,7 +66,13 @@ public class ejercicio1 extends AppCompatActivity {
         // 🔊 Audio principal
         LinearLayout audioButton = findViewById(R.id.audioButton);
         audioPlayer = MediaPlayer.create(this, R.raw.voz_buenos_dias);
-        audioButton.setOnClickListener(v -> audioPlayer.start());
+        audioButton.setOnClickListener(v -> {
+            if (audioPlayer != null) {
+                audioPlayer.start();
+            }
+            // Efecto de clic
+            audioManager.reproducirClic();
+        });
 
         // 🗣️ Opciones
         setupOption(optionTantaWawa, "Allin p'unchay", R.raw.voz_buenos_dias);
@@ -76,14 +86,15 @@ public class ejercicio1 extends AppCompatActivity {
 
             if (normalize(selectedAnswer).equals(normalize(correctAnswer))) {
                 long duracion = System.currentTimeMillis() - tiempoInicio;
+                // 🎉 Reproducir sonido de éxito
+                audioManager.reproducirExito();
                 showDialog("¡Bien hecho!", "¡Respuesta correcta! 🎉", duracion);
             } else {
+                // ❌ Reproducir sonido de error
+                audioManager.reproducirError();
                 restarVida();
             }
         });
-
-        //saltar boton
-
     }
 
     private void restarVida() {
@@ -107,11 +118,17 @@ public class ejercicio1 extends AppCompatActivity {
             checkButton.setEnabled(true);
             checkButton.setBackgroundTintList(getResources().getColorStateList(android.R.color.holo_green_dark));
 
+            // Reproducir audio de la opción
             if (optionPlayer != null) {
                 optionPlayer.release();
             }
             optionPlayer = MediaPlayer.create(this, audioResId);
-            optionPlayer.start();
+            if (optionPlayer != null) {
+                optionPlayer.start();
+            }
+
+            // Efecto de clic
+            audioManager.reproducirClic();
         });
     }
 
@@ -132,7 +149,7 @@ public class ejercicio1 extends AppCompatActivity {
                     intent.putExtra("tiempo", duracion);
                     intent.putExtra("nivel", 1);
                     intent.putExtra("ejercicio", 2);
-                    intent.putExtra("vidas", vidasActuales); // 👈 importante
+                    intent.putExtra("vidas", vidasActuales);
                     startActivity(intent);
                     finish();
                 })
@@ -140,13 +157,12 @@ public class ejercicio1 extends AppCompatActivity {
                 .show();
     }
 
-
     private String normalize(String s) {
         return s.trim()
                 .toLowerCase()
-                .replace("’", "'")
-                .replace("‘", "'")
-                .replace("", "'")
+                .replace("'", "'")
+                .replace("'", "'")
+                .replace("`", "'")
                 .replace("´", "'")
                 .replace("ʻ", "'");
     }
@@ -162,5 +178,17 @@ public class ejercicio1 extends AppCompatActivity {
             optionPlayer = null;
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Pausar audios al salir
+        if (audioPlayer != null && audioPlayer.isPlaying()) {
+            audioPlayer.pause();
+        }
+        if (optionPlayer != null && optionPlayer.isPlaying()) {
+            optionPlayer.pause();
+        }
     }
 }

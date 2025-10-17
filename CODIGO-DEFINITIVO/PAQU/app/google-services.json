@@ -18,11 +18,6 @@
           "client_id": "507103280595-ofj9kgqqgqquj9d39glkqi2rokj9pt15.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-<<<<<<< HEAD
-            "package_name": "com.example.paquultimo",
-            "certificate_hash": "da06b5afd767dc8719bb98d953b97c5915608c7b",
-=======
->>>>>>> 8885d9dc0aa244db4180c9b9f72574b2e88f36a2
             "package_name": "com.example.paqu",
             "certificate_hash": "a9d51cb7dd9867ca27487504712a25710f2bbcb2"
           }

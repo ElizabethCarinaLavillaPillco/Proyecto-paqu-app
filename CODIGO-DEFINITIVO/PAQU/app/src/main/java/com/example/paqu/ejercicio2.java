@@ -44,6 +44,8 @@ public class ejercicio2 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ejercicio2);
 
+
+
         // Referencias UI
         oracionContainer = findViewById(R.id.oracionContainer);
         checkButton = findViewById(R.id.checkButton);

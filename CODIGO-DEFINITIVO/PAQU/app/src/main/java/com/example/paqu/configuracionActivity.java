@@ -3,11 +3,12 @@ package com.example.paqu;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -17,16 +18,15 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class configuracionActivity extends AppCompatActivity {
 
-    Button btnPreferencias, btnPerfil, btnNotificaciones, btnAPrivacidad, btnCentroAyuda, btnSugerencias, btnTamanioFuente;
+    Button btnPreferencias, btnPerfil, btnNotificaciones, btnAPrivacidad,
+            btnCentroAyuda, btnSugerencias, btnTamanioFuente, btnVolumen;
     TextView tvOk, tvPoliticaPrivacidad, tvTerminos, tvCerrarSesion;
 
     FirebaseAuth mAuth;
-    Button btnCerrarSesion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_configuracion);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -34,10 +34,24 @@ public class configuracionActivity extends AppCompatActivity {
             return insets;
         });
 
-        // NUEVO: Aplicar fuentes automáticamente
+        // Aplicar fuentes automáticamente
         aplicarFuentesAutomaticas();
 
-        // botones
+        // Inicializar Firebase
+        mAuth = FirebaseAuth.getInstance();
+
+        // Inicializar vistas
+        initViews();
+
+        // Aplicar animaciones de entrada
+        aplicarAnimacionesEntrada();
+
+        // Configurar listeners
+        setupListeners();
+    }
+
+    private void initViews() {
+        // Botones
         btnPreferencias = findViewById(R.id.btnPreferencias);
         btnPerfil = findViewById(R.id.btnPerfil);
         btnNotificaciones = findViewById(R.id.btnNotificaciones);
@@ -45,128 +59,149 @@ public class configuracionActivity extends AppCompatActivity {
         btnCentroAyuda = findViewById(R.id.btnCentroAyuda);
         btnSugerencias = findViewById(R.id.btnSugerencias);
         btnTamanioFuente = findViewById(R.id.btnTamanioFuente);
+        btnVolumen = findViewById(R.id.btnVolumen);
 
-        // textos que actuan como botones
+        // TextViews
         tvOk = findViewById(R.id.tvOk);
         tvCerrarSesion = findViewById(R.id.tvCerrarSesion);
         tvTerminos = findViewById(R.id.tvTerminos);
         tvPoliticaPrivacidad = findViewById(R.id.tvPoliticaPrivacidad);
+    }
 
-        // acciones
-        tvOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(configuracionActivity.this, perfilActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-            }
+    private void setupListeners() {
+        // OK - Volver
+        tvOk.setOnClickListener(v -> {
+            animarClick(v);
+            startActivity(new Intent(this, perfilActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
         });
 
-        // Cerrar sesión
-        mAuth = FirebaseAuth.getInstance();
-        tvCerrarSesion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAuth.signOut(); // Cierra la sesión
-                Intent intent = new Intent(configuracionActivity.this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish(); // Finaliza esta actividad
-            }
+        // Cerrar Sesión
+        tvCerrarSesion.setOnClickListener(v -> {
+            animarClick(v);
+            mAuth.signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
 
-        // Botón de tamaño de fuente
-        btnTamanioFuente.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(configuracionActivity.this, TamanioFuenteActivity.class);
-                startActivity(intent);
-            }
+        // Tamaño de Fuente
+        btnTamanioFuente.setOnClickListener(v -> {
+            animarClick(v);
+            startActivity(new Intent(this, TamanioFuenteActivity.class));
         });
 
-        // Acciones para los otros botones
-        btnPreferencias.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(configuracionActivity.this, "Preferencias", Toast.LENGTH_SHORT).show();
-            }
+        // 🔊 NUEVO: Botón Volumen
+        btnVolumen.setOnClickListener(v -> {
+            animarClick(v);
+            startActivity(new Intent(this, VolumenAjusteActivity.class));
         });
 
-        btnPerfil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(configuracionActivity.this, perfilActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-            }
+        // Perfil
+        btnPerfil.setOnClickListener(v -> {
+            animarClick(v);
+            startActivity(new Intent(this, perfilActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
         });
 
-        btnNotificaciones.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(configuracionActivity.this, "Notificaciones", Toast.LENGTH_SHORT).show();
-            }
+        // Resto de botones (placeholder)
+        btnPreferencias.setOnClickListener(v -> {
+            animarClick(v);
+            Toast.makeText(this, "Preferencias", Toast.LENGTH_SHORT).show();
         });
 
-        btnAPrivacidad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(configuracionActivity.this, "Ajustes de Privacidad", Toast.LENGTH_SHORT).show();
-            }
+        btnNotificaciones.setOnClickListener(v -> {
+            animarClick(v);
+            Toast.makeText(this, "Notificaciones", Toast.LENGTH_SHORT).show();
         });
 
-        btnCentroAyuda.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(configuracionActivity.this, "Centro de Ayuda", Toast.LENGTH_SHORT).show();
-            }
+        btnAPrivacidad.setOnClickListener(v -> {
+            animarClick(v);
+            Toast.makeText(this, "Ajustes de Privacidad", Toast.LENGTH_SHORT).show();
         });
 
-        btnSugerencias.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(configuracionActivity.this, "Sugerencias", Toast.LENGTH_SHORT).show();
-            }
+        btnCentroAyuda.setOnClickListener(v -> {
+            animarClick(v);
+            Toast.makeText(this, "Centro de Ayuda", Toast.LENGTH_SHORT).show();
         });
 
-        // Acciones para los textos de política y términos
-        tvPoliticaPrivacidad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(configuracionActivity.this, "Política de Privacidad", Toast.LENGTH_SHORT).show();
-            }
+        btnSugerencias.setOnClickListener(v -> {
+            animarClick(v);
+            Toast.makeText(this, "Sugerencias", Toast.LENGTH_SHORT).show();
         });
 
-        tvTerminos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(configuracionActivity.this, "Términos y Condiciones", Toast.LENGTH_SHORT).show();
-            }
+        tvPoliticaPrivacidad.setOnClickListener(v -> {
+            animarClick(v);
+            Toast.makeText(this, "Política de Privacidad", Toast.LENGTH_SHORT).show();
+        });
+
+        tvTerminos.setOnClickListener(v -> {
+            animarClick(v);
+            Toast.makeText(this, "Términos y Condiciones", Toast.LENGTH_SHORT).show();
         });
     }
 
-    // NUEVO: Método para aplicar fuentes a TODOS los TextView
+    // ============= ANIMACIONES =============
+
+    private void aplicarAnimacionesEntrada() {
+        Animation slideIn = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
+        slideIn.setDuration(400);
+
+        View[] vistas = {
+                btnPreferencias, btnPerfil, btnNotificaciones,
+                btnTamanioFuente, btnVolumen,
+                btnAPrivacidad, btnCentroAyuda, btnSugerencias
+        };
+
+        for (int i = 0; i < vistas.length; i++) {
+            View vista = vistas[i];
+            vista.setAlpha(0f);
+            vista.setTranslationX(-100f);
+
+            vista.animate()
+                    .alpha(1f)
+                    .translationX(0f)
+                    .setDuration(500)
+                    .setStartDelay(i * 80)
+                    .start();
+        }
+    }
+
+    private void animarClick(View view) {
+        view.animate()
+                .scaleX(0.95f)
+                .scaleY(0.95f)
+                .setDuration(100)
+                .withEndAction(() -> {
+                    view.animate()
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(100)
+                            .start();
+                })
+                .start();
+    }
+
+    // ============= FUENTES =============
+
     private void aplicarFuentesAutomaticas() {
-        // TextView principales
-        aplicarFuente(R.id.textView17, 20f);  // "Configuración"
-        aplicarFuente(R.id.textView18, 16f);  // "Cuenta"
-        aplicarFuente(R.id.text, 16f);        // "Accesibilidad"
-        aplicarFuente(R.id.text5, 16f);       // "Soporte"
-
-        // TextView que actúan como botones
-        aplicarFuente(R.id.tvOk, 16f);        // "OK"
-        aplicarFuente(R.id.tvCerrarSesion, 16f); // "Cerrar Sesión"
-        aplicarFuente(R.id.tvPoliticaPrivacidad, 14f); // "POLÍTICA DE PRIVACIDAD"
-        aplicarFuente(R.id.tvTerminos, 14f);  // "TÉRMINOS"
-
-        // Aplicar también a los textos de los botones
+        aplicarFuente(R.id.textView17, 20f);
+        aplicarFuente(R.id.textView18, 16f);
+        aplicarFuente(R.id.text, 16f);
+        aplicarFuente(R.id.text5, 16f);
+        aplicarFuente(R.id.tvOk, 16f);
+        aplicarFuente(R.id.tvCerrarSesion, 16f);
+        aplicarFuente(R.id.tvPoliticaPrivacidad, 14f);
+        aplicarFuente(R.id.tvTerminos, 14f);
         aplicarFuenteBotones();
     }
 
-    // NUEVO: Método para aplicar fuentes a los botones
     private void aplicarFuenteBotones() {
         int[] botonesIds = {
                 R.id.btnPreferencias, R.id.btnPerfil, R.id.btnNotificaciones,
                 R.id.btnAPrivacidad, R.id.btnCentroAyuda, R.id.btnSugerencias,
-                R.id.btnTamanioFuente
+                R.id.btnTamanioFuente, R.id.btnVolumen
         };
 
         for (int botonId : botonesIds) {
@@ -177,7 +212,6 @@ public class configuracionActivity extends AppCompatActivity {
         }
     }
 
-    // NUEVO: Método helper
     private void aplicarFuente(int textViewId, float tamanioBase) {
         TextView textView = findViewById(textViewId);
         if (textView != null) {
@@ -188,11 +222,10 @@ public class configuracionActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // NUEVO: Re-aplicar fuentes por si hubo cambios
         aplicarFuentesAutomaticas();
     }
 
-    // MÉTODOS ESTÁTICOS (ya existían)
+    // Métodos estáticos (para uso global)
     public static float obtenerFactorFuente(android.content.Context context) {
         android.content.SharedPreferences prefs = context.getSharedPreferences("configuracion_app", android.content.Context.MODE_PRIVATE);
         return prefs.getFloat("factor_fuente", 1.0f);
