@@ -17,13 +17,10 @@
           "client_id": "507103280595-ofj9kgqqgqquj9d39glkqi2rokj9pt15.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-<<<<<<< HEAD
             "package_name": "com.example.paquultimo",
-            "certificate_hash": "da06b5afd767dc8719bb98d953b97c5915608c7b"
-=======
+            "certificate_hash": "da06b5afd767dc8719bb98d953b97c5915608c7b",
             "package_name": "com.example.paqu",
             "certificate_hash": "a9d51cb7dd9867ca27487504712a25710f2bbcb2"
->>>>>>> cceefd0682b9a7ebb02102a91f71f5bbe0cffd38
           }
         },
         {

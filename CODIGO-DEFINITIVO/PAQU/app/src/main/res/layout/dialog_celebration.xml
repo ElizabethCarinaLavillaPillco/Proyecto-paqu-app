@@ -6,11 +6,12 @@
     android:background="#80000000">
 
     <!-- Confetti de fondo (ocupa toda la pantalla) -->
-    <com.airbnb.lottie.LottieAnimationView
+        <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottieConfetti"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:lottie_autoPlay="true"
+        app:lottie_rawRes="@raw/confetti"
         app:lottie_loop="false" />
 
     <!-- Contenido central -->
@@ -30,6 +31,7 @@
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             app:lottie_autoPlay="true"
+            app:lottie_rawRes="@raw/animation_llama_terminoleccion"
             app:lottie_loop="false" />
 
         <!-- Mensaje de celebración -->
@@ -68,21 +70,21 @@
                 android:layout_height="24dp"
                 android:src="@drawable/ic_star"
                 android:layout_margin="4dp"
-                app:tint="@color/verde" />
+                app:tint="@color/white" />
 
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_star"
                 android:layout_margin="4dp"
-                app:tint="@color/verde" />
+                app:tint="@color/white" />
 
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_star"
                 android:layout_margin="4dp"
-                app:tint="@color/verde" />
+                app:tint="@color/white" />
 
         </LinearLayout>
 

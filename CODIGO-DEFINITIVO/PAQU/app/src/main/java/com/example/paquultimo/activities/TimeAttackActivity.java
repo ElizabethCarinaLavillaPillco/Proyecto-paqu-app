@@ -436,7 +436,7 @@ public class TimeAttackActivity extends AppCompatActivity {
 
         if (isCorrect) {
             //sonido de exito
-            lottieAnimation.setAnimation("check_success.json");
+            lottieAnimation.setAnimation("success.json");
             playSound(R.raw.voz2);
         } else {
             //sonid de vo< eorro

@@ -50,6 +50,9 @@
             android:name=".ejercicio1"
             android:exported="true" />
         <activity
+            android:name=".ejercicio2"
+            android:exported="true" />
+        <activity
             android:name=".homeActivity"
             android:exported="false" />
         <activity
@@ -70,6 +73,9 @@
         <activity
             android:name=".LoginActivity"
             android:exported="false" />
+        <activity
+            android:name=".configuracionActivity"
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

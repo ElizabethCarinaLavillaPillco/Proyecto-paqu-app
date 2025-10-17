@@ -28,7 +28,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_llama_app"
-                app:tint="@color/white" />
+                app:tint="@color/ic_logo_background" />
 
             <TextView
                 android:layout_width="0dp"
@@ -53,6 +53,8 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_gravity="center_horizontal"
+            app:lottie_rawRes="@raw/animation_llama_terminoleccion"
+
             android:layout_marginBottom="8dp"
             app:lottie_autoPlay="true"
             app:lottie_loop="false" />
@@ -62,13 +64,13 @@
             android:id="@+id/tvResultTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="¡Felicidades!"
-            android:textColor="@color/verde"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            android:gravity="center"
             android:layout_marginBottom="8dp"
-            android:letterSpacing="0.02" />
+            android:gravity="center"
+            android:letterSpacing="0.02"
+            android:text="¡Felicidades!"
+            android:textColor="@color/white"
+            android:textSize="32sp"
+            android:textStyle="bold" />
 
         <!-- Subtítulo -->
         <TextView
@@ -209,7 +211,7 @@
                             android:layout_height="32dp"
                             android:src="@drawable/ic_star"
                             android:layout_marginBottom="8dp"
-                            app:tint="@color/verde" />
+                            app:tint="@color/morado" />
 
                         <TextView
                             android:layout_width="wrap_content"

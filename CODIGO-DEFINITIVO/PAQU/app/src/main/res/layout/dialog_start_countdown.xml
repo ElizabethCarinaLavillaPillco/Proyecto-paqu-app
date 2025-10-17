@@ -15,6 +15,7 @@
         android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
         app:lottie_autoPlay="true"
+        app:lottie_rawRes="@raw/animation_llama_tecleando"
         app:lottie_loop="false" />
 
     <!-- Texto del countdown -->

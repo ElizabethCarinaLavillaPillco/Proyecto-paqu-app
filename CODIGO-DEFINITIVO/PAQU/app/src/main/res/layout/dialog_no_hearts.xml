@@ -13,9 +13,9 @@
         android:id="@+id/lottieCrying"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        app:lottie_fileName="crying_llama.json"
+        app:lottie_rawRes="@raw/llama_llorando"
         app:lottie_autoPlay="true"
-        app:lottie_loop="true"/>
+        app:lottie_loop="false"/>
 
     <TextView
         android:layout_width="wrap_content"
