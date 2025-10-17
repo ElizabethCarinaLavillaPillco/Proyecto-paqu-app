@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#667eea"
+    android:padding="24dp"
+    tools:context=".TamanioFuenteActivity">
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tamaño de Fuente"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="32dp"
+        android:fontFamily="@font/fredoka_one"
+        android:letterSpacing="0.02" />
+
+    <!-- Tarjeta principal -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="12dp"
+        app:cardBackgroundColor="#FFFFFF"
+        android:layout_marginBottom="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="28dp"
+            android:background="#FFFFFF">
+
+            <!-- Icono decorativo -->
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:text="𝖠"
+                android:textSize="36sp"
+                android:gravity="center"
+                android:textColor="#667eea"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="24dp"
+                android:background="#f3f4ff"
+                android:backgroundTint="#f3f4ff" />
+
+            <!-- Texto de ejemplo -->
+            <TextView
+                android:id="@+id/tvTextoEjemplo1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Este es un texto de ejemplo para ver cómo se ve el tamaño de fuente seleccionado en tu aplicación."
+                android:gravity="center"
+                android:textColor="#000000"
+                android:lineSpacingMultiplier="1.2"
+                android:padding="20dp"
+                android:background="#f8f9fa"
+                android:layout_marginBottom="40dp" />
+
+            <!-- Contenedor de la barra -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
+
+                <!-- Etiqueta -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ajusta el tamaño:"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="@font/fredoka_one" />
+
+                <!-- Barra deslizante con iconos -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8px">
+
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:text="A"
+                        android:textSize="14sp"
+                        android:gravity="center"
+                        android:textColor="#757575"
+                        android:layout_marginEnd="12dp" />
+
+                    <SeekBar
+                        android:id="@+id/seekBarFuente1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:progress="2"
+                        android:max="4"
+                        android:progressTint="#667eea"
+                        android:thumbTint="#667eea"
+                        android:progressBackgroundTint="#E0E0E0" />
+
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:text="A"
+                        android:textSize="22sp"
+                        android:gravity="center"
+                        android:textColor="#757575"
+                        android:layout_marginStart="12dp" />
+
+                </LinearLayout>
+
+                <!-- Etiquetas de tamaño -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pequeño"
+                        android:textSize="12sp"
+                        android:textColor="#757575"
+                        android:layout_weight="1"
+                        android:gravity="start" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mediano"
+                        android:textSize="12sp"
+                        android:textColor="#757575"
+                        android:layout_weight="1"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Grande"
+                        android:textSize="12sp"
+                        android:textColor="#757575"
+                        android:layout_weight="1"
+                        android:gravity="end" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Indicador de tamaño actual -->
+            <TextView
+                android:id="@+id/tvTamanioActual1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tamaño: Mediano"
+                android:textSize="14sp"
+                android:textColor="#667eea"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:fontFamily="@font/fredoka_one"
+                android:background="#f3f4ff"
+                android:padding="12dp"
+                android:layout_marginBottom="24dp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Botones de acción -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp">
+
+        <!-- Botón Cancelar con borde morado -->
+        <TextView
+            android:id="@+id/btnCancelar1"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_weight="1"
+            android:text="Cancelar"
+            android:textSize="16sp"
+            android:textColor="#667eea"
+            android:gravity="center"
+            android:layout_marginEnd="12dp"
+            android:fontFamily="@font/fredoka_one"
+            android:background="#FFFFFF"
+            android:backgroundTint="#FFFFFF"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground" />
+
+        <!-- Botón Aplicar sólido morado -->
+        <TextView
+            android:id="@+id/btnAplicar1"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_weight="1"
+            android:text="Aplicar"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_marginStart="12dp"
+            android:fontFamily="@font/fredoka_one"
+            android:background="#667eea"
+            android:backgroundTint="#667eea"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+
+</LinearLayout>

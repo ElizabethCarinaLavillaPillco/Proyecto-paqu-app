@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.paquultimo"
+    namespace = "com.example.paqu"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.paquultimo"
+        applicationId = "com.example.paqu"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
