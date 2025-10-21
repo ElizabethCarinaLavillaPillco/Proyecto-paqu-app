@@ -30,11 +30,6 @@ public class AudioManager {
         return instance;
     }
 
-    // ============= REPRODUCIR EFECTOS =============
-
-    /**
-     * Reproduce un efecto de sonido (éxito, error, clic, etc.)
-     */
     public void reproducirEfecto(int audioResId) {
         if (!efectosActivados()) return;
 
@@ -58,36 +53,15 @@ public class AudioManager {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Efecto de éxito (respuesta correcta)
-     */
     public void reproducirExito() {
-        // Reemplaza R.raw.exito con tu archivo de audio
-        reproducirEfecto(R.raw.efecto_exito); // Temporal - cambiar después
+        reproducirEfecto(R.raw.efecto_exito);
     }
-
-    /**
-     * Efecto de error (respuesta incorrecta)
-     */
     public void reproducirError() {
-        // Reemplaza R.raw.error con tu archivo de audio
-        reproducirEfecto(R.raw.efecto_error); // Temporal - cambiar después
+        reproducirEfecto(R.raw.efecto_error);
     }
-
-    /**
-     * Efecto de clic
-     */
     public void reproducirClic() {
-        // Reemplaza R.raw.clic con tu archivo de audio
-        reproducirEfecto(R.raw.efecto_click); // Temporal - cambiar después
+        reproducirEfecto(R.raw.efecto_click);
     }
-
-    // ============= MÚSICA DE FONDO =============
-
-    /**
-     * Inicia música de fondo en loop
-     */
     public void iniciarMusicaFondo(int audioResId) {
         if (!musicaActivada()) return;
 
