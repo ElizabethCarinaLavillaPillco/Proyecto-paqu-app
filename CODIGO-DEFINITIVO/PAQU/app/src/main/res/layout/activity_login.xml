@@ -56,7 +56,7 @@
         android:id="@+id/textView2"
         android:layout_width="285dp"
         android:layout_height="37dp"
-        android:layout_marginTop="396dp"
+        android:layout_marginTop="312dp"
         android:fontFamily="@font/fredoka_one"
         android:foregroundGravity="center_vertical|center|center_horizontal"
         android:gravity="center|center_horizontal|center_vertical"
@@ -64,7 +64,6 @@
         android:textColor="#000000"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/animationView" />
 
@@ -87,7 +86,7 @@
         android:id="@+id/textView"
         android:layout_width="336dp"
         android:layout_height="38dp"
-        android:layout_marginTop="244dp"
+        android:layout_marginTop="192dp"
         android:fontFamily="@font/fredoka_one"
         android:foregroundGravity="center_vertical|center|center_horizontal"
         android:gravity="center|center_horizontal|center_vertical"
@@ -95,6 +94,7 @@
         android:textColor="#000000"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.48"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/animationView" />
 

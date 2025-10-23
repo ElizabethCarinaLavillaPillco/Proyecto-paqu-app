@@ -90,5 +90,4 @@ dependencies {
 
     implementation ("com.tbuonomo:dotsindicator:5.0")
 
-
 }

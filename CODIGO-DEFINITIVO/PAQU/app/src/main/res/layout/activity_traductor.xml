@@ -255,7 +255,7 @@
             android:textSize="18sp"
             app:backgroundTint="@color/morado"
             app:cornerRadius="20dp"
-            android:src="@android:drawable/ic_menu_translate"
+            android:src="@drawable/ic_menu_translate"
             app:iconGravity="textStart"
             app:iconTint="@color/white"
             app:layout_constraintTop_toBottomOf="@id/cardOrigen" />
