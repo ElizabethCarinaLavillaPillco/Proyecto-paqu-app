@@ -14,6 +14,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.paqu.activities.InfoCuentaActivity;
+import com.example.paqu.activities.InfoSoporteActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class configuracionActivity extends AppCompatActivity {
@@ -108,7 +110,7 @@ public class configuracionActivity extends AppCompatActivity {
         // Resto de botones (placeholder)
         btnPreferencias.setOnClickListener(v -> {
             animarClick(v);
-            Toast.makeText(this, "Preferencias", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, InfoCuentaActivity.class));
         });
 
         btnNotificaciones.setOnClickListener(v -> {
@@ -123,7 +125,7 @@ public class configuracionActivity extends AppCompatActivity {
 
         btnCentroAyuda.setOnClickListener(v -> {
             animarClick(v);
-            Toast.makeText(this, "Centro de Ayuda", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, InfoSoporteActivity.class));
         });
 
         btnSugerencias.setOnClickListener(v -> {
