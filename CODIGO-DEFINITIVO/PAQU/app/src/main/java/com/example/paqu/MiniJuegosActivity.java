@@ -50,7 +50,7 @@ public class MiniJuegosActivity extends BaseActivity {
         if (texto.contains("Practica Quechua")) return 16f;
         if (texto.contains("Memoria") || texto.contains("Contra el Reloj") || texto.contains("Cuento en Acción")) return 20f; // ← AGREGAR "Cuento en Acción"
         if (texto.contains("parejas") || texto.contains("Responde antes") || texto.contains("Interactúa con historias")) return 14f; // ← AGREGAR "Interactúa con historias"
-        if (texto.contains("Próximamente") || texto.contains("Disponible") || texto.contains("🔜 Próximamente")) return 12f;
+        if (texto.contains("Próximamente") || texto.contains("Disponible") || texto.contains("Disponible")) return 12f;
         if (texto.contains("💡")) return 12f;
         return 14f; // Tamaño por defecto
     }
@@ -79,7 +79,8 @@ public class MiniJuegosActivity extends BaseActivity {
         });
         // Cuento en Acción
         cardCuentoAccion.setOnClickListener(v -> {
-            Toast.makeText(this, "📖 Cuento en Acción - Próximamente", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MiniJuegosActivity.this, CuentoAccionActivity.class);
+            startActivity(intent);
         });
     }
 

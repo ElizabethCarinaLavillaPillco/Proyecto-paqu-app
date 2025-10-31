@@ -8,4 +8,6 @@
     <color name="rosado">#FFBC5B</color>
     <color name="moradit">#D7CDFB</color>
     <color name="azul">#2196F3</color>
+    <color name="filter_selected">#4CAF50</color>
+    <color name="filter_unselected">#666666</color>
 </resources>
