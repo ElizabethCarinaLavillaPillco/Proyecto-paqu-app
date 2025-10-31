@@ -48,9 +48,9 @@ public class MiniJuegosActivity extends BaseActivity {
     private float obtenerTamanioParaTexto(String texto) {
         if (texto.contains("🎮 Minijuegos")) return 32f;
         if (texto.contains("Practica Quechua")) return 16f;
-        if (texto.contains("Memoria") || texto.contains("Contra el Reloj")) return 20f;
-        if (texto.contains("parejas") || texto.contains("Responde antes")) return 14f;
-        if (texto.contains("Próximamente") || texto.contains("Disponible")) return 12f;
+        if (texto.contains("Memoria") || texto.contains("Contra el Reloj") || texto.contains("Cuento en Acción")) return 20f; // ← AGREGAR "Cuento en Acción"
+        if (texto.contains("parejas") || texto.contains("Responde antes") || texto.contains("Interactúa con historias")) return 14f; // ← AGREGAR "Interactúa con historias"
+        if (texto.contains("Próximamente") || texto.contains("Disponible") || texto.contains("🔜 Próximamente")) return 12f;
         if (texto.contains("💡")) return 12f;
         return 14f; // Tamaño por defecto
     }
@@ -65,6 +65,7 @@ public class MiniJuegosActivity extends BaseActivity {
     private void setupGameCards() {
         CardView cardMemoria = findViewById(R.id.cardMemoria);
         CardView cardContrarreloj = findViewById(R.id.cardContrarreloj);
+        CardView cardCuentoAccion = findViewById(R.id.cardCuentoAccion);
 
         // Juego de Memoria
         cardMemoria.setOnClickListener(v -> {
@@ -76,7 +77,12 @@ public class MiniJuegosActivity extends BaseActivity {
             Intent intent = new Intent(this, com.example.paqu.activities.TimeAttackActivity.class);
             startActivity(intent);
         });
+        // Cuento en Acción
+        cardCuentoAccion.setOnClickListener(v -> {
+            Toast.makeText(this, "📖 Cuento en Acción - Próximamente", Toast.LENGTH_SHORT).show();
+        });
     }
+
 
     @Override
     protected int getSelectedNavItemId() {

@@ -198,7 +198,82 @@
                 </RelativeLayout>
 
             </androidx.cardview.widget.CardView>
+            <!-- Card Cuento en Acción -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardCuentoAccion"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@color/white">
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="20dp">
+
+                    <!-- Imagen del juego -->
+                    <ImageView
+                        android:id="@+id/icStoryGame"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@drawable/ic_timer"
+                        android:layout_centerVertical="true"
+                        app:tint="@color/azul" />
+
+                    <!-- Contenido textual -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/icStoryGame"
+                        android:layout_marginStart="20dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cuento en Acción"
+                            android:textColor="@color/black"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Interactúa con historias Quechua"
+                            android:textColor="@color/grey"
+                            android:textSize="14sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <!-- Badge "Disponible" -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔜 Próximamente"
+                            android:textColor="@color/azul"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:background="@drawable/bg_badge_available"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="4dp" />
+
+                    </LinearLayout>
+
+                    <!-- Icono de flecha -->
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_arrow_forward"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        app:tint="@color/azul" />
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
             <!-- Mensaje informativo -->
             <TextView
                 android:layout_width="match_parent"
