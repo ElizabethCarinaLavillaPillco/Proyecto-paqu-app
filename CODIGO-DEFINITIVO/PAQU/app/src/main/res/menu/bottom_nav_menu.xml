@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/casaicon"
+        android:title="Inicio" />
+
+    <item
+        android:id="@+id/nav_dictionary"
+        android:icon="@drawable/diccionarioicon"
+        android:title="Diccionario" />
+
+    <item
+        android:id="@+id/nav_minijuegos"
+        android:icon="@drawable/ic_star"
+        android:title="Minijuegos" />
+
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/usericon"
+        android:title="Perfil" />
+</menu>

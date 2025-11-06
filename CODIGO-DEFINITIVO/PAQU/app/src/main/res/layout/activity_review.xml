@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/bg_gradient_review">
+
+    <!-- Barra de progreso con degradado -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="#FFFFFF"
+        android:layout_marginBottom="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:progressDrawable="@drawable/progress_gradient" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Información de progreso -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="#FFFFFF"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/textProgress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="0/0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#1F2937"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/textWordCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 palabras por repasar"
+                android:textSize="14sp"
+                android:textColor="#6B7280" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Tarjeta de pregunta/respuesta -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Pregunta con degradado -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card_gradient_bg"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="180dp"
+                android:padding="24dp">
+
+                <TextView
+                    android:id="@+id/textQuestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Pregunta"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textColor="#FFFFFF"
+                    android:lineSpacingExtra="4dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Respuesta con degradado (inicialmente oculta) -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/answer_orange_gradient_bg"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="150dp"
+                android:padding="24dp">
+
+                <TextView
+                    android:id="@+id/textAnswer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Respuesta"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textColor="#FFFFFF"
+                    android:lineSpacingExtra="4dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+    <!-- Botón para mostrar respuesta con degradado -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/btnShowAnswer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_black_gradient"
+            android:padding="16dp"
+            android:text="Mostrar Respuesta"
+            android:textColor="#FFFFFF"
+            android:textColorLink="#B19191"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Botones de calificación con degradados -->
+    <LinearLayout
+        android:id="@+id/layoutAnswerButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            android:layout_marginEnd="4dp">
+
+            <Button
+                android:id="@+id/btnHard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Difícil"
+                android:background="@drawable/button_hard_gradient"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:padding="16dp" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp">
+
+            <Button
+                android:id="@+id/btnMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Medio"
+                android:background="@drawable/button_medium_gradient"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:padding="16dp" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            android:layout_marginStart="4dp">
+
+            <Button
+                android:id="@+id/btnEasy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fácil"
+                android:background="@drawable/button_easy_gradient"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:padding="16dp" />
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+</LinearLayout>
