@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#F5E9FF"> <!-- Fondo lila claro -->
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="74dp"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <!-- Barra de progreso -->
+
+            <!-- Vidas -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="296dp"
+                android:layout_height="12dp"
+                android:layout_marginBottom="16dp"
+                android:max="100"
+                android:progress="60"
+                android:progressDrawable="@drawable/progress_bar_lila" />
+
+            <LinearLayout
+                android:layout_width="34dp"
+                android:layout_height="46dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="Vidas"
+                    android:src="@drawable/corazonicon" />
+
+                <TextView
+                    android:id="@+id/livesCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="5"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Título -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ESCUCHAR - UYARIY"
+            android:textColor="#A259FF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <!-- Instrucción -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Escucha y selecciona las palabras"
+            android:textColor="#000000"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Botón audio central -->
+        <LinearLayout
+            android:id="@+id/audioButton"
+            android:layout_width="84dp"
+            android:layout_height="71dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/audio_button_bg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <ImageView
+                android:layout_width="61dp"
+                android:layout_height="27dp"
+                android:src="@drawable/ic_audio" />
+
+
+        </LinearLayout>
+
+        <!-- Línea de oración armada -->
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/oracionContainer"
+            android:layout_width="match_parent"
+            android:layout_height="53dp"
+            android:layout_marginBottom="16dp"
+            android:padding="8dp"
+            android:background="@color/moradit"
+            app:alignItems="center"
+            app:flexWrap="wrap"
+            app:justifyContent="flex_start" />
+
+
+        <!-- Opciones -->
+        <GridLayout
+            android:id="@+id/optionsGrid"
+            android:layout_width="374dp"
+            android:layout_height="200dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:columnCount="2"
+            android:rowCount="2">
+
+            <!-- Opción: t’anta wawa -->
+            <LinearLayout
+                android:id="@+id/opcion1"
+                android:layout_width="1dp"
+                android:layout_height="70dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                android:background="@drawable/option_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/tvOpcion1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Allin"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Opción: ch’usaqchakuy -->
+            <LinearLayout
+                android:id="@+id/opcion2"
+                android:layout_width="2dp"
+                android:layout_height="70dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                android:background="@drawable/option_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/tvOpcion2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="p'unchay"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Opción: wiñaypaq -->
+            <LinearLayout
+                android:id="@+id/opcion3"
+                android:layout_width="4dp"
+                android:layout_height="70dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                android:background="@drawable/option_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/tvOpcion3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="sukha"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Opción: samay -->
+            <LinearLayout
+                android:id="@+id/opcion4"
+                android:layout_width="5dp"
+                android:layout_height="70dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                android:background="@drawable/option_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/tvOpcion4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="tuta"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </GridLayout>
+
+
+
+
+        <Button
+            android:id="@+id/checkButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="COMPROBAR"
+            android:enabled="false"
+            android:backgroundTint="#A259FF"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:padding="16dp" />
+    </LinearLayout>
+</RelativeLayout>
