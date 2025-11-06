@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -25,6 +26,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import com.example.paqu.utils.StreakManager;
+
 public class homeActivity extends BaseActivity {
 
     private CardView stickySection;
@@ -33,10 +36,21 @@ public class homeActivity extends BaseActivity {
     private int originalColor;
     private int stickyColor;
 
+    private StreakManager streakManager;
+    private TextView streakDays, diamondsCount, livesCount;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // ✅ INICIALIZAR PRIMERO LAS VISTAS
+        streakDays = findViewById(R.id.streakDays);
+        diamondsCount = findViewById(R.id.diamondsCount);
+        livesCount = findViewById(R.id.livesCount);
+
+        // ✅ INICIALIZAR STREAK MANAGER
+        streakManager = new StreakManager();
 
         // Configurar barra de navegación inferior
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
@@ -47,19 +61,81 @@ public class homeActivity extends BaseActivity {
         sectionContent = findViewById(R.id.sectionContent);
 
         // Obtener colores
-        stickyColor = ContextCompat.getColor(this, R.color.rosado); // Color morado para sticky
+        stickyColor = ContextCompat.getColor(this, R.color.rosado);
 
         // Configurar el efecto sticky con cambio de color
         setupStickyHeader();
 
-        // Actualizar datos del usuario
-        updateUserData();
+        // ✅ PRIMERO ACTUALIZAR RACHA, LUEGO CARGAR DATOS
+        updateStreakAndData();
 
         // Configurar niveles clickeables
         setupLevelCards();
-        // SOLO ESTA LÍNEA NUEVA
+
         aplicarFuentesAutomaticas();
     }
+
+    // ✅ MÉTODO UNIFICADO PARA ACTUALIZAR RACHA Y DATOS
+    private void updateStreakAndData() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+
+            // 1. ACTUALIZAR RACHA EN FIREBASE
+            streakManager.updateUserStreak(userId, new StreakManager.StreakUpdateCallback() {
+                @Override
+                public void onStreakUpdated(int newStreak) {
+                    Log.d("STREAK_DEBUG", "✅ Racha actualizada: " + newStreak);
+
+                    // 2. MOSTRAR RACHA INMEDIATAMENTE EN PANTALLA
+                    runOnUiThread(() -> {
+                        streakDays.setText(String.valueOf(newStreak));
+                        Toast.makeText(homeActivity.this, "🔥 Racha: " + newStreak + " días", Toast.LENGTH_SHORT).show();
+                    });
+
+                    // 3. CARGAR EL RESTO DE DATOS (diamantes, vidas)
+                    loadUserData(userId);
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.e("STREAK_DEBUG", "❌ Error: " + error);
+                    runOnUiThread(() -> {
+                        streakDays.setText("1");
+                    });
+                    loadUserData(userId);
+                }
+            });
+        }
+    }
+
+    // ✅ MÉTODO PARA CARGAR DIAMANTES Y VIDAS
+    private void loadUserData(String userId) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                .getReference("Usuarios")
+                .child(userId);
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Long diamantes = snapshot.child("diamantes").getValue(Long.class);
+                    Long vidas = snapshot.child("vidas").getValue(Long.class);
+
+                    runOnUiThread(() -> {
+                        diamondsCount.setText(diamantes != null ? String.valueOf(diamantes) : "0");
+                        livesCount.setText(vidas != null ? String.valueOf(vidas) : "0");
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("DATA_DEBUG", "Error datos: " + error.getMessage());
+            }
+        });
+    }
+
     // MÉTODO NUEVO - VERSIÓN SIMPLE Y EFECTIVA
     private void aplicarFuentesAutomaticas() {
         // Header
@@ -70,11 +146,6 @@ public class homeActivity extends BaseActivity {
         // Sección sticky
         CardView stickyCard = findViewById(R.id.stickySection);
         if (stickyCard != null) {
-            // Estos son los 2 TextView dentro del CardView
-            TextView titulo = stickyCard.findViewById(android.R.id.title); // o busca por índice
-            TextView subtitulo = stickyCard.findViewById(android.R.id.summary);
-
-            // Si no encuentras por ID, usa esta alternativa:
             LinearLayout content = findViewById(R.id.sectionContent);
             if (content != null && content.getChildCount() >= 2) {
                 View child1 = content.getChildAt(0);
@@ -113,6 +184,7 @@ public class homeActivity extends BaseActivity {
             configuracionActivity.aplicarTamanioFuente(textView, tamanioBase);
         }
     }
+
     private void setupStickyHeader() {
         final ViewTreeObserver observer = stickySection.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -121,62 +193,19 @@ public class homeActivity extends BaseActivity {
                 stickySectionTop = stickySection.getTop();
                 stickySection.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                // Configurar scroll listener
                 findViewById(R.id.mainScrollView).getViewTreeObserver()
                         .addOnScrollChangedListener(() -> {
                             int scrollY = findViewById(R.id.mainScrollView).getScrollY();
-
-                            // Cambiar color y posición cuando se hace scroll
                             if (scrollY >= stickySectionTop) {
-                                // Cambiar color a morado
                                 sectionContent.setBackgroundColor(stickyColor);
                             } else {
-                                // Volver a posición normal
                                 stickySection.setTranslationY(0);
-                                // Restaurar color original
                                 sectionContent.setBackgroundColor(originalColor);
                             }
                         });
             }
         });
     }
-
-    private void updateUserData() {
-        TextView streakDays = findViewById(R.id.streakDays);
-        TextView diamondsCount = findViewById(R.id.diamondsCount);
-        TextView livesCount = findViewById(R.id.livesCount);
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user != null) {
-            String uid = user.getUid();
-            DatabaseReference userRef = FirebaseDatabase.getInstance()
-                    .getReference("Usuarios")
-                    .child(uid);
-
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        Long racha = snapshot.child("racha").getValue(Long.class);
-                        Long diamantes = snapshot.child("diamantes").getValue(Long.class);
-                        Long vidas = snapshot.child("vidas").getValue(Long.class);
-
-                        streakDays.setText(racha != null ? String.valueOf(racha) : "0");
-                        diamondsCount.setText(diamantes != null ? String.valueOf(diamantes) : "0");
-                        livesCount.setText(vidas != null ? String.valueOf(vidas) : "0");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(homeActivity.this, "Error al obtener datos del usuario", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-
-
 
     private void setupLevelCards() {
         int[] levelCardIds = {R.id.level1Card, R.id.level2Card, R.id.level3Card,
@@ -221,7 +250,7 @@ public class homeActivity extends BaseActivity {
                 progressBar.setProgress(0);
                 progressBar.setAlpha(0.5f);
                 progressBar.getProgressDrawable().setColorFilter(
-                        ContextCompat.getColor(this, R.color.grey), // define color gris en `colors.xml`
+                        ContextCompat.getColor(this, R.color.grey),
                         PorterDuff.Mode.SRC_IN);
                 statusIcon.setImageResource(R.drawable.ic_cross);
             }
@@ -231,11 +260,10 @@ public class homeActivity extends BaseActivity {
             });
         }
 
-        // Actualizar barra de la sección
         ProgressBar sectionProgressBar = findViewById(R.id.sectionProgressBar);
         if (sectionProgressBar != null) {
             float progreso = (float) totalCompletados / 6f;
-            int porcentaje = Math.round(progreso * 100); // 1/6 ≈ 17%
+            int porcentaje = Math.round(progreso * 100);
 
             sectionProgressBar.setProgress(porcentaje);
 
@@ -247,88 +275,19 @@ public class homeActivity extends BaseActivity {
                         ContextCompat.getColor(this, R.color.rosado), PorterDuff.Mode.SRC_IN);
             }
         }
-
-
     }
 
-    private void updateProgressAppearance(ProgressBar progressBar, int progress) {
-        if (progress <= 0) {
-            // Nivel bloqueado
-            progressBar.setProgress(0);
-            progressBar.setAlpha(0.5f); // Hacer más transparente
-        } else if (progress >= 100) {
-            // Nivel completado
-            progressBar.setProgress(100);
-            progressBar.getProgressDrawable().setColorFilter(
-                    ContextCompat.getColor(this, R.color.verde),
-                    PorterDuff.Mode.SRC_IN);
-        } else {
-            // Nivel en progreso
-            progressBar.setProgress(progress);
-            progressBar.getProgressDrawable().setColorFilter(
-                    ContextCompat.getColor(this, R.color.morado),
-                    PorterDuff.Mode.SRC_IN);
-        }
-    }
     private void navigateToExercise(int levelNumber) {
         try {
-            Intent intent;
-
-            switch(levelNumber) {
-                case 1:
-                    intent = new Intent(this, ejercicio1.class);
-                    intent.putExtra("LEVEL_NUMBER", levelNumber);
-                    startActivity(intent);
-                    break;
-
-                case 2:
-                    // Para cuando implementes el nivel 2
-                    // intent = new Intent(this, ejercicio2.class);
-                    Toast.makeText(this, "Nivel 2 en desarrollo", Toast.LENGTH_SHORT).show();
-                    break;
-
-                default:
-                    Toast.makeText(this, "Nivel no disponible aún", Toast.LENGTH_SHORT).show();
+            if (levelNumber == 1) {
+                Intent intent = new Intent(this, ejercicio1.class);
+                intent.putExtra("LEVEL_NUMBER", levelNumber);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Nivel " + levelNumber + " en desarrollo", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-    }
-
-    private void loadProgressFromFirebase() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            DatabaseReference userRef = FirebaseDatabase.getInstance()
-                    .getReference("users")
-                    .child(user.getUid())
-                    .child("progress");
-
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot levelSnapshot : snapshot.getChildren()) {
-                        int level = Integer.parseInt(levelSnapshot.getKey().replace("level", ""));
-                        int progress = levelSnapshot.getValue(Integer.class);
-
-                        // Actualizar la barra de progreso correspondiente
-                        if (level >= 1 && level <= 6) {
-                            CardView levelCard = findViewById(getResources()
-                                    .getIdentifier("level" + level + "Card", "id", getPackageName()));
-                            if (levelCard != null) {
-                                ProgressBar pb = levelCard.findViewById(R.id.levelProgress);
-                                pb.setProgress(progress);
-                                updateProgressAppearance(pb, progress);
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(homeActivity.this, "Error al cargar progreso", Toast.LENGTH_SHORT).show();
-                }
-            });
         }
     }
 
@@ -339,28 +298,24 @@ public class homeActivity extends BaseActivity {
                     int id = item.getItemId();
 
                     if (id == R.id.nav_home) {
-                        // Ya estamos en home
                         return true;
                     } else if (id == R.id.nav_dictionary) {
-                        Intent intent = new Intent(homeActivity.this, diccionarioActivity.class);
-                        startActivity(intent);
+                        startActivity(new Intent(homeActivity.this, diccionarioActivity.class));
                         finish();
                         return true;
                     } else if (id == R.id.nav_minijuegos) {
-                        // CORREGIDO: Ahora apunta a MiniJuegosActivity
-                        Intent intent = new Intent(homeActivity.this, MiniJuegosActivity.class);
-                        startActivity(intent);
+                        startActivity(new Intent(homeActivity.this, MiniJuegosActivity.class));
                         finish();
                         return true;
                     } else if (id == R.id.nav_profile) {
-                        Intent intent = new Intent(homeActivity.this, perfilActivity.class);
-                        startActivity(intent);
+                        startActivity(new Intent(homeActivity.this, perfilActivity.class));
                         finish();
                         return true;
                     }
                     return false;
                 }
             };
+
     @Override
     protected int getSelectedNavItemId() {
         return R.id.nav_home;
@@ -369,10 +324,9 @@ public class homeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        updateUserData();     // ← Asegúrate de que esta línea esté aquí
-        setupLevelCards(); // Recargar progreso
+        // ✅ ACTUALIZAR RACHA Y DATOS CADA VEZ QUE SE ABRE LA APP
+        updateStreakAndData();
+        setupLevelCards();
         aplicarFuentesAutomaticas();
     }
-
-
 }
