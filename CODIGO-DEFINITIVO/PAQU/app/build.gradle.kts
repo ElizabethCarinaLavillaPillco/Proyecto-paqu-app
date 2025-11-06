@@ -89,5 +89,5 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     implementation ("com.tbuonomo:dotsindicator:5.0")
-
+    implementation ("androidx.work:work-runtime:2.9.0")
 }

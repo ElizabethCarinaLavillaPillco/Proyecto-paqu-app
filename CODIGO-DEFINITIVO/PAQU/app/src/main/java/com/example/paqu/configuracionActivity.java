@@ -115,7 +115,7 @@ public class configuracionActivity extends AppCompatActivity {
 
         btnNotificaciones.setOnClickListener(v -> {
             animarClick(v);
-            Toast.makeText(this, "Notificaciones", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, NotificationSettingsActivity.class));
         });
 
         btnAPrivacidad.setOnClickListener(v -> {

@@ -81,38 +81,54 @@ public class homeActivity extends BaseActivity {
         if (currentUser != null) {
             String userId = currentUser.getUid();
 
-            // 1. ACTUALIZAR RACHA EN FIREBASE
+            Log.d("STREAK_FIX", "🎯 ACTUALIZANDO RACHA PARA: " + userId);
+
+            // 1. ACTUALIZAR RACHA (versión simple)
             streakManager.updateUserStreak(userId, new StreakManager.StreakUpdateCallback() {
                 @Override
                 public void onStreakUpdated(int newStreak) {
-                    Log.d("STREAK_DEBUG", "✅ Racha actualizada: " + newStreak);
+                    Log.d("STREAK_FIX", "🎉 RACHA ACTUALIZADA: " + newStreak);
 
-                    // 2. MOSTRAR RACHA INMEDIATAMENTE EN PANTALLA
                     runOnUiThread(() -> {
                         streakDays.setText(String.valueOf(newStreak));
                         Toast.makeText(homeActivity.this, "🔥 Racha: " + newStreak + " días", Toast.LENGTH_SHORT).show();
                     });
-
-                    // 3. CARGAR EL RESTO DE DATOS (diamantes, vidas)
-                    loadUserData(userId);
                 }
 
                 @Override
                 public void onError(String error) {
-                    Log.e("STREAK_DEBUG", "❌ Error: " + error);
+                    Log.e("STREAK_FIX", "💥 ERROR: " + error);
+
                     runOnUiThread(() -> {
+                        // SI HAY ERROR, mostrar 1 igualmente
                         streakDays.setText("1");
+                        Toast.makeText(homeActivity.this, "Racha iniciada: 1 día", Toast.LENGTH_SHORT).show();
                     });
-                    loadUserData(userId);
                 }
             });
+
+            // 2. CARGAR DATOS EXISTENTES (si los tienes)
+            loadExistingUserData(userId);
+
+        } else {
+            Log.e("STREAK_FIX", "❌ Usuario no logueado");
+            streakDays.setText("1");
         }
     }
 
+    // ✅ CARGAR DATOS EXISTENTES (OPCIONAL)
+    private void loadExistingUserData(String userId) {
+        // Si tienes datos en otra ubicación, cargarlos aquí
+        // Por ahora, poner valores por defecto
+        runOnUiThread(() -> {
+            diamondsCount.setText("0");
+            livesCount.setText("5");
+        });
+    }
     // ✅ MÉTODO PARA CARGAR DIAMANTES Y VIDAS
     private void loadUserData(String userId) {
         DatabaseReference userRef = FirebaseDatabase.getInstance()
-                .getReference("Usuarios")
+                .getReference("users")
                 .child(userId);
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
