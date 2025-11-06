@@ -3,169 +3,361 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@drawable/bg_gradient_main">
 
-  <!-- Cabecera superior -->
-  <LinearLayout
-      android:id="@+id/header"
+  <!-- Cabecera superior elegante -->
+  <androidx.cardview.widget.CardView
+      android:id="@+id/headerCard"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_alignParentTop="true"
-      android:background="@drawable/progress_bar_lila"
-      android:orientation="horizontal"
-      android:padding="16dp">
+      app:cardCornerRadius="0dp"
+      app:cardElevation="8dp"
+      app:cardBackgroundColor="#FFFFFF">
 
-    <!-- Idioma (Bandera quechua) -->
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_weight="1"
-        android:src="@drawable/cuscoicon"
-        android:contentDescription="Idioma Quechua" />
-
-    <!-- Días de racha -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:background="#6366F1"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:gravity="center_vertical">
 
-      <ImageView
-          android:layout_width="24dp"
-          android:layout_height="24dp"
-          android:src="@drawable/fuegoicono"
-          android:contentDescription="Racha" />
-
-      <TextView
-          android:id="@+id/streakDays"
-          android:layout_width="wrap_content"
+      <!-- Idioma (Bandera quechua) -->
+      <androidx.cardview.widget.CardView
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
-          android:text="0"
-          android:textColor="@color/white"
-          android:textSize="16sp" />
-    </LinearLayout>
+          android:layout_weight="1"
+          app:cardCornerRadius="16dp"
+          app:cardElevation="4dp"
+          app:cardBackgroundColor="#FFFFFF">
 
-    <!-- Diamantes -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
 
-      <ImageView
-          android:layout_width="24dp"
-          android:layout_height="24dp"
-          android:src="@drawable/diamanteicon"
-          android:contentDescription="Diamantes" />
+          <ImageView
+              android:layout_width="48dp"
+              android:layout_height="48dp"
+              android:src="@drawable/cuscoicon"
+              android:contentDescription="Idioma Quechua" />
 
-      <TextView
-          android:id="@+id/diamondsCount"
-          android:layout_width="wrap_content"
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Quechua"
+              android:textColor="#6366F1"
+              android:textSize="11sp"
+              android:textStyle="bold"
+              android:layout_marginTop="4dp" />
+        </LinearLayout>
+      </androidx.cardview.widget.CardView>
+
+      <!-- Días de racha -->
+      <androidx.cardview.widget.CardView
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
-          android:layout_marginStart="4dp"
-          android:text="0"
-          android:textColor="@color/white"
-          android:textSize="16sp" />
-    </LinearLayout>
+          android:layout_weight="1"
+          android:layout_marginStart="10dp"
+          app:cardCornerRadius="16dp"
+          app:cardElevation="4dp"
+          app:cardBackgroundColor="#FFFFFF">
 
-    <!-- Vidas -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
 
-      <ImageView
-          android:layout_width="24dp"
-          android:layout_height="24dp"
-          android:src="@drawable/corazonicon"
-          android:contentDescription="Vidas" />
+          <ImageView
+              android:layout_width="30dp"
+              android:layout_height="30dp"
+              android:src="@drawable/fuegoicono"
+              android:contentDescription="Racha" />
 
-      <TextView
-          android:id="@+id/livesCount"
-          android:layout_width="wrap_content"
+          <TextView
+              android:id="@+id/streakDays"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="0"
+              android:textColor="#1F2937"
+              android:textSize="20sp"
+              android:textStyle="bold"
+              android:layout_marginTop="4dp" />
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Días"
+              android:textColor="#6B7280"
+              android:textSize="10sp"
+              android:textStyle="bold" />
+        </LinearLayout>
+      </androidx.cardview.widget.CardView>
+
+      <!-- Diamantes -->
+      <androidx.cardview.widget.CardView
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
-          android:layout_marginStart="4dp"
-          android:text="5"
-          android:textColor="@color/white"
-          android:textSize="16sp" />
+          android:layout_weight="1"
+          android:layout_marginStart="10dp"
+          app:cardCornerRadius="16dp"
+          app:cardElevation="4dp"
+          app:cardBackgroundColor="#FFFFFF">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+          <ImageView
+              android:layout_width="30dp"
+              android:layout_height="30dp"
+              android:src="@drawable/diamanteicon"
+              android:contentDescription="Diamantes" />
+
+          <TextView
+              android:id="@+id/diamondsCount"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="0"
+              android:textColor="#1F2937"
+              android:textSize="20sp"
+              android:textStyle="bold"
+              android:layout_marginTop="4dp" />
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Gemas"
+              android:textColor="#6B7280"
+              android:textSize="10sp"
+              android:textStyle="bold" />
+        </LinearLayout>
+      </androidx.cardview.widget.CardView>
+
+      <!-- Vidas -->
+      <androidx.cardview.widget.CardView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:layout_marginStart="10dp"
+          app:cardCornerRadius="16dp"
+          app:cardElevation="4dp"
+          app:cardBackgroundColor="#FFFFFF">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+          <ImageView
+              android:layout_width="30dp"
+              android:layout_height="30dp"
+              android:src="@drawable/corazonicon"
+              android:contentDescription="Vidas" />
+
+          <TextView
+              android:id="@+id/livesCount"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="5"
+              android:textColor="#1F2937"
+              android:textSize="20sp"
+              android:textStyle="bold"
+              android:layout_marginTop="4dp" />
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Vidas"
+              android:textColor="#6B7280"
+              android:textSize="10sp"
+              android:textStyle="bold" />
+        </LinearLayout>
+      </androidx.cardview.widget.CardView>
     </LinearLayout>
-  </LinearLayout>
+  </androidx.cardview.widget.CardView>
 
-  <!-- Contenido principal -->
-
-      <!-- Sección 1: Saludos -->
+  <!-- Sección 1: Saludos con diseño armonioso -->
   <androidx.cardview.widget.CardView
       android:id="@+id/stickySection"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_below="@id/header"
+      android:layout_below="@id/headerCard"
+      android:layout_marginStart="16dp"
+      android:layout_marginEnd="16dp"
+      android:layout_marginTop="20dp"
       android:layout_marginBottom="16dp"
-      app:cardCornerRadius="8dp"
-      app:cardElevation="4dp">
+      app:cardCornerRadius="20dp"
+      app:cardElevation="8dp"
+      app:cardBackgroundColor="#FFFFFF">
 
     <LinearLayout
         android:id="@+id/sectionContent"
-        android:layout_width="411dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/progress_bar_lila"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="24dp">
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:gravity="center_vertical"
+          android:layout_marginBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📚"
+            android:textSize="32sp"
+            android:layout_marginEnd="12dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Sección 1"
+              android:textColor="#1F2937"
+              android:textSize="13sp"
+              android:alpha="0.9" />
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Saludos"
+              android:textColor="#1F2937"
+              android:textSize="24sp"
+              android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nivel 1"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#1F2937"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:elevation="2dp" />
+      </LinearLayout>
 
       <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Sección 1: Saludos"
-          android:textColor="@color/black"
-          android:textSize="20sp"
-          android:textStyle="bold" />
-
-      <TextView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
           android:text="Aprende los saludos básicos en Quechua"
-          android:textColor="@color/black"
-          android:textSize="16sp" />
+          android:textColor="#1F2937"
+          android:textSize="15sp"
+          android:alpha="0.95"
+          android:layout_marginBottom="16dp" />
 
       <ProgressBar
           android:id="@+id/sectionProgressBar"
           style="?android:attr/progressBarStyleHorizontal"
           android:layout_width="match_parent"
-          android:layout_height="10dp"
-          android:layout_marginTop="8dp"
+          android:layout_height="14dp"
           android:progress="0"
-          android:progressDrawable="@color/morado" />
+          android:progressDrawable="@color/black" />
 
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="0% completado"
+          android:textColor="#1F2937"
+          android:textSize="12sp"
+          android:layout_marginTop="8dp"
+          android:alpha="0.9" />
     </LinearLayout>
   </androidx.cardview.widget.CardView>
 
-      <!-- ScrollView para el contenido desplazable -->
+  <!-- ScrollView para el contenido desplazable -->
   <ScrollView
       android:id="@+id/mainScrollView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_above="@+id/bottomNavigation"
       android:layout_below="@id/stickySection"
-      android:background="@color/white"
-      android:fillViewport="true">
+      android:fillViewport="true"
+      android:paddingStart="16dp"
+      android:paddingEnd="16dp"
+      android:paddingBottom="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="16dp">
+        android:orientation="vertical">
+
+      <!-- Banner motivacional -->
+      <androidx.cardview.widget.CardView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:cardCornerRadius="20dp"
+          app:cardElevation="6dp"
+          app:cardBackgroundColor="#FFFFFF"
+          android:layout_marginBottom="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp"
+            android:gravity="center_vertical">
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="🎯"
+              android:textSize="42sp"
+              android:layout_marginEnd="16dp" />
+
+          <LinearLayout
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tu Camino de Aprendizaje"
+                android:textColor="#1F2937"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Completa cada nivel para desbloquear el siguiente"
+                android:textColor="#6B7280"
+                android:textSize="13sp"
+                android:layout_marginTop="4dp" />
+          </LinearLayout>
+        </LinearLayout>
+      </androidx.cardview.widget.CardView>
 
       <!-- Niveles (camino como Duolingo) -->
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="vertical"
-          android:padding="16dp">
-
+          android:orientation="vertical">
 
         <!-- Nivel 1 -->
         <include
@@ -197,6 +389,41 @@
             android:id="@+id/level6Card"
             layout="@layout/item_level" />
       </LinearLayout>
+
+      <!-- Mensaje motivacional final -->
+      <androidx.cardview.widget.CardView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:cardCornerRadius="20dp"
+          app:cardElevation="6dp"
+          app:cardBackgroundColor="#ECFDF5"
+          android:layout_marginTop="24dp"
+          android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp"
+            android:gravity="center_vertical">
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="💪"
+              android:textSize="38sp"
+              android:layout_marginEnd="12dp" />
+
+          <TextView
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:text="¡Sigue practicando todos los días para mantener tu racha!"
+              android:textColor="#065F46"
+              android:textSize="14sp"
+              android:textStyle="bold" />
+        </LinearLayout>
+      </androidx.cardview.widget.CardView>
     </LinearLayout>
   </ScrollView>
 
@@ -207,5 +434,49 @@
       android:layout_height="wrap_content"
       android:layout_alignParentBottom="true"
       android:background="@color/white"
+      android:elevation="8dp"
       app:menu="@menu/bottom_nav_menu" />
+
+  <!-- BURBUJA FLOTANTE ARRASTRABLE - SIEMPRE ENCIMA DE TODO -->
+  <androidx.cardview.widget.CardView
+      android:id="@+id/draggableBubble"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:layout_marginEnd="16dp"
+      app:cardCornerRadius="50dp"
+      app:cardElevation="16dp"
+      android:elevation="100dp"
+      android:translationZ="100dp"
+      app:cardBackgroundColor="#6366F1">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bubble_gradient_bg"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="🔄"
+          android:textSize="24sp"
+          android:layout_marginEnd="8dp" />
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Repaso"
+          android:textColor="#FFFFFF"
+          android:textSize="16sp"
+          android:textStyle="bold" />
+    </LinearLayout>
+  </androidx.cardview.widget.CardView>
+
 </RelativeLayout>

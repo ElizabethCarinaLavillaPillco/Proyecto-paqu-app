@@ -13,6 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -35,7 +43,9 @@ public class homeActivity extends BaseActivity {
     private int stickySectionTop;
     private int originalColor;
     private int stickyColor;
-
+    private CardView draggableBubble;
+    private float dX, dY;
+    private int lastAction;
     private StreakManager streakManager;
     private TextView streakDays, diamondsCount, livesCount;
 
@@ -73,6 +83,12 @@ public class homeActivity extends BaseActivity {
         setupLevelCards();
 
         aplicarFuentesAutomaticas();
+        // Inicializar la burbuja flotante
+        draggableBubble = findViewById(R.id.draggableBubble);
+
+        // Configurar el comportamiento arrastrable
+        setupDraggableBubble();
+
     }
 
     // ✅ MÉTODO UNIFICADO PARA ACTUALIZAR RACHA Y DATOS
@@ -305,6 +321,128 @@ public class homeActivity extends BaseActivity {
         } catch (Exception e) {
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void setupDraggableBubble() {
+        draggableBubble.setOnTouchListener(new View.OnTouchListener() {
+            private boolean isDragging = false;
+            private final int DRAG_THRESHOLD = 10; // píxeles de tolerancia para considerar arrastre
+
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dX = view.getX() - event.getRawX();
+                        dY = view.getY() - event.getRawY();
+                        isDragging = false; // Reiniciar estado de arrastre
+                        view.setElevation(20f);
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+                        // Calcular distancia movida
+                        float deltaX = Math.abs(event.getRawX() + dX - view.getX());
+                        float deltaY = Math.abs(event.getRawY() + dY - view.getY());
+
+                        // Si se movió más del umbral, se considera arrastre
+                        if (deltaX > DRAG_THRESHOLD || deltaY > DRAG_THRESHOLD) {
+                            isDragging = true;
+                        }
+
+                        float newX = event.getRawX() + dX;
+                        float newY = event.getRawY() + dY;
+
+                        // Obtener dimensiones de la pantalla y la vista
+                        ViewGroup parent = (ViewGroup) view.getParent();
+                        int parentWidth = parent.getWidth();
+                        int parentHeight = parent.getHeight();
+                        int viewWidth = view.getWidth();
+                        int viewHeight = view.getHeight();
+
+                        // Limitar el movimiento dentro de los bordes de la pantalla
+                        if (newX < 0) {
+                            newX = 0;
+                        } else if (newX + viewWidth > parentWidth) {
+                            newX = parentWidth - viewWidth;
+                        }
+
+                        if (newY < 0) {
+                            newY = 0;
+                        } else if (newY + viewHeight > parentHeight) {
+                            newY = parentHeight - viewHeight;
+                        }
+
+                        view.animate()
+                                .x(newX)
+                                .y(newY)
+                                .setDuration(0)
+                                .start();
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // Restaurar elevación original
+                        view.setElevation(12f);
+
+                        // Solo ejecutar click si NO fue un arrastre
+                        if (!isDragging) {
+                            onBubbleClicked();
+                        }
+                        break;
+
+                    default:
+                        return false;
+                }
+                return true;
+            }
+        });
+    }
+
+    private void onBubbleClicked() {
+        // ✅ ABRIR ACTIVIDAD DE REPASO
+        try {
+            // Animación de clic
+            draggableBubble.animate()
+                    .scaleX(0.9f)
+                    .scaleY(0.9f)
+                    .setDuration(100)
+                    .withEndAction(() -> {
+                        draggableBubble.animate()
+                                .scaleX(1.0f)
+                                .scaleY(1.0f)
+                                .setDuration(100)
+                                .start();
+
+                        // Abrir actividad de repaso después de la animación
+                        openReviewActivity();
+                    })
+                    .start();
+        } catch (Exception e) {
+            Log.e("REVIEW_ERROR", "Error al abrir repaso: " + e.getMessage());
+            Toast.makeText(this, "Error al abrir repaso", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // ✅ MÉTODO PARA ABRIR ACTIVIDAD DE REPASO
+    private void openReviewActivity() {
+        try {
+            Intent intent = new Intent(this, ReviewActivity.class);
+            startActivity(intent);
+
+        } catch (Exception e) {
+            Log.e("REVIEW_ERROR", "No se pudo abrir ReviewActivity: " + e.getMessage());
+            Toast.makeText(this, "Función de repaso no disponible aún", Toast.LENGTH_SHORT).show();
+
+            // Mensaje temporal hasta que crees la actividad
+            showTemporaryReview();
+        }
+    }
+
+    // ✅ MÉTODO TEMPORAL - Mostrar repaso básico hasta que crees ReviewActivity
+    private void showTemporaryReview() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Repaso")
+                .setMessage("La función de repaso estará disponible pronto")
+                .setPositiveButton("OK", null)
+                .show();
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
