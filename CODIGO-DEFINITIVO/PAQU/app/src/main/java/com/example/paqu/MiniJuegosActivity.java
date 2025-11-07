@@ -7,6 +7,8 @@ import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 
+import com.example.paqu.activities.TimeAttackActivity;
+
 public class MiniJuegosActivity extends BaseActivity {
 
     @Override
@@ -48,9 +50,9 @@ public class MiniJuegosActivity extends BaseActivity {
     private float obtenerTamanioParaTexto(String texto) {
         if (texto.contains("🎮 Minijuegos")) return 32f;
         if (texto.contains("Practica Quechua")) return 16f;
-        if (texto.contains("Memoria") || texto.contains("Contra el Reloj") || texto.contains("Cuento en Acción")) return 20f; // ← AGREGAR "Cuento en Acción"
-        if (texto.contains("parejas") || texto.contains("Responde antes") || texto.contains("Interactúa con historias")) return 14f; // ← AGREGAR "Interactúa con historias"
-        if (texto.contains("Próximamente") || texto.contains("Disponible") || texto.contains("Disponible")) return 12f;
+        if (texto.contains("Memoria") || texto.contains("Contra el Reloj")) return 20f;
+        if (texto.contains("parejas") || texto.contains("Responde antes")) return 14f;
+        if (texto.contains("Próximamente") || texto.contains("Disponible")) return 12f;
         if (texto.contains("💡")) return 12f;
         return 14f; // Tamaño por defecto
     }
@@ -65,11 +67,11 @@ public class MiniJuegosActivity extends BaseActivity {
     private void setupGameCards() {
         CardView cardMemoria = findViewById(R.id.cardMemoria);
         CardView cardContrarreloj = findViewById(R.id.cardContrarreloj);
-        CardView cardCuentoAccion = findViewById(R.id.cardCuentoAccion);
 
         // Juego de Memoria
         cardMemoria.setOnClickListener(v -> {
-            Toast.makeText(this, "🎮 Sección en desarrollo", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, com.example.paqu.activities.MemoriaActivity.class);
+            startActivity(intent);
         });
 
         // Juego Contra el Reloj
@@ -77,13 +79,7 @@ public class MiniJuegosActivity extends BaseActivity {
             Intent intent = new Intent(this, com.example.paqu.activities.TimeAttackActivity.class);
             startActivity(intent);
         });
-        // Cuento en Acción
-        cardCuentoAccion.setOnClickListener(v -> {
-            Intent intent = new Intent(MiniJuegosActivity.this, CuentoAccionActivity.class);
-            startActivity(intent);
-        });
     }
-
 
     @Override
     protected int getSelectedNavItemId() {

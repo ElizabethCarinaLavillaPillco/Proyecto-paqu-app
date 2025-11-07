@@ -11,4 +11,31 @@
     <color name="filter_selected">#4CAF50</color>
     <color name="filter_unselected">#666666</color>
     <color name="transparent">#00000000</color>
-</resources>
+    <?xml version="1.0" encoding="utf-8"?>
+
+        <color name="primary_color">#C4562E</color>          <!-- Marrón andino -->
+        <color name="primary_dark">#8B3A1E</color>           <!-- Marrón oscuro -->
+        <color name="primary_light">#E67E22</color>          <!-- Naranja suave -->
+
+        <!-- Colores de acento -->
+        <color name="accent_color">#FFD700</color>           <!-- Dorado -->
+        <color name="accent_light">#FFEC8B</color>           <!-- Dorado claro -->
+
+        <!-- Colores de fondo -->
+        <color name="background_color">#FFF8E1</color>       <!-- Beige claro -->
+        <color name="surface_color">#FFFFFF</color>          <!-- Blanco -->
+
+        <!-- Colores de texto -->
+        <color name="text_primary">#212121</color>           <!-- Negro suave -->
+        <color name="text_secondary">#757575</color>         <!-- Gris -->
+        <color name="text_on_primary">#FFFFFF</color>        <!-- Blanco sobre primario -->
+
+        <!-- Colores de estado -->
+        <color name="success_color">#27AE60</color>          <!-- Verde -->
+        <color name="error_color">#E74C3C</color>            <!-- Rojo -->
+        <color name="warning_color">#F39C12</color>          <!-- Naranja -->
+
+        <!-- Colores neutrales -->
+        <color name="divider_color">#BDBDBD</color>          <!-- Gris divisor -->
+        <color name="card_color">#FFFFFF</color>             <!-- Fondo de cards -->
+    </resources>
