@@ -56,7 +56,7 @@ public class TraductorActivity extends AppCompatActivity {
     Handler mainHandler;
 
     // API Configuration (cambiar por tu servidor)
-    private static final String API_URL = "http://TU_IP:5000/traducir"; // Cambiar después
+    private static final String API_URL = "http://127.0.0.1:5000/traducir"; 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
