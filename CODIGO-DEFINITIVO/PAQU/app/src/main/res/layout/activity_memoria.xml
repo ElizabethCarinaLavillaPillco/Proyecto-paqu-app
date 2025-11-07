@@ -30,14 +30,14 @@
             android:layout_height="48dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="4dp"
-            android:backgroundTint="@color/primary_color">
+            app:cardBackgroundColor="@color/primary_color">
 
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_reset"
-                android:tint="@android:color/white" />
+                android:tint="#FFFFFF"/>
 
         </androidx.cardview.widget.CardView>
 
@@ -103,7 +103,7 @@
             android:layout_height="match_parent"
             android:columnCount="4"
             android:rowCount="3"
-            android:padding="8dp" />
+            android:padding="12dp" />
 
     </androidx.cardview.widget.CardView>
 
