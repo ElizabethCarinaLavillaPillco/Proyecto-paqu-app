@@ -437,7 +437,9 @@
       android:elevation="8dp"
       app:menu="@menu/bottom_nav_menu" />
 
-  <!-- BURBUJA FLOTANTE ARRASTRABLE - SIEMPRE ENCIMA DE TODO -->
+  <!-- BURBUJAS FLOTANTES ARRASTRABLES -->
+
+  <!-- Burbuja de Repaso -->
   <androidx.cardview.widget.CardView
       android:id="@+id/draggableBubble"
       android:layout_width="wrap_content"
@@ -473,6 +475,49 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="Repaso"
+          android:textColor="#FFFFFF"
+          android:textSize="16sp"
+          android:textStyle="bold" />
+    </LinearLayout>
+  </androidx.cardview.widget.CardView>
+
+  <!-- Burbuja de Datos Curiosos -->
+  <androidx.cardview.widget.CardView
+      android:id="@+id/curiositiesBubble"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:layout_marginEnd="16dp"
+      android:layout_marginTop="90dp"
+      app:cardCornerRadius="50dp"
+      app:cardElevation="16dp"
+      android:elevation="100dp"
+      android:translationZ="100dp"
+      app:cardBackgroundColor="#F59E0B">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bubble_curiosities_bg"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="💡"
+          android:textSize="24sp"
+          android:layout_marginEnd="8dp" />
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Datos"
           android:textColor="#FFFFFF"
           android:textSize="16sp"
           android:textStyle="bold" />

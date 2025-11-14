@@ -44,7 +44,9 @@ public class homeActivity extends BaseActivity {
     private int originalColor;
     private int stickyColor;
     private CardView draggableBubble;
+    private CardView curiositiesBubble; // ✅ NUEVA BURBUJA
     private float dX, dY;
+    private float dX2, dY2; // ✅ PARA LA SEGUNDA BURBUJA
     private int lastAction;
     private StreakManager streakManager;
     private TextView streakDays, diamondsCount, livesCount;
@@ -83,12 +85,14 @@ public class homeActivity extends BaseActivity {
         setupLevelCards();
 
         aplicarFuentesAutomaticas();
-        // Inicializar la burbuja flotante
+
+        // ✅ INICIALIZAR BURBUJA DE REPASO
         draggableBubble = findViewById(R.id.draggableBubble);
+        setupDraggableBubble(draggableBubble, true); // true = es burbuja de repaso
 
-        // Configurar el comportamiento arrastrable
-        setupDraggableBubble();
-
+        // ✅ INICIALIZAR BURBUJA DE DATOS CURIOSOS
+        curiositiesBubble = findViewById(R.id.curiositiesBubble);
+        setupDraggableBubble(curiositiesBubble, false); // false = es burbuja de curiosidades
     }
 
     // ✅ MÉTODO UNIFICADO PARA ACTUALIZAR RACHA Y DATOS
@@ -141,6 +145,7 @@ public class homeActivity extends BaseActivity {
             livesCount.setText("5");
         });
     }
+
     // ✅ MÉTODO PARA CARGAR DIAMANTES Y VIDAS
     private void loadUserData(String userId) {
         DatabaseReference userRef = FirebaseDatabase.getInstance()
@@ -323,42 +328,40 @@ public class homeActivity extends BaseActivity {
         }
     }
 
-    private void setupDraggableBubble() {
-        draggableBubble.setOnTouchListener(new View.OnTouchListener() {
+    // ✅ MÉTODO UNIFICADO PARA HACER BURBUJAS ARRASTRABLES
+    private void setupDraggableBubble(final CardView bubble, final boolean isReviewBubble) {
+        bubble.setOnTouchListener(new View.OnTouchListener() {
             private boolean isDragging = false;
-            private final int DRAG_THRESHOLD = 10; // píxeles de tolerancia para considerar arrastre
+            private final int DRAG_THRESHOLD = 10;
+            private float localDX = 0, localDY = 0;
 
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
-                        dX = view.getX() - event.getRawX();
-                        dY = view.getY() - event.getRawY();
-                        isDragging = false; // Reiniciar estado de arrastre
+                        localDX = view.getX() - event.getRawX();
+                        localDY = view.getY() - event.getRawY();
+                        isDragging = false;
                         view.setElevation(20f);
                         break;
 
                     case MotionEvent.ACTION_MOVE:
-                        // Calcular distancia movida
-                        float deltaX = Math.abs(event.getRawX() + dX - view.getX());
-                        float deltaY = Math.abs(event.getRawY() + dY - view.getY());
+                        float deltaX = Math.abs(event.getRawX() + localDX - view.getX());
+                        float deltaY = Math.abs(event.getRawY() + localDY - view.getY());
 
-                        // Si se movió más del umbral, se considera arrastre
                         if (deltaX > DRAG_THRESHOLD || deltaY > DRAG_THRESHOLD) {
                             isDragging = true;
                         }
 
-                        float newX = event.getRawX() + dX;
-                        float newY = event.getRawY() + dY;
+                        float newX = event.getRawX() + localDX;
+                        float newY = event.getRawY() + localDY;
 
-                        // Obtener dimensiones de la pantalla y la vista
                         ViewGroup parent = (ViewGroup) view.getParent();
                         int parentWidth = parent.getWidth();
                         int parentHeight = parent.getHeight();
                         int viewWidth = view.getWidth();
                         int viewHeight = view.getHeight();
 
-                        // Limitar el movimiento dentro de los bordes de la pantalla
                         if (newX < 0) {
                             newX = 0;
                         } else if (newX + viewWidth > parentWidth) {
@@ -379,12 +382,15 @@ public class homeActivity extends BaseActivity {
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        // Restaurar elevación original
-                        view.setElevation(12f);
+                        view.setElevation(16f);
 
-                        // Solo ejecutar click si NO fue un arrastre
                         if (!isDragging) {
-                            onBubbleClicked();
+                            // ✅ DIFERENCIAR QUÉ BURBUJA FUE CLICKEADA
+                            if (isReviewBubble) {
+                                onReviewBubbleClicked();
+                            } else {
+                                onCuriositiesBubbleClicked();
+                            }
                         }
                         break;
 
@@ -396,10 +402,9 @@ public class homeActivity extends BaseActivity {
         });
     }
 
-    private void onBubbleClicked() {
-        // ✅ ABRIR ACTIVIDAD DE REPASO
+    // ✅ CLICK EN BURBUJA DE REPASO
+    private void onReviewBubbleClicked() {
         try {
-            // Animación de clic
             draggableBubble.animate()
                     .scaleX(0.9f)
                     .scaleY(0.9f)
@@ -411,7 +416,6 @@ public class homeActivity extends BaseActivity {
                                 .setDuration(100)
                                 .start();
 
-                        // Abrir actividad de repaso después de la animación
                         openReviewActivity();
                     })
                     .start();
@@ -421,18 +425,51 @@ public class homeActivity extends BaseActivity {
         }
     }
 
-    // ✅ MÉTODO PARA ABRIR ACTIVIDAD DE REPASO
+    // ✅ CLICK EN BURBUJA DE DATOS CURIOSOS
+    private void onCuriositiesBubbleClicked() {
+        try {
+            curiositiesBubble.animate()
+                    .scaleX(0.9f)
+                    .scaleY(0.9f)
+                    .setDuration(100)
+                    .withEndAction(() -> {
+                        curiositiesBubble.animate()
+                                .scaleX(1.0f)
+                                .scaleY(1.0f)
+                                .setDuration(100)
+                                .start();
+
+                        openCuriositiesActivity();
+                    })
+                    .start();
+        } catch (Exception e) {
+            Log.e("CURIOSITIES_ERROR", "Error al abrir curiosidades: " + e.getMessage());
+            Toast.makeText(this, "Error al abrir datos curiosos", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // ✅ ABRIR ACTIVIDAD DE REPASO
     private void openReviewActivity() {
         try {
             Intent intent = new Intent(this, ReviewActivity.class);
             startActivity(intent);
-
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } catch (Exception e) {
             Log.e("REVIEW_ERROR", "No se pudo abrir ReviewActivity: " + e.getMessage());
             Toast.makeText(this, "Función de repaso no disponible aún", Toast.LENGTH_SHORT).show();
-
-            // Mensaje temporal hasta que crees la actividad
             showTemporaryReview();
+        }
+    }
+
+    // ✅ ABRIR ACTIVIDAD DE DATOS CURIOSOS
+    private void openCuriositiesActivity() {
+        try {
+            Intent intent = new Intent(this, CuriositiesActivity.class);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        } catch (Exception e) {
+            Log.e("CURIOSITIES_ERROR", "No se pudo abrir CuriositiesActivity: " + e.getMessage());
+            Toast.makeText(this, "Función de datos curiosos no disponible aún", Toast.LENGTH_SHORT).show();
         }
     }
 
