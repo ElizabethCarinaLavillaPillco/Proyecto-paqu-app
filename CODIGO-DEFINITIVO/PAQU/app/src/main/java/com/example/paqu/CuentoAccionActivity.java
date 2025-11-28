@@ -1,9 +1,11 @@
 package com.example.paqu;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.motion.utils.ViewState;
 
 public class CuentoAccionActivity extends BaseActivity {
 
@@ -80,15 +82,36 @@ public class CuentoAccionActivity extends BaseActivity {
 
     private void setupCuentoCards() {
         cardCuento1.setOnClickListener(v -> {
-            Toast.makeText(this, "Abriendo: La Leyenda del Zorro", Toast.LENGTH_SHORT).show();
+            try {
+                Intent intent = new Intent(CuentoAccionActivity.this, VistaCuentoActivity.class);
+                intent.putExtra("cuento_id", 1);
+                intent.putExtra("titulo", "La Leyenda del Zorro");
+                startActivity(intent);
+            } catch (Exception e) {
+                Toast.makeText(this, "Error al abrir el cuento", Toast.LENGTH_SHORT).show();
+            }
         });
 
         cardCuento2.setOnClickListener(v -> {
-            Toast.makeText(this, "Abriendo: Aventuras en los Andes", Toast.LENGTH_SHORT).show();
+            try {
+                Intent intent = new Intent(CuentoAccionActivity.this, VistaCuentoActivity.class);
+                intent.putExtra("cuento_id", 2);
+                intent.putExtra("titulo", "Aventuras en los Andes");
+                startActivity(intent);
+            } catch (Exception e) {
+                Toast.makeText(this, "Error al abrir el cuento", Toast.LENGTH_SHORT).show();
+            }
         });
 
         cardCuento3.setOnClickListener(v -> {
-            Toast.makeText(this, "Abriendo: El Origen de las Montañas", Toast.LENGTH_SHORT).show();
+            try {
+                Intent intent = new Intent(CuentoAccionActivity.this, VistaCuentoActivity.class);
+                intent.putExtra("cuento_id", 3);
+                intent.putExtra("titulo", "El Origen de las Montañas");
+                startActivity(intent);
+            } catch (Exception e) {
+                Toast.makeText(this, "Error al abrir el cuento", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

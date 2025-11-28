@@ -53,8 +53,8 @@ public class TraductorActivity extends AppCompatActivity {
     // Threading
     Handler mainHandler;
 
-    // API Configuration (cambiar por tu servidor)
-    private static final String API_URL = "http://10.0.2.2:5000/traducir";
+    // API Configuration
+    private static final String API_URL = "http://127.0.0.1:5000/traducir"; 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

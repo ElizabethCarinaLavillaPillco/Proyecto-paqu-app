@@ -45,6 +45,13 @@
             android:name=".DiccionarioActivity"
             android:exported="false" />
         <activity
+            android:name=".CuriositiesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.MemoriaActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".activities.InfoSoporteActivity"
             android:exported="false" />
         <activity
@@ -67,8 +74,11 @@
             android:exported="false"
             android:label="Configuración de Recordatorios" />
         <activity
-            android:name=".TimeAttackActivity"
+            android:name=".activities.TimeAttackActivity"
             android:exported="true" />
+        <activity
+            android:name=".VistaCuentoActivity"
+            android:exported="false" />
         <activity
             android:name=".CuentoAccionActivity"
             android:exported="false" />

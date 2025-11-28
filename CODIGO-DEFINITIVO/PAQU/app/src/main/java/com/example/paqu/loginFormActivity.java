@@ -1,5 +1,6 @@
 package com.example.paqu;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,10 +8,10 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,37 +20,35 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class loginFormActivity extends AppCompatActivity {
-    private EditText etEmail, etPassword;
-    private Button btnIngresar, btnCrear;
-    private com.google.android.gms.common.SignInButton btnGoogle;
-    private TextView tvRecuperarPassword;
-    private FirebaseAuth mAuth;
-    private DatabaseReference usersRef;
 
+    private EditText tvEmail, tvPassword;
+    private Button btnIngresar, btnCrear;
+    private TextView tvRecuperarPassword;
+    private SignInButton btnGoogle;
+
+    private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
-    private static final int RC_SIGN_IN = 9001;
+
+    private static final int RC_SIGN_IN = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,51 +56,140 @@ public class loginFormActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login_form);
 
         // Inicializar Firebase
-        mAuth = FirebaseAuth.getInstance();
-        usersRef = FirebaseDatabase.getInstance().getReference("Usuarios");
+        FirebaseApp.initializeApp(this);
+        firebaseAuth = FirebaseAuth.getInstance();
 
-        // Configurar Google Sign-In
-        configureGoogleSignIn();
+        // Referencias UI (mismos IDs que tu XML)
+        tvEmail = findViewById(R.id.tvEmail);
+        tvPassword = findViewById(R.id.tvPassword);
+        btnIngresar = findViewById(R.id.btnIngresar);
+        btnCrear = findViewById(R.id.btnCrear);
+        tvRecuperarPassword = findViewById(R.id.tvRecuperarPassword);
+        btnGoogle = findViewById(R.id.btnGoogle);
 
-        // Verificar si ya hay un usuario logueado
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null) {
-            startActivity(new Intent(this, homeActivity.class));
+        // Configurar inicio de sesión con Google
+        configurarLoginGoogle();
+
+        // Botón normal: iniciar sesión con correo y contraseña
+        btnIngresar.setOnClickListener(v -> loginConCorreo());
+
+        // Botón: ir a registro
+        btnCrear.setOnClickListener(v -> {
+            Intent intent = new Intent(loginFormActivity.this, registroActivity.class);
+            startActivity(intent);
             finish();
+        });
+
+        // Recuperar contraseña con diseño hermoso
+        tvRecuperarPassword.setOnClickListener(v -> recuperarPassword());
+    }
+
+    // -------------------------------
+    // 🔹 CONFIGURAR LOGIN GOOGLE
+    // -------------------------------
+    private void configurarLoginGoogle() {
+        try {
+            Log.d("GOOGLE_LOGIN", "Configurando Google Sign-In...");
+
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+
+            googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+            btnGoogle.setOnClickListener(v -> {
+                Log.d("GOOGLE_LOGIN", "Botón Google presionado");
+                Intent signInIntent = googleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            });
+
+        } catch (Exception e) {
+            Log.e("GOOGLE_LOGIN", "Error al configurar Google: " + e.getMessage());
+        }
+    }
+
+    // -------------------------------
+    // 🔹 LOGIN CON CORREO Y CONTRASEÑA
+    // -------------------------------
+    private void loginConCorreo() {
+        String correo = tvEmail.getText().toString().trim();
+        String contra = tvPassword.getText().toString().trim();
+
+        if (correo.isEmpty() || contra.isEmpty()) {
+            Toast.makeText(this, "Ingrese correo y contraseña", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Inicializar vistas
-        etEmail = findViewById(R.id.tvEmail);
-        etPassword = findViewById(R.id.tvPassword);
-        btnIngresar = findViewById(R.id.btnIngresar);
-        btnCrear = findViewById(R.id.btnCrear);
-        btnGoogle = findViewById(R.id.btnGoogle);
-        tvRecuperarPassword = findViewById(R.id.tvRecuperarPassword);
-
-        // Configurar listeners
-        btnIngresar.setOnClickListener(v -> loginUser());
-
-        btnCrear.setOnClickListener(v -> {
-            startActivity(new Intent(loginFormActivity.this, registroActivity.class));
-        });
-
-        btnGoogle.setOnClickListener(v -> signInWithGoogle());
-
-        // Listener para recuperar contraseña
-        tvRecuperarPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recuperarPassword();
-            }
-        });
+        firebaseAuth.signInWithEmailAndPassword(correo, contra)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        if (user != null) {
+                            redirigirAHome();
+                        }
+                    } else {
+                        Toast.makeText(this, "Error al iniciar sesión: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
-    // MÉTODO: Recuperar contraseña con diseño degradado
-    // MÉTODO: Recuperar contraseña con diseño degradado
+    // -------------------------------
+    // 🔹 RESULTADO LOGIN GOOGLE
+    // -------------------------------
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Log.d("GOOGLE_LOGIN", "Resultado del intento de Google recibido");
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                if (account != null) {
+                    firebaseAuthWithGoogle(account);
+                }
+            } catch (ApiException e) {
+                Log.e("GOOGLE_LOGIN", "Error al iniciar sesión con Google: " + e.getMessage());
+                Toast.makeText(this, "Error al iniciar sesión con Google", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // -------------------------------
+    // 🔹 AUTENTICAR CON FIREBASE
+    // -------------------------------
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d("GOOGLE_LOGIN", "Autenticando con Firebase...");
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser usuario = firebaseAuth.getCurrentUser();
+                        if (usuario != null) {
+                            redirigirAHome();
+                        }
+                    } else {
+                        Toast.makeText(this, "Autenticación con Google fallida", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // -------------------------------
+    // 🔹 REDIRECCIÓN A HOMEACTIVITY
+    // -------------------------------
+    private void redirigirAHome() {
+        Intent intent = new Intent(loginFormActivity.this, homeActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    // -------------------------------
+    // 🔹 RECUPERAR CONTRASEÑA CON DISEÑO HERMOSO
+    // -------------------------------
     private void recuperarPassword() {
         // Crear el diálogo personalizado
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
 
         // Crear el layout principal
         LinearLayout mainLayout = new LinearLayout(this);
@@ -214,8 +302,8 @@ public class loginFormActivity extends AppCompatActivity {
         etEmailRecuperar.setLayoutParams(etParams);
 
         // Si ya hay un email, sugerirlo
-        if (etEmail.getText() != null && !etEmail.getText().toString().isEmpty()) {
-            etEmailRecuperar.setText(etEmail.getText().toString());
+        if (tvEmail.getText() != null && !tvEmail.getText().toString().isEmpty()) {
+            etEmailRecuperar.setText(tvEmail.getText().toString());
         }
 
         emailContainer.addView(etEmailRecuperar);
@@ -281,7 +369,7 @@ public class loginFormActivity extends AppCompatActivity {
 
         // Configurar el diálogo
         builder.setView(mainLayout);
-        AlertDialog dialog = builder.create();
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
 
         // Hacer el fondo transparente
         if (dialog.getWindow() != null) {
@@ -310,10 +398,12 @@ public class loginFormActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    // MÉTODO: Enviar email de recuperación con ProgressDialog personalizado
+    // -------------------------------
+    // 🔹 ENVIAR EMAIL DE RECUPERACIÓN
+    // -------------------------------
     private void enviarEmailRecuperacion(String email) {
         // Crear diálogo de progreso personalizado
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
 
         // Layout principal
         LinearLayout progressLayout = new LinearLayout(this);
@@ -358,7 +448,7 @@ public class loginFormActivity extends AppCompatActivity {
 
         builder.setView(progressLayout);
         builder.setCancelable(false);
-        AlertDialog progressDialog = builder.create();
+        androidx.appcompat.app.AlertDialog progressDialog = builder.create();
 
         if (progressDialog.getWindow() != null) {
             progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -367,7 +457,7 @@ public class loginFormActivity extends AppCompatActivity {
         progressDialog.show();
 
         // Enviar email de recuperación
-        mAuth.sendPasswordResetEmail(email)
+        firebaseAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -382,9 +472,11 @@ public class loginFormActivity extends AppCompatActivity {
                 });
     }
 
-    // MÉTODO: Mostrar diálogo de éxito hermoso
+    // -------------------------------
+    // 🔹 MOSTRAR DIÁLOGO DE ÉXITO
+    // -------------------------------
     private void mostrarDialogoExito() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
 
         // Layout principal
         LinearLayout mainLayout = new LinearLayout(this);
@@ -499,7 +591,7 @@ public class loginFormActivity extends AppCompatActivity {
         mainLayout.addView(contentLayout);
 
         builder.setView(mainLayout);
-        AlertDialog dialog = builder.create();
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -510,9 +602,11 @@ public class loginFormActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    // MÉTODO: Mostrar diálogo de error hermoso
+    // -------------------------------
+    // 🔹 MOSTRAR DIÁLOGO DE ERROR
+    // -------------------------------
     private void mostrarDialogoError(Exception exception) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
 
         // Layout principal
         LinearLayout mainLayout = new LinearLayout(this);
@@ -597,13 +691,13 @@ public class loginFormActivity extends AppCompatActivity {
         message.setLayoutParams(msgParams);
         contentLayout.addView(message);
 
-        // Botón Reintentar con degradado
-        Button btnReintentar = new Button(this);
-        btnReintentar.setText("Entendido");
-        btnReintentar.setTextColor(Color.WHITE);
-        btnReintentar.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-        btnReintentar.setTypeface(null, Typeface.BOLD);
-        btnReintentar.setPadding(80, 30, 80, 30);
+        // Botón Entendido con degradado
+        Button btnEntendido = new Button(this);
+        btnEntendido.setText("Entendido");
+        btnEntendido.setTextColor(Color.WHITE);
+        btnEntendido.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+        btnEntendido.setTypeface(null, Typeface.BOLD);
+        btnEntendido.setPadding(80, 30, 80, 30);
 
         GradientDrawable btnGradient = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
@@ -613,31 +707,33 @@ public class loginFormActivity extends AppCompatActivity {
                 }
         );
         btnGradient.setCornerRadius(70f);
-        btnReintentar.setBackground(btnGradient);
-        btnReintentar.setElevation(12f);
+        btnEntendido.setBackground(btnGradient);
+        btnEntendido.setElevation(12f);
 
         LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 140
         );
-        btnReintentar.setLayoutParams(btnParams);
-        contentLayout.addView(btnReintentar);
+        btnEntendido.setLayoutParams(btnParams);
+        contentLayout.addView(btnEntendido);
 
         mainLayout.addView(contentLayout);
 
         builder.setView(mainLayout);
-        AlertDialog dialog = builder.create();
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        btnReintentar.setOnClickListener(v -> dialog.dismiss());
+        btnEntendido.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
     }
 
-    // MÉTODO: Obtener mensaje de error personalizado
+    // -------------------------------
+    // 🔹 OBTENER MENSAJE DE ERROR PERSONALIZADO
+    // -------------------------------
     private String obtenerMensajeError(Exception exception) {
         if (exception == null) {
             return "Error desconocido. Por favor intenta nuevamente.";
@@ -669,143 +765,5 @@ public class loginFormActivity extends AppCompatActivity {
 
         // Error genérico
         return "No se pudo enviar el enlace. Por favor verifica el correo e intenta nuevamente.";
-    }
-
-    private void configureGoogleSignIn() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        googleSignInClient = GoogleSignIn.getClient(this, gso);
-    }
-
-    private void signInWithGoogle() {
-        Intent signInIntent = googleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            } catch (ApiException e) {
-                Toast.makeText(this, "Error en inicio de sesión con Google", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Usuario autenticado con Google, ahora verificar si está registrado
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        if (user != null) {
-                            checkIfUserIsRegistered(user);
-                        }
-                    } else {
-                        Toast.makeText(this, "Error en autenticación con Google", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    // Método: Verificar si el usuario está registrado en Firebase Database
-    private void checkIfUserIsRegistered(FirebaseUser user) {
-        String userId = user.getUid();
-
-        usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // ✅ Usuario registrado - permitir acceso
-                    Toast.makeText(loginFormActivity.this, "¡Bienvenido!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(loginFormActivity.this, homeActivity.class));
-                    finish();
-                } else {
-                    // ❌ Usuario NO registrado - cerrar sesión y mostrar mensaje
-                    mAuth.signOut();
-                    googleSignInClient.signOut();
-                    Toast.makeText(loginFormActivity.this,
-                            "Usuario no registrado. Por favor, regístrate primero.",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(loginFormActivity.this, "Error al verificar usuario", Toast.LENGTH_SHORT).show();
-                mAuth.signOut();
-                googleSignInClient.signOut();
-            }
-        });
-    }
-
-    private void loginUser() {
-        String email = etEmail.getText().toString();
-        String password = etPassword.getText().toString();
-
-        // Validaciones...
-        if(email.isEmpty()) {
-            etEmail.setError("Email es requerido");
-            etEmail.requestFocus();
-            return;
-        }
-
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError("Ingrese un email válido");
-            etEmail.requestFocus();
-            return;
-        }
-
-        if(password.isEmpty()) {
-            etPassword.setError("Contraseña es requerida");
-            etPassword.requestFocus();
-            return;
-        }
-
-        if(password.length() < 6) {
-            etPassword.setError("La contraseña debe tener al menos 6 caracteres");
-            etPassword.requestFocus();
-            return;
-        }
-
-        // Mostrar loading
-        btnIngresar.setEnabled(false);
-        btnIngresar.setText("CARGANDO...");
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    btnIngresar.setEnabled(true);
-                    btnIngresar.setText("INGRESAR");
-
-                    if (task.isSuccessful()) {
-                        // Para login normal, asumimos que el usuario está registrado
-                        Intent i = new Intent(loginFormActivity.this, homeActivity.class);
-                        startActivity(i);
-                        finish();
-                    } else {
-                        Toast.makeText(loginFormActivity.this,
-                                "Credenciales incorrectas",
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null) {
-            startActivity(new Intent(this, homeActivity.class));
-            finish();
-        }
     }
 }
