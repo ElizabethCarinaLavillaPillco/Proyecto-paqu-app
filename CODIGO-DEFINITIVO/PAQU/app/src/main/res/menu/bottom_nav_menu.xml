@@ -17,7 +17,7 @@
 
     <item
         android:id="@+id/nav_Minijuegos"
-        android:icon="@drawable/minijuegosicon"
+        android:icon="@drawable/ic_star"
         android:title="Mini Juegos" />
 
     <item

@@ -52,7 +52,7 @@ public class HerramientasActivity extends BaseActivity {
 
     @Override
     protected int getSelectedNavItemId() {
-        return 0;
+        return R.id.nav_dictionary;  // ✅ CORREGIDO: Ahora retorna el ID correcto
     }
 
     private void initViews() {

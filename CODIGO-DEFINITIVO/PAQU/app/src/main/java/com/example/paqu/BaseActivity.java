@@ -34,10 +34,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract int getSelectedNavItemId();
 
+    // ✅ MAPA DE NAVEGACIÓN ACTUALIZADO
     private final Map<Integer, Class<?>> navigationMap = new HashMap<Integer, Class<?>>() {{
         put(R.id.nav_home, homeActivity.class);
         put(R.id.nav_dictionary, HerramientasActivity.class);
-        put(R.id.nav_stats, EstadisticasActivity.class);  // ✅ NUEVA ENTRADA
+        put(R.id.nav_stats, EstadisticasActivity.class);
         put(R.id.nav_Minijuegos, MiniJuegosActivity.class);
         put(R.id.nav_profile, perfilActivity.class);
     }};
@@ -48,14 +49,16 @@ public abstract class BaseActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     int id = item.getItemId();
 
+                    // Si ya estamos en esta activity, no hacer nada
                     if (id == getSelectedNavItemId()) {
                         return true;
                     }
 
                     Class<?> targetActivity = navigationMap.get(id);
                     if (targetActivity != null) {
-                        startActivity(new Intent(BaseActivity.this, targetActivity)
-                                .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                        Intent intent = new Intent(BaseActivity.this, targetActivity);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        startActivity(intent);
                         overridePendingTransition(0, 0);
                     }
                     return true;

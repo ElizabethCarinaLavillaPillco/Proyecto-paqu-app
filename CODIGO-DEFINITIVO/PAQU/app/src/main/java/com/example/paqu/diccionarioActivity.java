@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +30,7 @@ public class DiccionarioActivity extends AppCompatActivity {
     EditText etBuscar;
     ChipGroup chipGroupCategorias;
     RecyclerView rvPalabras;
-    TextView tvNoResultados;
+    LinearLayout tvNoResultados;
     LottieAnimationView lottieSearch;
 
     // Data
@@ -164,11 +165,15 @@ public class DiccionarioActivity extends AppCompatActivity {
         if (palabrasFiltradas.isEmpty()) {
             tvNoResultados.setVisibility(View.VISIBLE);
             rvPalabras.setVisibility(View.GONE);
-            lottieSearch.playAnimation();
+            if (lottieSearch != null) {
+                lottieSearch.playAnimation();
+            }
         } else {
             tvNoResultados.setVisibility(View.GONE);
             rvPalabras.setVisibility(View.VISIBLE);
-            lottieSearch.pauseAnimation();
+            if (lottieSearch != null) {
+                lottieSearch.pauseAnimation();
+            }
         }
     }
 
