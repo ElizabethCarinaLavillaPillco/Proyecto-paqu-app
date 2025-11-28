@@ -87,6 +87,6 @@ public class MiniJuegosActivity extends BaseActivity {
 
     @Override
     protected int getSelectedNavItemId() {
-        return R.id.nav_minijuegos;
+        return R.id.nav_Minijuegos;
     }
 }

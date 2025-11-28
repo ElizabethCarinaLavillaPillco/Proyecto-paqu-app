@@ -1,4 +1,3 @@
-// BaseActivity.java
 package com.example.paqu;
 
 import android.content.Intent;
@@ -14,11 +13,9 @@ import java.util.Map;
 public abstract class BaseActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Eliminamos setContentView aquí, cada actividad hija lo manejará
     }
 
     @Override
@@ -37,13 +34,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract int getSelectedNavItemId();
 
-    // En BaseActivity
     private final Map<Integer, Class<?>> navigationMap = new HashMap<Integer, Class<?>>() {{
         put(R.id.nav_home, homeActivity.class);
-        put(R.id.nav_dictionary, diccionarioActivity.class);
-        put(R.id.nav_minijuegos, MiniJuegosActivity.class);
+        put(R.id.nav_dictionary, HerramientasActivity.class);
+        put(R.id.nav_stats, EstadisticasActivity.class);  // ✅ NUEVA ENTRADA
+        put(R.id.nav_Minijuegos, MiniJuegosActivity.class);
         put(R.id.nav_profile, perfilActivity.class);
     }};
+
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override

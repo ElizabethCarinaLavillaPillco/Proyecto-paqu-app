@@ -10,4 +10,19 @@
     <color name="azul">#2196F3</color>
     <color name="filter_selected">#4CAF50</color>
     <color name="filter_unselected">#666666</color>
+
+    <!-- Colores del gráfico -->
+    <color name="amarillo">#FFD54F</color>
+    <color name="naranja">#FF8A65</color>
+    <color name="celeste">#4DD0E1</color>
+    <color name="lila">#BA68C8</color>
+
+    <!-- Colores de texto -->
+    <color name="negro">#212121</color>
+    <color name="gris">#757575</color>
+    <color name="gris_claro">#BDBDBD</color>
+
+    <!-- Colores de fondo -->
+    <color name="fondo_card">#FAFAFA</color>
+    <color name="fondo_app">#F5F5F5</color>
 </resources>

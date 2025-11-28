@@ -454,10 +454,10 @@ public class homeActivity extends BaseActivity {
                     if (id == R.id.nav_home) {
                         return true;
                     } else if (id == R.id.nav_dictionary) {
-                        startActivity(new Intent(homeActivity.this, diccionarioActivity.class));
+                        startActivity(new Intent(homeActivity.this, HerramientasActivity.class));
                         finish();
                         return true;
-                    } else if (id == R.id.nav_minijuegos) {
+                    } else if (id == R.id.nav_Minijuegos) {
                         startActivity(new Intent(homeActivity.this, MiniJuegosActivity.class));
                         finish();
                         return true;

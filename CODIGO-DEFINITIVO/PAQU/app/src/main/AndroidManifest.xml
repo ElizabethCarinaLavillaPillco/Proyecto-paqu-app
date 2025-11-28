@@ -13,6 +13,9 @@
     <uses-permission
         android:name="com.google.android.gms.permission.AD_ID"
         tools:node="remove" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +28,22 @@
         android:theme="@style/Theme.PAQU"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".EstadisticasActivity"
+            android:label="Estadísticas"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PAQU"
+            android:exported="false" />
+
+        <activity
+            android:name=".PronunciacionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HerramientasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DiccionarioActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.InfoSoporteActivity"
             android:exported="false" />
@@ -45,16 +64,13 @@
             android:exported="true" />
         <activity
             android:name=".NotificationSettingsActivity"
-            android:label="Configuración de Recordatorios"
-            android:exported="false" />
+            android:exported="false"
+            android:label="Configuración de Recordatorios" />
         <activity
             android:name=".TimeAttackActivity"
             android:exported="true" />
         <activity
             android:name=".CuentoAccionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".diccionarioActivity"
             android:exported="false" />
         <activity
             android:name=".avatarActivity"
@@ -125,8 +141,9 @@
         </activity>
         <activity
             android:name=".ReviewActivity"
-            android:label="Repaso Espaciado"
-            android:exported="false" />
+            android:exported="false"
+            android:label="Repaso Espaciado" />
+
         <receiver
             android:name=".NotificationReceiver"
             android:enabled="true"
@@ -142,7 +159,5 @@
             android:name="com.facebook.sdk.ClientToken"
             android:value="@string/facebook_client_token" />
     </application>
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
 </manifest>
