@@ -79,6 +79,9 @@ public class MiniJuegosActivity extends BaseActivity {
             Intent intent = new Intent(this, com.example.paqu.activities.TimeAttackActivity.class);
             startActivity(intent);
         });
+
+        // Cuentos
+
     }
 
     @Override

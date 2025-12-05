@@ -41,6 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         put(R.id.nav_stats, EstadisticasActivity.class);
         put(R.id.nav_Minijuegos, MiniJuegosActivity.class);
         put(R.id.nav_profile, perfilActivity.class);
+
     }};
 
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =

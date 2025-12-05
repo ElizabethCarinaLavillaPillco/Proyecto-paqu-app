@@ -24,11 +24,15 @@
         android:padding="20dp"
         android:gravity="center_vertical">
 
-      <!-- Idioma (Bandera quechua) -->
+      <!-- Idioma (Bandera quechua) - CLICKEABLE PARA ABRIR MAPA -->
       <androidx.cardview.widget.CardView
+          android:id="@+id/cardMapaVariantes"
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
+          android:clickable="true"
+          android:focusable="true"
+          android:foreground="?android:attr/selectableItemBackground"
           app:cardCornerRadius="16dp"
           app:cardElevation="4dp"
           app:cardBackgroundColor="#FFFFFF">
@@ -40,11 +44,15 @@
             android:orientation="vertical"
             android:padding="12dp">
 
+          <!-- ⭐ IMAGEN CLICKEABLE ⭐ -->
           <ImageView
+              android:id="@+id/ivMapaQuechua"
               android:layout_width="48dp"
               android:layout_height="48dp"
               android:src="@drawable/cuscoicon"
-              android:contentDescription="Idioma Quechua" />
+              android:contentDescription="Mapa de Variantes del Quechua"
+              android:clickable="true"
+              android:focusable="true" />
 
           <TextView
               android:layout_width="wrap_content"
@@ -54,6 +62,14 @@
               android:textSize="11sp"
               android:textStyle="bold"
               android:layout_marginTop="4dp" />
+
+          <!-- ⭐ INDICADOR DE QUE ES CLICKEABLE ⭐ -->
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="🗺️"
+              android:textSize="12sp"
+              android:layout_marginTop="2dp" />
         </LinearLayout>
       </androidx.cardview.widget.CardView>
 

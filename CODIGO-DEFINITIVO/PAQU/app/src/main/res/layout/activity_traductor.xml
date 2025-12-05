@@ -11,6 +11,11 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+
+
+
+
+
         <!-- Header -->
         <ImageView
             android:id="@+id/iconAtras"

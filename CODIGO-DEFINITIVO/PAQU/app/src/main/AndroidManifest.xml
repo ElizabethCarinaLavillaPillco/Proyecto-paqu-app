@@ -29,12 +29,25 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".MapaVariantesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FavoritosActivity"
+            android:exported="false"
+            android:label="Favoritos"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".EstadisticasActivity"
+            android:exported="false"
             android:label="Estadísticas"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.PAQU"
+            android:theme="@style/Theme.PAQU" />
+        <activity
+            android:name=".CuentoAccionActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".CuentoAccionActivity"
+            android:exported="false" />
         <activity
             android:name=".PronunciacionActivity"
             android:exported="false" />
@@ -50,7 +63,6 @@
         <activity
             android:name=".activities.MemoriaActivity"
             android:exported="false" />
-
         <activity
             android:name=".activities.InfoSoporteActivity"
             android:exported="false" />
@@ -78,9 +90,6 @@
             android:exported="true" />
         <activity
             android:name=".VistaCuentoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".CuentoAccionActivity"
             android:exported="false" />
         <activity
             android:name=".avatarActivity"

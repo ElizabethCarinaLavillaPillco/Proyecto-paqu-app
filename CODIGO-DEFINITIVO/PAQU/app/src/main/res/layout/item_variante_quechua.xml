@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardVariante"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="6dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:backgroundTint="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <!-- Barra de color lateral -->
+        <View
+            android:id="@+id/colorBar"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:background="@color/morado"
+            android:layout_marginEnd="16dp" />
+
+        <!-- Contenido principal -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Header con nombre y badge -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tvNombre"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Quechua Cusqueño"
+                    android:fontFamily="@font/fredoka_one"
+                    android:textSize="17sp"
+                    android:textColor="@color/negro"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+
+                <!-- Badge "Principal" -->
+                <TextView
+                    android:id="@+id/badgePrincipal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⭐"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Región -->
+            <TextView
+                android:id="@+id/tvRegion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍 Cusco y Puno"
+                android:textSize="13sp"
+                android:textColor="@color/gris"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Info adicional -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Hablantes -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:background="@drawable/bg_chip_info"
+                    android:padding="8dp"
+                    android:gravity="center_vertical"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:id="@+id/tvHablantes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="👥 1.5M"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/fredoka_one"
+                        android:textColor="@color/morado" />
+                </LinearLayout>
+
+                <!-- Ejemplo -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:background="@drawable/bg_chip_info"
+                    android:padding="8dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvEjemplo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💬 Allillanchu"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/fredoka_one"
+                        android:textColor="@color/verde"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Icono de flecha -->
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_forward"
+            app:tint="@color/gris_claro"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

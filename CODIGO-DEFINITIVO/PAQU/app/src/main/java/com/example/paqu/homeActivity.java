@@ -37,7 +37,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.example.paqu.utils.StreakManager;
 
 public class homeActivity extends BaseActivity {
-
+    private CardView cardMapaVariantes;
+    private ImageView ivMapaQuechua;
     private CardView stickySection;
     private LinearLayout sectionContent;
     private int stickySectionTop;
@@ -83,6 +84,7 @@ public class homeActivity extends BaseActivity {
 
         // Configurar niveles clickeables
         setupLevelCards();
+        setupMapaButton();
 
         aplicarFuentesAutomaticas();
 
@@ -93,6 +95,65 @@ public class homeActivity extends BaseActivity {
         // ✅ INICIALIZAR BURBUJA DE DATOS CURIOSOS
         curiositiesBubble = findViewById(R.id.curiositiesBubble);
         setupDraggableBubble(curiositiesBubble, false); // false = es burbuja de curiosidades
+    }
+    private void setupMapaButton() {
+        cardMapaVariantes = findViewById(R.id.cardMapaVariantes);
+        ivMapaQuechua = findViewById(R.id.ivMapaQuechua);
+
+        // Hacer clickeable el CardView completo
+        if (cardMapaVariantes != null) {
+            cardMapaVariantes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    abrirMapaVariantes();
+                }
+            });
+        }
+
+        // También hacer clickeable el ImageView
+        if (ivMapaQuechua != null) {
+            ivMapaQuechua.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    abrirMapaVariantes();
+                }
+            });
+        }
+    }
+
+
+    private void abrirMapaVariantes() {
+        try {
+            // Animación de feedback visual
+            if (cardMapaVariantes != null) {
+                cardMapaVariantes.animate()
+                        .scaleX(0.95f)
+                        .scaleY(0.95f)
+                        .setDuration(100)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                cardMapaVariantes.animate()
+                                        .scaleX(1.0f)
+                                        .scaleY(1.0f)
+                                        .setDuration(100)
+                                        .start();
+                            }
+                        })
+                        .start();
+            }
+
+            // Abrir MapaVariantesActivity
+            Intent intent = new Intent(homeActivity.this, MapaVariantesActivity.class);
+            startActivity(intent);
+
+            // Animación de transición suave
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+        } catch (Exception e) {
+            Log.e("MAPA_ERROR", "Error al abrir mapa: " + e.getMessage());
+            Toast.makeText(this, "Error al abrir el mapa de variantes", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // ✅ MÉTODO UNIFICADO PARA ACTUALIZAR RACHA Y DATOS

@@ -11,22 +11,50 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.paqu.managers.FavoritosManager;
 import com.google.android.material.card.MaterialCardView;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.ViewHolder> {
 
     private List<DiccionarioActivity.PalabraDiccionario> palabras;
     private Context context;
     private int lastPosition = -1;
+    private FavoritosManager favoritosManager;
+    private Set<String> palabrasFavoritas;  // Cache de favoritos
 
     public DiccionarioAdapter(List<DiccionarioActivity.PalabraDiccionario> palabras, Context context) {
         this.palabras = palabras;
         this.context = context;
+        this.favoritosManager = new FavoritosManager();
+        this.palabrasFavoritas = new HashSet<>();
+
+        // Cargar favoritos al inicializar
+        cargarFavoritos();
+    }
+
+    private void cargarFavoritos() {
+        favoritosManager.obtenerFavoritos(new FavoritosManager.FavoritosListCallback() {
+            @Override
+            public void onSuccess(List<com.example.paqu.models.FavoritoPalabra> favoritos) {
+                palabrasFavoritas.clear();
+                for (com.example.paqu.models.FavoritoPalabra fav : favoritos) {
+                    palabrasFavoritas.add(fav.getQuechua());
+                }
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(String error) {
+                // Manejar error silenciosamente
+            }
+        });
     }
 
     @NonNull
@@ -50,6 +78,10 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
         int colorRes = getColorForCategory(palabra.categoria);
         holder.indicadorCategoria.setBackgroundColor(context.getResources().getColor(colorRes));
 
+        // Verificar si es favorito y actualizar estrella
+        boolean esFavorito = palabrasFavoritas.contains(palabra.quechua);
+        actualizarEstrellaFavorito(holder.btnFavorito, esFavorito);
+
         // Audio
         holder.btnAudio.setOnClickListener(v -> {
             animarClick(v);
@@ -57,10 +89,10 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
             // TODO: Implementar TTS
         });
 
-        // Favoritos
+        // Favoritos con animación
         holder.btnFavorito.setOnClickListener(v -> {
             animarClick(v);
-            Toast.makeText(context, "⭐ Agregado a favoritos", Toast.LENGTH_SHORT).show();
+            toggleFavorito(palabra, holder.btnFavorito);
         });
 
         // Animación de entrada
@@ -72,6 +104,77 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
         return palabras.size();
     }
 
+    /**
+     * Toggle favorito con animación
+     */
+    private void toggleFavorito(DiccionarioActivity.PalabraDiccionario palabra, ImageView btnFavorito) {
+        boolean eraFavorito = palabrasFavoritas.contains(palabra.quechua);
+
+        favoritosManager.toggleFavorito(
+                palabra.quechua,
+                palabra.espanol,
+                palabra.categoria,
+                palabra.pronunciacion,
+                new FavoritosManager.FavoritoCallback() {
+                    @Override
+                    public void onSuccess() {
+                        // Actualizar cache local
+                        if (eraFavorito) {
+                            palabrasFavoritas.remove(palabra.quechua);
+                            Toast.makeText(context, "⭐ Eliminado de favoritos", Toast.LENGTH_SHORT).show();
+                        } else {
+                            palabrasFavoritas.add(palabra.quechua);
+                            Toast.makeText(context, "⭐ Agregado a favoritos", Toast.LENGTH_SHORT).show();
+                            animarEstrella(btnFavorito);
+                        }
+
+                        // Actualizar UI
+                        actualizarEstrellaFavorito(btnFavorito, !eraFavorito);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(context, "Error: " + error, Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
+
+    /**
+     * Actualizar apariencia de la estrella
+     */
+    private void actualizarEstrellaFavorito(ImageView btnFavorito, boolean esFavorito) {
+        if (esFavorito) {
+            btnFavorito.setImageResource(R.drawable.ic_star);
+            btnFavorito.setColorFilter(
+                    ContextCompat.getColor(context, R.color.amarillo)
+            );
+        } else {
+            btnFavorito.setImageResource(R.drawable.ic_star);
+            btnFavorito.setColorFilter(
+                    ContextCompat.getColor(context, R.color.gris_claro)
+            );
+        }
+    }
+
+    /**
+     * Animación especial para la estrella
+     */
+    private void animarEstrella(ImageView estrella) {
+        estrella.animate()
+                .scaleX(1.5f)
+                .scaleY(1.5f)
+                .setDuration(200)
+                .withEndAction(() -> {
+                    estrella.animate()
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(200)
+                            .start();
+                })
+                .start();
+    }
+
     private int getColorForCategory(String categoria) {
         switch (categoria) {
             case "Saludos":
@@ -79,15 +182,15 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
             case "Familia":
                 return R.color.rosado;
             case "Naturaleza":
-                return android.R.color.holo_green_light;
+                return R.color.verde;
             case "Números":
-                return android.R.color.holo_blue_light;
+                return R.color.celeste;
             case "Verbos":
-                return android.R.color.holo_orange_light;
+                return R.color.naranja;
             case "Frases":
-                return android.R.color.holo_purple;
+                return R.color.lila;
             default:
-                return R.color.grey;
+                return R.color.gris;
         }
     }
 
