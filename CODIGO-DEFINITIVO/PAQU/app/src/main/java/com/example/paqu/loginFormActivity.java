@@ -310,6 +310,8 @@ public class loginFormActivity extends AppCompatActivity {
 
         if (rol.equals("administrador")) {
             intent = new Intent(this, homeActivity.class);
+        } else if (rol.equals("docente")) {
+            intent = new Intent(this, homeActivity.class);
         } else {
             intent = new Intent(this, homeActivity.class);
         }
