@@ -27,18 +27,16 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
+    compileOptions {// Sets the Java compiler target
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
-    // Optional but recommended: Use JVM Toolchain for consistent builds
-    kotlin {
-        jvmToolchain(11)
+    kotlinOptions {
+        // Sets the Kotlin compiler target
+        jvmTarget = "21"
     }
+
 }
 
 dependencies {

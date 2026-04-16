@@ -230,17 +230,17 @@ public class configuracionActivity extends AppCompatActivity {
         if (userRole.equals("administrador")) {
             btnGestionUsuarios.setOnClickListener(v -> {
                 animarClick(v);
-                startActivity(new Intent(this, GestionUsuariosActivity.class));
+                startActivity(new Intent(this, homeActivity.class));
             });
 
             btnAsignarRoles.setOnClickListener(v -> {
                 animarClick(v);
-                startActivity(new Intent(this, AsignarRolesActivity.class));
+                startActivity(new Intent(this, homeActivity.class));
             });
 
             btnConfigApp.setOnClickListener(v -> {
                 animarClick(v);
-                startActivity(new Intent(this, ConfigAppActivity.class));
+                startActivity(new Intent(this, homeActivity.class));
             });
         }
 
@@ -248,17 +248,17 @@ public class configuracionActivity extends AppCompatActivity {
         if (userRole.equals("docente")) {
             btnCrearLeccion.setOnClickListener(v -> {
                 animarClick(v);
-                startActivity(new Intent(this, CrearLeccionActivity.class));
+                startActivity(new Intent(this, homeActivity.class));
             });
 
             btnMisLecciones.setOnClickListener(v -> {
                 animarClick(v);
-                startActivity(new Intent(this, MisLeccionesActivity.class));
+                startActivity(new Intent(this, homeActivity.class));
             });
 
             btnGestionNiveles.setOnClickListener(v -> {
                 animarClick(v);
-                startActivity(new Intent(this, GestionNivelesActivity.class));
+                startActivity(new Intent(this, homeActivity.class));
             });
         }
     }

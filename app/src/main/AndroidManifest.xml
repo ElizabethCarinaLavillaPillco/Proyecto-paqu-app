@@ -29,10 +29,16 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".GestionNivelesActivity"
+            android:name=".EditarLeccionActivity"
             android:exported="false" />
         <activity
             android:name=".MisLeccionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CrearUsuarioAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GestionNivelesActivity"
             android:exported="false" />
         <activity
             android:name=".CrearLeccionActivity"
@@ -41,10 +47,10 @@
             android:name=".ConfigAppActivity"
             android:exported="false" />
         <activity
-            android:name=".AsignarRolesActivity"
+            android:name=".GestionUsuariosActivity"
             android:exported="false" />
         <activity
-            android:name=".GestionUsuariosActivity"
+            android:name=".AsignarRolesActivity"
             android:exported="false" />
         <activity
             android:name=".MapaVariantesActivity"
