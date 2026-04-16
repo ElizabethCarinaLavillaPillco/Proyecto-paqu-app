@@ -1,6 +1,6 @@
 package com.example.paqu;
 
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,6 +37,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class loginFormActivity extends AppCompatActivity {
 
@@ -47,6 +52,7 @@ public class loginFormActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
+    private DatabaseReference databaseReference;
 
     private static final int RC_SIGN_IN = 100;
 
@@ -58,6 +64,7 @@ public class loginFormActivity extends AppCompatActivity {
         // Inicializar Firebase
         FirebaseApp.initializeApp(this);
         firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
         // Referencias UI (mismos IDs que tu XML)
         tvEmail = findViewById(R.id.tvEmail);
@@ -110,7 +117,7 @@ public class loginFormActivity extends AppCompatActivity {
     }
 
     // -------------------------------
-    // 🔹 LOGIN CON CORREO Y CONTRASEÑA
+    // 🔹 LOGIN CON CORREO Y CONTRASEÑA (CON VERIFICACIÓN DE ROL)
     // -------------------------------
     private void loginConCorreo() {
         String correo = tvEmail.getText().toString().trim();
@@ -121,21 +128,30 @@ public class loginFormActivity extends AppCompatActivity {
             return;
         }
 
+        // Mostrar diálogo de carga
+        AlertDialog progressDialog = mostrarDialogoCarga("Iniciando sesión...");
+
         firebaseAuth.signInWithEmailAndPassword(correo, contra)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = firebaseAuth.getCurrentUser();
                         if (user != null) {
-                            redirigirAHome();
+                            // Verificar el rol del usuario en la base de datos
+                            verificarRolYRedirigir(user.getUid(), progressDialog);
+                        } else {
+                            progressDialog.dismiss();
+                            Toast.makeText(this, "Error al obtener datos del usuario", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(this, "Error al iniciar sesión: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        String errorMsg = task.getException() != null ? task.getException().getMessage() : "Error desconocido";
+                        Toast.makeText(this, "Error al iniciar sesión: " + errorMsg, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     // -------------------------------
-    // 🔹 RESULTADO LOGIN GOOGLE
+    // 🔹 RESULTADO LOGIN GOOGLE (CON VERIFICACIÓN DE ROL)
     // -------------------------------
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -157,31 +173,201 @@ public class loginFormActivity extends AppCompatActivity {
     }
 
     // -------------------------------
-    // 🔹 AUTENTICAR CON FIREBASE
+    // 🔹 AUTENTICAR CON FIREBASE (GOOGLE)
     // -------------------------------
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d("GOOGLE_LOGIN", "Autenticando con Firebase...");
+
+        AlertDialog progressDialog = mostrarDialogoCarga("Autenticando con Google...");
+
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser usuario = firebaseAuth.getCurrentUser();
                         if (usuario != null) {
-                            redirigirAHome();
+                            // Verificar si el usuario ya existe en la BD, si no, crearlo
+                            verificarOCrearUsuario(usuario, progressDialog);
+                        } else {
+                            progressDialog.dismiss();
+                            Toast.makeText(this, "Error al obtener datos del usuario", Toast.LENGTH_SHORT).show();
                         }
                     } else {
+                        progressDialog.dismiss();
                         Toast.makeText(this, "Autenticación con Google fallida", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     // -------------------------------
-    // 🔹 REDIRECCIÓN A HOMEACTIVITY
+    // 🔹 VERIFICAR O CREAR USUARIO EN BD (PARA GOOGLE)
     // -------------------------------
-    private void redirigirAHome() {
-        Intent intent = new Intent(loginFormActivity.this, homeActivity.class);
+    private void verificarOCrearUsuario(FirebaseUser usuario, AlertDialog progressDialog) {
+        String uid = usuario.getUid();
+
+        databaseReference.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    // Usuario nuevo con Google, crear en BD con rol usuario_comun
+                    crearUsuarioGoogleEnBD(usuario, progressDialog);
+                } else {
+                    // Usuario ya existe, verificar rol
+                    verificarRolYRedirigir(uid, progressDialog);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                progressDialog.dismiss();
+                Log.e("DB_ERROR", "Error al verificar usuario: " + error.getMessage());
+                Toast.makeText(loginFormActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // -------------------------------
+    // 🔹 CREAR USUARIO NUEVO DE GOOGLE EN BD
+    // -------------------------------
+    private void crearUsuarioGoogleEnBD(FirebaseUser usuario, AlertDialog progressDialog) {
+        String uid = usuario.getUid();
+        String email = usuario.getEmail() != null ? usuario.getEmail() : "";
+        String name = usuario.getDisplayName() != null ? usuario.getDisplayName() : "Usuario";
+
+        // Crear estructura del usuario
+        UserData userData = new UserData(uid, email, name, "usuario_comun");
+
+        databaseReference.child("users").child(uid).setValue(userData)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("DB", "Usuario Google creado en BD con rol usuario_comun");
+                    verificarRolYRedirigir(uid, progressDialog);
+                })
+                .addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Log.e("DB", "Error al crear usuario: " + e.getMessage());
+                    Toast.makeText(this, "Error al guardar datos del usuario", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    // -------------------------------
+    // 🔹 VERIFICAR ROL Y REDIRIGIR (NÚCLEO DE PERMISOS)
+    // -------------------------------
+    private void verificarRolYRedirigir(String uid, AlertDialog progressDialog) {
+        databaseReference.child("users").child(uid).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                progressDialog.dismiss();
+
+                String rol = snapshot.getValue(String.class);
+
+                if (rol == null || rol.isEmpty()) {
+                    // Si no tiene rol, asignar usuario_comun por defecto
+                    asignarRolPorDefecto(uid);
+                    rol = "usuario_comun";
+                }
+
+                // Guardar el rol en SharedPreferences para uso futuro
+                guardarRolEnPreferencias(rol);
+
+                // Redirigir según el rol
+                redirigirSegunRol(rol);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                progressDialog.dismiss();
+                Log.e("ROL_ERROR", "Error al obtener rol: " + error.getMessage());
+                Toast.makeText(loginFormActivity.this, "Error al verificar permisos", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // -------------------------------
+    // 🔹 ASIGNAR ROL POR DEFECTO
+    // -------------------------------
+    private void asignarRolPorDefecto(String uid) {
+        databaseReference.child("users").child(uid).child("role").setValue("usuario_comun")
+                .addOnSuccessListener(aVoid -> Log.d("ROL", "Rol usuario_comun asignado"))
+                .addOnFailureListener(e -> Log.e("ROL", "Error al asignar rol: " + e.getMessage()));
+    }
+
+    // -------------------------------
+    // 🔹 GUARDAR ROL EN PREFERENCIAS
+    // -------------------------------
+    private void guardarRolEnPreferencias(String rol) {
+        android.content.SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        android.content.SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("user_role", rol);
+        editor.apply();
+        Log.d("ROL", "Rol guardado: " + rol);
+    }
+
+    // -------------------------------
+    // 🔹 REDIRIGIR SEGÚN EL ROL
+    // -------------------------------
+    private void redirigirSegunRol(String rol) {
+        Intent intent;
+
+        if (rol.equals("administrador")) {
+            intent = new Intent(this, homeActivity.class);
+        } else {
+            intent = new Intent(this, homeActivity.class);
+        }
+
+        intent.putExtra("user_role", rol);
         startActivity(intent);
         finish();
+    }
+
+    // -------------------------------
+    // 🔹 MOSTRAR DIÁLOGO DE CARGA
+    // -------------------------------
+    private AlertDialog mostrarDialogoCarga(String mensaje) {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(80, 80, 80, 80);
+        layout.setGravity(Gravity.CENTER);
+
+        GradientDrawable background = new GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                new int[]{Color.parseColor("#667eea"), Color.parseColor("#764ba2")}
+        );
+        background.setCornerRadius(50f);
+        layout.setBackground(background);
+
+        android.widget.ProgressBar progressBar = new android.widget.ProgressBar(this);
+        progressBar.setIndeterminate(true);
+        LinearLayout.LayoutParams progressParams = new LinearLayout.LayoutParams(120, 120);
+        progressParams.gravity = Gravity.CENTER;
+        progressBar.setLayoutParams(progressParams);
+        layout.addView(progressBar);
+
+        TextView textView = new TextView(this);
+        textView.setText(mensaje);
+        textView.setTextColor(Color.WHITE);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        textView.setTypeface(null, Typeface.BOLD);
+        textView.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        textParams.topMargin = 40;
+        textView.setLayoutParams(textParams);
+        layout.addView(textView);
+
+        builder.setView(layout);
+        builder.setCancelable(false);
+
+        AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+        dialog.show();
+
+        return dialog;
     }
 
     // -------------------------------
@@ -290,8 +476,8 @@ public class loginFormActivity extends AppCompatActivity {
         final EditText etEmailRecuperar = new EditText(this);
         etEmailRecuperar.setHint("ejemplo@correo.com");
         etEmailRecuperar.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-        etEmailRecuperar.setTextColor(Color.BLACK); // ✅ Color negro para el texto
-        etEmailRecuperar.setHintTextColor(Color.parseColor("#999999")); // Color gris para el hint
+        etEmailRecuperar.setTextColor(Color.BLACK);
+        etEmailRecuperar.setHintTextColor(Color.parseColor("#999999"));
         etEmailRecuperar.setBackgroundColor(Color.TRANSPARENT);
         etEmailRecuperar.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         LinearLayout.LayoutParams etParams = new LinearLayout.LayoutParams(
@@ -765,5 +951,49 @@ public class loginFormActivity extends AppCompatActivity {
 
         // Error genérico
         return "No se pudo enviar el enlace. Por favor verifica el correo e intenta nuevamente.";
+    }
+
+    // -------------------------------
+    // 🔹 CLASE USERDATA PARA CREAR USUARIO EN BD
+    // -------------------------------
+    public static class UserData {
+        public String uid;
+        public String email;
+        public String name;
+        public String role;
+        public long createdAt;
+        public UserInfo userInfo;
+        public Progress progress;
+        public Streak streak;
+
+        public UserData(String uid, String email, String name, String role) {
+            this.uid = uid;
+            this.email = email;
+            this.name = name;
+            this.role = role;
+            this.createdAt = System.currentTimeMillis();
+            this.userInfo = new UserInfo();
+            this.progress = new Progress();
+            this.streak = new Streak();
+        }
+
+        public static class UserInfo {
+            public String avatar = "";
+            public String language = "es";
+            public boolean notificationsEnabled = true;
+        }
+
+        public static class Progress {
+            public int hearts = 5;
+            public int coins = 0;
+            public int level = 1;
+            public int totalXP = 0;
+        }
+
+        public static class Streak {
+            public int currentStreak = 0;
+            public int longestStreak = 0;
+            public long lastActiveDate = System.currentTimeMillis();
+        }
     }
 }
