@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.paqu.managers.FavoritosManager;
+import com.example.paqu.DiccionarioActivity;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.HashSet;

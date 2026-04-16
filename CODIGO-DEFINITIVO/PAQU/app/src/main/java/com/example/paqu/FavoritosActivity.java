@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.paqu.managers.FavoritosManager;
+import com.example.paqu.DiccionarioActivity;
 import com.example.paqu.models.FavoritoPalabra;
 import com.google.android.material.button.MaterialButton;
 

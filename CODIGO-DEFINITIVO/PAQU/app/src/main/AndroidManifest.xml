@@ -55,7 +55,7 @@
             android:name=".HerramientasActivity"
             android:exported="false" />
         <activity
-            android:name=".DiccionarioActivity"
+            android:name=".models.DiccionarioActivity"
             android:exported="false" />
         <activity
             android:name=".CuriositiesActivity"
