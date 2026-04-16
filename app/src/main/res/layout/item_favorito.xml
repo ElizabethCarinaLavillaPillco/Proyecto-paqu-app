@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardFavorito"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <!-- Botón Eliminar (Esquina superior derecha) -->
+        <ImageView
+            android:id="@+id/btnEliminar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_cross"
+            android:padding="6dp"
+            android:background="@drawable/option_background"
+            app:tint="@color/white" />
+
+        <!-- Contenido principal -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toStartOf="@id/btnEliminar"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- Palabra en Quechua -->
+            <TextView
+                android:id="@+id/tvQuechua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Allinllachu"
+                android:fontFamily="@font/fredoka_one"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <!-- Traducción -->
+            <TextView
+                android:id="@+id/tvEspanol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¿Cómo estás?"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:alpha="0.9"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <!-- Categoría -->
+            <TextView
+                android:id="@+id/tvCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saludos"
+                android:textSize="11sp"
+                android:textColor="@color/white"
+                android:background="@drawable/word_chip_background"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_marginTop="12dp"
+                android:alpha="0.8" />
+
+        </LinearLayout>
+
+        <!-- Botón Audio (Esquina inferior derecha) -->
+        <ImageView
+            android:id="@+id/btnAudio"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/ic_audio"
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/white" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

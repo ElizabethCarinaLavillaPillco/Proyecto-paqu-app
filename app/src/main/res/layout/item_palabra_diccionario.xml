@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardPalabra"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Indicador de Categoría (barra lateral) -->
+        <View
+            android:id="@+id/indicadorCategoria"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:background="@color/morado"
+            android:layout_marginEnd="12dp" />
+
+        <!-- Contenido Principal -->
+        <LinearLayout
+            android:id="@+id/layoutContenido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/indicadorCategoria"
+            android:layout_toStartOf="@id/layoutBotones"
+            android:orientation="vertical">
+
+            <!-- Palabra en Quechua -->
+            <TextView
+                android:id="@+id/tvQuechua"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Allinllachu"
+                android:fontFamily="@font/fredoka_one"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Traducción -->
+            <TextView
+                android:id="@+id/tvEspanol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¿Cómo estás?"
+                android:fontFamily="sans-serif"
+                android:textSize="16sp"
+                android:textColor="@color/grey"
+                android:layout_marginBottom="6dp" />
+
+            <!-- Pronunciación -->
+            <TextView
+                android:id="@+id/tvPronunciacion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔊 a-yin-ya-chu"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="13sp"
+                android:textColor="@color/morado"
+                android:layout_marginBottom="6dp" />
+
+            <!-- Categoría -->
+            <TextView
+                android:id="@+id/tvCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saludos"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_dialog_celebrations"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+        </LinearLayout>
+
+        <!-- Botones de Acción -->
+        <LinearLayout
+            android:id="@+id/layoutBotones"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- Botón Audio -->
+            <ImageView
+                android:id="@+id/btnAudio"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_audio"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginBottom="8dp"
+                app:tint="@color/morado" />
+
+            <!-- Botón Favorito -->
+            <ImageView
+                android:id="@+id/btnFavorito"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_star"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="@color/rosado" />
+        </LinearLayout>
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

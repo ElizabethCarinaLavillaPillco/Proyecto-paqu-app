@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="message_types">
+        <item>Motivacionales y Culturales</item>
+        <item>Solo Motivacionales</item>
+        <item>Solo Progreso</item>
+        <item>Todos los tipos</item>
+    </string-array>
+
+    <string-array name="notification_times">
+        <item>8:00 AM</item>
+        <item>2:00 PM</item>
+        <item>7:00 PM</item>
+        <item>Personalizado</item>
+    </string-array>
+</resources>
