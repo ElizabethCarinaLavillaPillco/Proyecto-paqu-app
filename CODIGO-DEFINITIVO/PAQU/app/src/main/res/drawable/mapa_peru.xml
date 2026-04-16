@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mapa simplificado del Perú con marcadores -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="400dp"
+    android:viewportWidth="300"
+    android:viewportHeight="400">
+
+    <!-- Contorno simplificado del Perú -->
+    <path
+        android:fillColor="#E8F5E9"
+        android:strokeColor="#4CAF50"
+        android:strokeWidth="3"
+        android:pathData="M150,20 L180,40 L200,80 L210,120 L200,160 L180,200 L160,240 L140,280 L120,320 L100,360 L80,340 L70,300 L75,260 L85,220 L95,180 L110,140 L120,100 L130,60 L140,30 Z"/>
+
+    <!-- Marcadores de las principales regiones usando path -->
+
+    <!-- Cusco (círculo naranja) -->
+    <path
+        android:fillColor="#FF6B35"
+        android:pathData="M140,260 m-8,0 a8,8 0 1,1 16,0 a8,8 0 1,1 -16,0"/>
+
+    <!-- Ayacucho (círculo morado) -->
+    <path
+        android:fillColor="#9B59B6"
+        android:pathData="M130,220 m-8,0 a8,8 0 1,1 16,0 a8,8 0 1,1 -16,0"/>
+
+    <!-- Ancash (círculo azul) -->
+    <path
+        android:fillColor="#3498DB"
+        android:pathData="M120,140 m-6,0 a6,6 0 1,1 12,0 a6,6 0 1,1 -12,0"/>
+
+    <!-- Cajamarca (círculo rojo) -->
+    <path
+        android:fillColor="#E74C3C"
+        android:pathData="M110,100 m-6,0 a6,6 0 1,1 12,0 a6,6 0 1,1 -12,0"/>
+
+    <!-- San Martín (círculo verde) -->
+    <path
+        android:fillColor="#27AE60"
+        android:pathData="M150,110 m-6,0 a6,6 0 1,1 12,0 a6,6 0 1,1 -12,0"/>
+
+    <!-- Puno (círculo púrpura) -->
+    <path
+        android:fillColor="#8E44AD"
+        android:pathData="M135,300 m-7,0 a7,7 0 1,1 14,0 a7,7 0 1,1 -14,0"/>
+
+    <!-- Junín (círculo turquesa) -->
+    <path
+        android:fillColor="#1ABC9C"
+        android:pathData="M125,180 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0"/>
+
+    <!-- Huánuco (círculo dorado) -->
+    <path
+        android:fillColor="#F39C12"
+        android:pathData="M128,150 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0"/>
+
+    <!-- Apurímac (círculo naranja quemado) -->
+    <path
+        android:fillColor="#D35400"
+        android:pathData="M135,240 m-6,0 a6,6 0 1,1 12,0 a6,6 0 1,1 -12,0"/>
+
+    <!-- Lima/Yauyos (círculo pequeño) -->
+    <path
+        android:fillColor="#E67E22"
+        android:pathData="M105,200 m-4,0 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0"/>
+
+    <!-- Acentos blancos en los marcadores (efecto 3D) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.3"
+        android:pathData="M140,257 m-3,0 a3,3 0 1,1 6,0 a3,3 0 1,1 -6,0"/>
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.3"
+        android:pathData="M130,217 m-3,0 a3,3 0 1,1 6,0 a3,3 0 1,1 -6,0"/>
+
+</vector>

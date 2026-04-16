@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/casaicon"
+        android:title="Inicio" />
+
+    <item
+        android:id="@+id/nav_dictionary"
+        android:icon="@drawable/diccionarioicon"
+        android:title="Herramientas" />
+
+    <item
+        android:id="@+id/nav_stats"
+        android:icon="@drawable/ic_stats"
+        android:title="Estadísticas" />
+
+
+
+    <item
+        android:id="@+id/nav_Minijuegos"
+        android:icon="@drawable/ic_star"
+        android:title="Mini Juegos" />
+
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/usericon"
+        android:title="Perfil" />
+</menu>

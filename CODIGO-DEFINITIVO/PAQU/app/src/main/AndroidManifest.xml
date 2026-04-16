@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_logo"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_logo"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.PAQU"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".MapaVariantesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FavoritosActivity"
+            android:exported="false"
+            android:label="Favoritos"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".EstadisticasActivity"
+            android:exported="false"
+            android:label="Estadísticas"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PAQU" />
+        <activity
+            android:name=".CuentoAccionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CuentoAccionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PronunciacionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HerramientasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".models.DiccionarioActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CuriositiesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.MemoriaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.InfoSoporteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.InfoCuentaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TraductorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".VolumenAjusteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MiniJuegosActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.LessonResultActivity"
+            android:exported="true" />
+        <activity
+            android:name=".NotificationSettingsActivity"
+            android:exported="false"
+            android:label="Configuración de Recordatorios" />
+        <activity
+            android:name=".activities.TimeAttackActivity"
+            android:exported="true" />
+        <activity
+            android:name=".VistaCuentoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".avatarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".perfilActivity"
+            android:exported="false" />
+        <activity
+            android:name=".loginFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio1"
+            android:exported="true" />
+        <activity
+            android:name=".ejercicio2"
+            android:exported="true" />
+        <activity
+            android:name=".homeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".logeocompletoActivity"
+            android:exported="true" />
+        <activity
+            android:name=".registroActivity"
+            android:exported="true" />
+        <activity
+            android:name=".CargaseguidaActivity"
+            android:exported="true" />
+        <activity
+            android:name=".CargaActivity"
+            android:exported="true" />
+        <activity
+            android:name=".profileActivity"
+            android:exported="true" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".configuracionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".TamanioFuenteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ReviewActivity"
+            android:exported="false"
+            android:label="Repaso Espaciado" />
+
+        <receiver
+            android:name=".NotificationReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token" />
+    </application>
+
+</manifest>

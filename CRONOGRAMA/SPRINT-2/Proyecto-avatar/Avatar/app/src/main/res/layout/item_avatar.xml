@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Fondo rombo -->
+    <FrameLayout
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:rotation="45"
+        android:background="@drawable/bg_rombo"
+        android:gravity="center">
+
+        <!-- Imagen centrada y DERECHA -->
+        <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:rotation="-45"
+            android:scaleType="centerCrop"
+            android:src="@drawable/chinchilla"/>
+    </FrameLayout>
+
+    <!-- Botón con nombre -->
+    <Button
+        android:id="@+id/btnName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="@color/morado"
+        android:text="CHINCHILLA"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"/>
+
+    <!-- Botón seleccionar -->
+    <Button
+        android:id="@+id/btnSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/naranja"
+        android:text="SELECCIONAR"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"/>
+</LinearLayout>

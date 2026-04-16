@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "507103280595",
+    "firebase_url": "https://paqu-41f3a-default-rtdb.firebaseio.com",
+    "project_id": "paqu-41f3a",
+    "storage_bucket": "paqu-41f3a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:507103280595:android:3d81762f4859ce95bdc326",
+        "android_client_info": {
+          "package_name": "com.example.paqu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "507103280595-ofj9kgqqgqquj9d39glkqi2rokj9pt15.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.paqu",
+            "certificate_hash": "a9d51cb7dd9867ca27487504712a25710f2bbcb2"
+          }
+        },
+        {
+          "client_id": "507103280595-9d5ca90anqs9vs4qhf63roaulbhg0d6f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTr0fwE_uVujVmAMVcwg-_KakqgeD36yw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "507103280595-9d5ca90anqs9vs4qhf63roaulbhg0d6f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
