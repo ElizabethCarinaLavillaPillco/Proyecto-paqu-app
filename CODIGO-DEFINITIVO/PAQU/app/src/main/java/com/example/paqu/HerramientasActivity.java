@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.paqu.DiccionarioActivity;
+import com.example.paqu.models.DiccionarioActivity;
 import com.google.android.material.card.MaterialCardView;
 
 public class HerramientasActivity extends BaseActivity {

@@ -1,4 +1,4 @@
-package com.example.paqu;
+package com.example.paqu.models;
 
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.paqu.DiccionarioAdapter;
+import com.example.paqu.R;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
