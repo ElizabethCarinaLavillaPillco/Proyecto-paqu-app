@@ -8,180 +8,325 @@
     android:background="@color/white"
     tools:context=".registroActivity">
 
-    <EditText
-        android:id="@+id/txtNombre"
-        android:layout_width="300dp"
+    <!-- Header con botón cerrar -->
+    <Button
+        android:id="@+id/btnCerrar"
+        android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:fontFamily="@font/fredoka_one"
-        android:hint="Nombre"
-        android:inputType="text"
-        android:textColor="@color/grey"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.423"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="16dp"
+        app:icon="@drawable/simbolox"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView11"
-        android:layout_width="289dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="128dp"
+        android:id="@+id/titleRegistro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:fontFamily="@font/fredoka_one"
-        android:foregroundGravity="center_vertical|center|center_horizontal"
-        android:gravity="center|center_horizontal|center_vertical"
-        android:text="Al registrarte en PAQU, aceptas nuestros Términos y Política de privacidad . "
+        android:text="Únete a PAQU"
+        android:textColor="@color/black"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/subtitleRegistro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/fredoka_one"
+        android:text="Completa tus datos para continuar"
         android:textColor="@color/grey"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+        app:layout_constraintTop_toBottomOf="@+id/titleRegistro" />
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/btnGoogle"
-        android:layout_width="193dp"
-        android:layout_height="38dp"
-        android:layout_marginTop="72dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.472"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnIngresarApp" />
+    <!-- ScrollView para contenido -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/subtitleRegistro">
 
-    <Button
-        android:id="@+id/btnCerrar"
-        android:layout_width="65dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="16dp"
-        app:icon="@drawable/simbolox"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.046"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="40dp">
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="76dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="¿ Cuál es tu nombre ?"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.19"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <!-- Campo Nombre -->
+            <TextView
+                android:id="@+id/labelNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/fredoka_one"
+                android:text="¿Cuál es tu nombre? *"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="292dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Escribe tu correo electrónico:"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.25"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <EditText
+                android:id="@+id/txtNombre"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:background="@drawable/edit_text_background"
+                android:ems="10"
+                android:fontFamily="@font/fredoka_one"
+                android:hint="Ej: Juan García"
+                android:inputType="text"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey" />
 
-    <EditText
-        android:id="@+id/txtContra"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:fontFamily="@font/fredoka_one"
-        android:hint="Contraseña"
-        android:inputType="text"
-        android:textColor="@color/grey"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+            <TextView
+                android:id="@+id/errorNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/fredoka_one"
+                android:textColor="#D32F2F"
+                android:textSize="11sp"
+                android:visibility="gone"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="" />
 
-    <EditText
-        android:id="@+id/txtCorreo"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:fontFamily="@font/fredoka_one"
-        android:hint="Correo"
-        android:inputType="text"
-        android:textColor="@color/grey"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.423"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+            <!-- Campo Fecha de Nacimiento -->
+            <TextView
+                android:id="@+id/labelFecha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/fredoka_one"
+                android:text="¿Cuándo naciste? * (Debes tener 8 años o más)"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="188dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="¿ Cuántos años tienes ?"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.203"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center">
 
-    <Button
-        android:id="@+id/btnIngresarApp"
-        android:layout_width="300dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="CONTINUAR"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.423"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtContra" />
+                <!-- Spinner Día -->
+                <Spinner
+                    android:id="@+id/spinnerDia"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/spinner_background" />
 
-    <TextView
-        android:id="@+id/textView10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="92dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="o Registrarse también con :"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtContra" />
+                <!-- Spinner Mes -->
+                <Spinner
+                    android:id="@+id/spinnerMes"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/spinner_background" />
 
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="404dp"
-        android:fontFamily="@font/fredoka_one"
-        android:text="Escribe una contraseña:"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.202"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+                <!-- Spinner Año -->
+                <Spinner
+                    android:id="@+id/spinnerAno"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/spinner_background" />
 
-    <EditText
-        android:id="@+id/txtEdad"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:fontFamily="@font/fredoka_one"
-        android:hint="Edad"
-        android:inputType="text"
-        android:textColor="@color/grey"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.423"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+            </LinearLayout>
 
+            <TextView
+                android:id="@+id/errorFecha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/fredoka_one"
+                android:textColor="#D32F2F"
+                android:textSize="11sp"
+                android:visibility="gone"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="" />
+
+            <!-- Campo Correo -->
+            <TextView
+                android:id="@+id/labelCorreo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/fredoka_one"
+                android:text="Tu correo electrónico *"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/txtCorreo"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:background="@drawable/edit_text_background"
+                android:ems="10"
+                android:fontFamily="@font/fredoka_one"
+                android:hint="ejemplo@gmail.com"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey" />
+
+            <TextView
+                android:id="@+id/errorCorreo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/fredoka_one"
+                android:textColor="#D32F2F"
+                android:textSize="11sp"
+                android:visibility="gone"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="" />
+
+            <!-- Campo Contraseña -->
+            <TextView
+                android:id="@+id/labelContra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/fredoka_one"
+                android:text="Contraseña * (mínimo 6 caracteres)"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/txtContra"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:background="@drawable/edit_text_background"
+                android:ems="10"
+                android:fontFamily="@font/fredoka_one"
+                android:hint="Ingresa tu contraseña"
+                android:inputType="textPassword"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey" />
+
+            <TextView
+                android:id="@+id/errorContra"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/fredoka_one"
+                android:textColor="#D32F2F"
+                android:textSize="11sp"
+                android:visibility="gone"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="" />
+
+            <!-- Mensaje de error -->
+            <TextView
+                android:id="@+id/mensajeError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/fredoka_one"
+                android:textColor="#D32F2F"
+                android:textSize="12sp"
+                android:visibility="gone"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="" />
+
+            <!-- Botón Continuar -->
+            <Button
+                android:id="@+id/btnIngresarApp"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/fredoka_one"
+                android:text="CONTINUAR"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="12dp"
+                android:background="@color/black"
+                android:textColor="@color/white" />
+
+            <!-- Divider -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/grey" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="@font/fredoka_one"
+                    android:text="o continúa con"
+                    android:textColor="@color/grey"
+                    android:textSize="12sp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/grey" />
+
+            </LinearLayout>
+
+            <!-- Botón Google -->
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/btnGoogle"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp" />
+
+            <!-- Términos y Condiciones -->
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/fredoka_one"
+                android:gravity="center"
+                android:text="Al registrarte en PAQU, aceptas nuestros\nTérminos y Política de privacidad"
+                android:textColor="@color/grey"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
