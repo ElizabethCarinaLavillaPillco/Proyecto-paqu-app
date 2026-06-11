@@ -235,7 +235,7 @@ public class configuracionActivity extends AppCompatActivity {
 
             btnAsignarRoles.setOnClickListener(v -> {
                 animarClick(v);
-                startActivity(new Intent(this, homeActivity.class));
+                startActivity(new Intent(configuracionActivity.this, AsignarRolesActivity.class));
             });
 
             btnConfigApp.setOnClickListener(v -> {
