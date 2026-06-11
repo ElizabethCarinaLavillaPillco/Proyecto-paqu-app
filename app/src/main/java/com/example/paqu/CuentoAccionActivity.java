@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.motion.utils.ViewState;
 
 public class CuentoAccionActivity extends BaseActivity {
 
@@ -13,6 +12,9 @@ public class CuentoAccionActivity extends BaseActivity {
     private CardView cardCuento1, cardCuento2, cardCuento3;
     private TextView textFilterHistorias, textFilterInfantil, textFilterLeyendas;
 
+    private boolean historiaActiva = false;
+    private boolean infantilActiva = false;
+    private boolean leyendaActiva = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +27,7 @@ public class CuentoAccionActivity extends BaseActivity {
         setupUIElements();
         setupFilters();
         setupCuentoCards();
+        filtrarCuentos();
     }
 
     private void setupUIElements() {
@@ -46,38 +49,76 @@ public class CuentoAccionActivity extends BaseActivity {
     private void setupFilters() {
         // Filtro Historias
         filterHistorias.setOnClickListener(v -> {
-            toggleFilter(filterHistorias, textFilterHistorias);
+            historiaActiva = !historiaActiva;
+            toggleFilter(filterHistorias, textFilterHistorias, historiaActiva);
             filtrarCuentos();
         });
 
-        // Filtro Infantil
         filterInfantil.setOnClickListener(v -> {
-            toggleFilter(filterInfantil, textFilterInfantil);
+            infantilActiva = !infantilActiva;
+            toggleFilter(filterInfantil, textFilterInfantil, infantilActiva);
             filtrarCuentos();
         });
 
-        // Filtro Leyendas
         filterLeyendas.setOnClickListener(v -> {
-            toggleFilter(filterLeyendas, textFilterLeyendas);
+            leyendaActiva = !leyendaActiva;
+            toggleFilter(filterLeyendas, textFilterLeyendas, leyendaActiva);
             filtrarCuentos();
         });
     }
 
-    private void toggleFilter(CardView cardView, TextView textView) {
-        boolean isSelected = cardView.getCardBackgroundColor().getDefaultColor() == getResources().getColor(R.color.filter_selected);
+    private void toggleFilter(CardView cardView, TextView textView, boolean activo) {
 
-        if (isSelected) {
-            cardView.setCardBackgroundColor(getResources().getColor(R.color.filter_unselected));
-            textView.setTextColor(getResources().getColor(R.color.white));
+        if (activo) {
+            cardView.setCardBackgroundColor(
+                    getResources().getColor(R.color.filter_selected));
+            textView.setTextColor(
+                    getResources().getColor(R.color.black));
         } else {
-            cardView.setCardBackgroundColor(getResources().getColor(R.color.filter_selected));
-            textView.setTextColor(getResources().getColor(R.color.black));
+            cardView.setCardBackgroundColor(
+                    getResources().getColor(R.color.filter_unselected));
+            textView.setTextColor(
+                    getResources().getColor(R.color.white));
         }
     }
 
     private void filtrarCuentos() {
-        // Por ahora solo muestra mensaje, luego implementarás la lógica real
-        Toast.makeText(this, "Filtrando cuentos...", Toast.LENGTH_SHORT).show();
+
+        boolean historiasSeleccionado = historiaActiva;
+        boolean infantilSeleccionado = infantilActiva;
+        boolean leyendasSeleccionado = leyendaActiva;
+
+        // Si no hay filtros activos, mostrar todo
+        if (!historiasSeleccionado &&
+                !infantilSeleccionado &&
+                !leyendasSeleccionado) {
+
+            cardCuento1.setVisibility(android.view.View.VISIBLE);
+            cardCuento2.setVisibility(android.view.View.VISIBLE);
+            cardCuento3.setVisibility(android.view.View.VISIBLE);
+            return;
+        }
+
+        // cardCuento1 = Leyenda
+        cardCuento1.setVisibility(
+                leyendasSeleccionado
+                        ? android.view.View.VISIBLE
+                        : android.view.View.GONE
+        );
+
+        // cardCuento2 = Infantil
+        cardCuento2.setVisibility(
+                infantilSeleccionado
+                        ? android.view.View.VISIBLE
+                        : android.view.View.GONE
+        );
+
+        // cardCuento3 = Historia
+        cardCuento3.setVisibility(
+                historiasSeleccionado
+                        ? android.view.View.VISIBLE
+                        : android.view.View.GONE
+        );
     }
 
     private void setupCuentoCards() {

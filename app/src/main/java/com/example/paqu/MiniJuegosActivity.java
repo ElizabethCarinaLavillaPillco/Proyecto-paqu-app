@@ -66,7 +66,8 @@ public class MiniJuegosActivity extends BaseActivity {
 
     private void setupGameCards() {
         CardView cardMemoria = findViewById(R.id.cardMemoria);
-        CardView cardContrarreloj = findViewById(R.id.cardContrarreloj);
+        //CardView cardContrarreloj = findViewById(R.id.cardContrarreloj);
+        CardView cardCuentos = findViewById(R.id.cardCuentos);
 
         // Juego de Memoria
         cardMemoria.setOnClickListener(v -> {
@@ -75,12 +76,17 @@ public class MiniJuegosActivity extends BaseActivity {
         });
 
         // Juego Contra el Reloj
-        cardContrarreloj.setOnClickListener(v -> {
-            Intent intent = new Intent(this, com.example.paqu.activities.TimeAttackActivity.class);
+        //cardContrarreloj.setOnClickListener(v -> {
+        //    Intent intent = new Intent(this, com.example.paqu.activities.TimeAttackActivity.class);
+        //     startActivity(intent);
+        // });
+
+        // Cuentos Interactivos
+        cardCuentos.setOnClickListener(v -> {
+            Intent intent = new Intent(this,
+                    CuentoAccionActivity.class);
             startActivity(intent);
         });
-
-        // Cuentos
 
     }
 
