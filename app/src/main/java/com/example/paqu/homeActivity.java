@@ -35,6 +35,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.example.paqu.utils.StreakManager;
 
 public class homeActivity extends BaseActivity {
+    private TextView tvSectionNumber;
+    private TextView tvSectionTitle;
+    private TextView tvSectionDescription;
+    private ProgressBar progressBarGeneral;
+    private TextView tvPorcentajeCompletado;
+
     private CardView cardMapaVariantes;
     private ImageView ivMapaQuechua;
     private CardView stickySection;
@@ -59,6 +65,12 @@ public class homeActivity extends BaseActivity {
         streakDays = findViewById(R.id.streakDays);
         diamondsCount = findViewById(R.id.diamondsCount);
         livesCount = findViewById(R.id.livesCount);
+
+        tvSectionNumber = findViewById(R.id.tvSectionNumber);
+        tvSectionTitle = findViewById(R.id.tvSectionTitle);
+        progressBarGeneral = findViewById(R.id.sectionProgressBar);
+        tvSectionDescription = findViewById(R.id.tvSectionDescription);
+        tvPorcentajeCompletado = findViewById(R.id.tvPorcentajeCompletado);
 
         SharedPreferences prefs =
                 getSharedPreferences("game_data", MODE_PRIVATE);
@@ -88,9 +100,11 @@ public class homeActivity extends BaseActivity {
 
         // ✅ PRIMERO ACTUALIZAR RACHA, LUEGO CARGAR DATOS
         updateStreakAndData();
-
-        // Configurar niveles clickeables
+        actualizarProgresoGeneral();
         setupLevelCards();
+        setupMapaButton();
+        // Configurar niveles clickeables
+
         setupMapaButton();
 
         aplicarFuentesAutomaticas();
@@ -254,7 +268,119 @@ public class homeActivity extends BaseActivity {
             livesCount.setText(String.valueOf(vidas));
         });
     }
+    private void actualizarProgresoGeneral() {
 
+
+        SharedPreferences prefs =
+                getSharedPreferences("game_data", MODE_PRIVATE);
+
+        int nivelActual =
+                prefs.getInt("nivel_completado", 1);
+        Log.d("PROGRESO", "nivelActual = " + nivelActual);
+
+        String[] nombresLecciones = {
+                "Saludos",
+                "Presentaciones",
+                "Familia",
+                "Números",
+                "Colores",
+                "Animales"
+        };
+
+        String[] descripciones = {
+                "Aprende los saludos básicos en Quechua",
+                "Aprende a presentarte",
+                "Aprende vocabulario de familia",
+                "Aprende los números",
+                "Aprende los colores",
+                "Aprende nombres de animales"
+        };
+
+        if (nivelActual < 1) nivelActual = 1;
+        if (nivelActual > 6) nivelActual = 6;
+
+        tvSectionNumber.setText("Sección " + nivelActual);
+        tvSectionTitle.setText(nombresLecciones[nivelActual - 1]);
+        tvSectionDescription.setText(descripciones[nivelActual - 1]);
+
+        int porcentaje = (nivelActual - 1) * 100 / 6;
+
+        progressBarGeneral.setMax(100);
+        progressBarGeneral.setProgress(porcentaje);
+
+        tvPorcentajeCompletado.setText(
+                porcentaje + "% completado"
+        );
+
+    }
+    private void setupLevelCards() {
+
+        int[] cards = {
+                R.id.level1Card,
+                R.id.level2Card,
+                R.id.level3Card,
+                R.id.level4Card,
+                R.id.level5Card,
+                R.id.level6Card
+        };
+
+        int[] statusIcons = {
+                R.id.level1StatusIcon,
+                R.id.level2StatusIcon,
+                R.id.level3StatusIcon,
+                R.id.level4StatusIcon,
+                R.id.level5StatusIcon,
+                R.id.level6StatusIcon
+        };
+
+        SharedPreferences prefs =
+                getSharedPreferences("game_data", MODE_PRIVATE);
+
+        int nivelActual =
+                prefs.getInt("nivel_completado", 1);
+
+        for (int i = 0; i < cards.length; i++) {
+
+            CardView card = findViewById(cards[i]);
+            ImageView icon = findViewById(statusIcons[i]);
+
+            final int nivel = i + 1;
+
+            // ===== CHECK O CRUZ =====
+            boolean completado =
+                    prefs.getBoolean("nivel" + nivel, false);
+
+            if (icon != null) {
+
+                if (completado) {
+                    icon.setImageResource(R.drawable.ic_check);
+                } else {
+                    icon.setImageResource(R.drawable.ic_cross);
+                }
+            }
+
+            // ===== CLICK DEL NIVEL =====
+            if (card != null) {
+
+                card.setOnClickListener(v -> {
+
+                    if (nivel > nivelActual) {
+
+                        Toast.makeText(
+                                homeActivity.this,
+                                "Debes completar el nivel anterior",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        return;
+                    }
+
+                    navigateToExercise(nivel);
+
+                });
+            }
+        }
+    }
     private void loadUserData(String userId) {
         DatabaseReference userRef = FirebaseDatabase.getInstance()
                 .getReference("users")
@@ -354,120 +480,49 @@ public class homeActivity extends BaseActivity {
         });
     }
 
-    private void setupLevelCards() {
-        int[] levelCardIds = {R.id.level1Card, R.id.level2Card, R.id.level3Card,
-                R.id.level4Card, R.id.level5Card, R.id.level6Card};
 
-        int[] titleIds = {R.id.level1Title, R.id.level2Title, R.id.level3Title,
-                R.id.level4Title, R.id.level5Title, R.id.level6Title};
-
-        int[] descIds = {R.id.level1Description, R.id.level2Description, R.id.level3Description,
-                R.id.level4Description, R.id.level5Description, R.id.level6Description};
-
-        int[] progressIds = {R.id.level1Progress, R.id.level2Progress, R.id.level3Progress,
-                R.id.level4Progress, R.id.level5Progress, R.id.level6Progress};
-
-        int[] statusIconIds = {R.id.level1StatusIcon, R.id.level2StatusIcon, R.id.level3StatusIcon,
-                R.id.level4StatusIcon, R.id.level5StatusIcon, R.id.level6StatusIcon};
-
-        String[] descriptions = {
-                "Saludos básicos",
-                "Presentaciones",
-                "Familia",
-                "Números",
-                "Colores",
-                "Comida"
-        };
-
-        SharedPreferences prefs = getSharedPreferences("niveles", MODE_PRIVATE);
-        int totalCompletados = 0;
-
-        for (int i = 0; i < levelCardIds.length; i++) {
-            CardView levelCard = findViewById(levelCardIds[i]);
-            if (levelCard == null) continue;
-
-            final int levelNumber = i + 1;
-            boolean completado = prefs.getBoolean("nivel" + levelNumber, false);
-
-            TextView levelTitle = findViewById(titleIds[i]);
-            TextView levelDesc = findViewById(descIds[i]);
-            ProgressBar progressBar = findViewById(progressIds[i]);
-            ImageView statusIcon = findViewById(statusIconIds[i]);
-
-            if (levelTitle != null) {
-                levelTitle.setText(String.format("Nivel %d", levelNumber));
-            }
-
-            if (levelDesc != null) {
-                levelDesc.setText(descriptions[i]);
-            }
-
-            if (progressBar != null) {
-                if (completado) {
-                    progressBar.setProgress(100);
-                    progressBar.setAlpha(1f);
-                    progressBar.getProgressDrawable().setColorFilter(
-                            ContextCompat.getColor(this, R.color.morado),
-                            PorterDuff.Mode.SRC_IN);
-                    totalCompletados++;
-                } else {
-                    progressBar.setProgress(0);
-                    progressBar.setAlpha(0.5f);
-                    progressBar.getProgressDrawable().setColorFilter(
-                            ContextCompat.getColor(this, R.color.grey),
-                            PorterDuff.Mode.SRC_IN);
-                }
-            }
-
-            if (statusIcon != null) {
-                if (completado) {
-                    statusIcon.setImageResource(R.drawable.ic_check);
-                } else {
-                    statusIcon.setImageResource(R.drawable.ic_cross);
-                }
-            }
-
-            levelCard.setOnClickListener(v -> {
-                navigateToExercise(levelNumber);
-            });
-        }
-
-        ProgressBar sectionProgressBar = findViewById(R.id.sectionProgressBar);
-        if (sectionProgressBar != null) {
-            float progreso = (float) totalCompletados / 6f;
-            int porcentaje = Math.round(progreso * 100);
-
-            sectionProgressBar.setProgress(porcentaje);
-
-            if (porcentaje == 0) {
-                sectionProgressBar.getProgressDrawable().setColorFilter(
-                        ContextCompat.getColor(this, R.color.grey), PorterDuff.Mode.SRC_IN);
-            } else {
-                sectionProgressBar.getProgressDrawable().setColorFilter(
-                        ContextCompat.getColor(this, R.color.rosado), PorterDuff.Mode.SRC_IN);
-            }
-        }
-    }
 
     private void navigateToExercise(int levelNumber) {
+
         try {
-            if (levelNumber == 1) {
 
-                SharedPreferences prefs =
-                        getSharedPreferences("game_data", MODE_PRIVATE);
+            switch (levelNumber) {
 
-                long vidas = prefs.getLong("vidas", 5);
+                case 1:
 
-                Intent intent = new Intent(this, ejercicio1.class);
-                intent.putExtra("LEVEL_NUMBER", levelNumber);
-                intent.putExtra("vidas", vidas);
+                    SharedPreferences prefs =
+                            getSharedPreferences("game_data", MODE_PRIVATE);
 
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Nivel " + levelNumber + " en desarrollo", Toast.LENGTH_SHORT).show();
+                    long vidas = prefs.getLong("vidas", 5);
+
+                    Intent intent = new Intent(this, ejercicio1.class);
+                    intent.putExtra("LEVEL_NUMBER", levelNumber);
+                    intent.putExtra("vidas", vidas);
+
+                    startActivity(intent);
+                    break;
+
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+
+                    Toast.makeText(
+                            this,
+                            "Nivel " + levelNumber + " en desarrollo",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    break;
             }
+
         } catch (Exception e) {
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+
+            Toast.makeText(
+                    this,
+                    "Error: " + e.getMessage(),
+                    Toast.LENGTH_LONG
+            ).show();
         }
     }
 
@@ -651,8 +706,9 @@ public class homeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        updateStreakAndData();
         setupLevelCards();
+        updateStreakAndData();
+        actualizarProgresoGeneral();
         aplicarFuentesAutomaticas();
     }
 }

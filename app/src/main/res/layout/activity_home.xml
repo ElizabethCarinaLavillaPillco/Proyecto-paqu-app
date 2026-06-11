@@ -247,6 +247,7 @@
             android:orientation="vertical">
 
           <TextView
+              android:id="@+id/tvSectionNumber"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:text="Sección 1"
@@ -255,6 +256,7 @@
               android:alpha="0.9" />
 
           <TextView
+              android:id="@+id/tvSectionTitle"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:text="Saludos"
@@ -263,20 +265,11 @@
               android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nivel 1"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:background="#1F2937"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"
-            android:elevation="2dp" />
+
       </LinearLayout>
 
       <TextView
+          android:id="@+id/tvSectionDescription"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text="Aprende los saludos básicos en Quechua"
@@ -284,23 +277,24 @@
           android:textSize="15sp"
           android:alpha="0.95"
           android:layout_marginBottom="16dp" />
-
       <ProgressBar
           android:id="@+id/sectionProgressBar"
           style="?android:attr/progressBarStyleHorizontal"
           android:layout_width="match_parent"
-          android:layout_height="14dp"
+          android:layout_height="18dp"
+          android:max="100"
           android:progress="0"
-          android:progressDrawable="@color/black" />
+          android:progressDrawable="@drawable/progress_bar_general"/>
 
       <TextView
+          android:id="@+id/tvPorcentajeCompletado"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="0% completado"
           android:textColor="#1F2937"
           android:textSize="12sp"
           android:layout_marginTop="8dp"
-          android:alpha="0.9" />
+          android:alpha="0.9"/>
     </LinearLayout>
   </androidx.cardview.widget.CardView>
 

@@ -31,6 +31,16 @@ public class LeccionAcabadaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_leccion_acabada);
+        // ===== MARCAR NIVEL 1 COMO COMPLETADO =====
+        SharedPreferences prefs =
+                getSharedPreferences("game_data", MODE_PRIVATE);
+
+        int nivelActual = 1;
+
+        prefs.edit()
+                .putBoolean("nivel1", true)
+                .putInt("nivel_completado", nivelActual + 1)
+                .apply();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
