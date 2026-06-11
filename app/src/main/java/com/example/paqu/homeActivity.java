@@ -502,11 +502,11 @@ public class homeActivity extends BaseActivity {
                 break;
 
             case 3:
-                // intent = new Intent(this, ejercicio3_1.class);
+                intent = new Intent(this, ejercicio3_1.class);
                 break;
 
             case 4:
-                // intent = new Intent(this, ejercicio4_1.class);
+                intent = new Intent(this, ejercicio4_1.class);
                 break;
 
             case 5:

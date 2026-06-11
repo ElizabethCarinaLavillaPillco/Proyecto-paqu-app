@@ -29,6 +29,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ejercicio4_2"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio4_1"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio3_2"
+            android:exported="false" />
+        <activity
+            android:name=".ejercicio3_1"
+            android:exported="false" />
+        <activity
             android:name=".ejercicio2_2"
             android:exported="false" />
         <activity
