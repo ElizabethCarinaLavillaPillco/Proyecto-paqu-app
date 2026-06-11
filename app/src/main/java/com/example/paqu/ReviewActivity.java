@@ -1,6 +1,8 @@
 package com.example.paqu;
 
+import android.app.AlertDialog;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -9,14 +11,15 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.paqu.utils.SpacedRepetitionManager;
 import java.util.List;
-
+import android.content.Intent;
+import android.widget.ImageButton;
 public class ReviewActivity extends AppCompatActivity {
 
     private TextView textQuestion, textAnswer, textProgress, textWordCount;
     private Button btnShowAnswer, btnEasy, btnMedium, btnHard;
     private LinearLayout layoutAnswerButtons;
     private ProgressBar progressBar;
-
+    private ImageButton btnClose;
     private SpacedRepetitionManager reviewManager;
     private List<SpacedRepetitionManager.ReviewCard> currentSessionCards;
     private int currentCardIndex = 0;
@@ -50,7 +53,9 @@ public class ReviewActivity extends AppCompatActivity {
         btnEasy.setOnClickListener(v -> rateCard("easy"));
         btnMedium.setOnClickListener(v -> rateCard("medium"));
         btnHard.setOnClickListener(v -> rateCard("hard"));
+        btnClose = findViewById(R.id.btnClose);
 
+        btnClose.setOnClickListener(v -> onBackPressed());
         textAnswer.setVisibility(View.GONE);
         layoutAnswerButtons.setVisibility(View.GONE);
     }
@@ -244,6 +249,11 @@ public class ReviewActivity extends AppCompatActivity {
 
         btnContinue.setOnClickListener(v -> {
             dialog.dismiss();
+
+            Intent intent = new Intent(ReviewActivity.this, homeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+
             finish();
         });
 
@@ -346,6 +356,11 @@ public class ReviewActivity extends AppCompatActivity {
 
         btnOk.setOnClickListener(v -> {
             dialog.dismiss();
+
+            Intent intent = new Intent(ReviewActivity.this, homeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+
             finish();
         });
 
@@ -355,6 +370,7 @@ public class ReviewActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // Crear vista personalizada para el diálogo
+        super.onBackPressed();
         LinearLayout dialogLayout = new LinearLayout(this);
         dialogLayout.setOrientation(LinearLayout.VERTICAL);
         dialogLayout.setPadding(60, 60, 60, 60);
@@ -383,7 +399,7 @@ public class ReviewActivity extends AppCompatActivity {
         title.setText("Salir del repaso");
         title.setTextSize(26);
         title.setTextColor(Color.WHITE);
-        title.setTypeface(null, android.graphics.Typeface.BOLD);
+        title.setTypeface(null, Typeface.BOLD);
         title.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -424,7 +440,7 @@ public class ReviewActivity extends AppCompatActivity {
         btnNo.setText("No");
         btnNo.setTextSize(18);
         btnNo.setTextColor(Color.WHITE);
-        btnNo.setTypeface(null, android.graphics.Typeface.BOLD);
+        btnNo.setTypeface(null, Typeface.BOLD);
         btnNo.setPadding(0, 40, 0, 40);
         GradientDrawable btnNoGradient = new GradientDrawable();
         btnNoGradient.setColor(Color.parseColor("#718096"));
@@ -441,7 +457,7 @@ public class ReviewActivity extends AppCompatActivity {
         btnYes.setText("Sí");
         btnYes.setTextSize(18);
         btnYes.setTextColor(Color.WHITE);
-        btnYes.setTypeface(null, android.graphics.Typeface.BOLD);
+        btnYes.setTypeface(null, Typeface.BOLD);
         btnYes.setPadding(0, 40, 0, 40);
         GradientDrawable btnYesGradient = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
@@ -457,12 +473,20 @@ public class ReviewActivity extends AppCompatActivity {
 
         dialogLayout.addView(buttonsLayout);
 
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogLayout);
-        final android.app.AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.setCancelable(false);
+        btnYes.setOnClickListener(v -> {
+            dialog.dismiss();
 
+            Intent intent = new Intent(ReviewActivity.this, homeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+
+            finish();
+        });
         btnNo.setOnClickListener(v -> dialog.dismiss());
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();

@@ -297,13 +297,28 @@ public class homeActivity extends BaseActivity {
         };
 
         if (nivelActual < 1) nivelActual = 1;
-        if (nivelActual > 6) nivelActual = 6;
 
-        tvSectionNumber.setText("Sección " + nivelActual);
-        tvSectionTitle.setText(nombresLecciones[nivelActual - 1]);
-        tvSectionDescription.setText(descripciones[nivelActual - 1]);
+        int porcentaje;
 
-        int porcentaje = (nivelActual - 1) * 100 / 6;
+        if (nivelActual > 6) {
+
+            porcentaje = 100;
+            tvSectionNumber.setVisibility(View.GONE);
+
+            tvSectionNumber.setText("🏆 CURSO COMPLETADO");
+            tvSectionTitle.setText("¡Felicitaciones!");
+            tvSectionDescription.setText(
+                    "Has completado todas las lecciones de Quechua"
+            );
+
+        } else {
+
+            tvSectionNumber.setText("Sección " + nivelActual);
+            tvSectionTitle.setText(nombresLecciones[nivelActual - 1]);
+            tvSectionDescription.setText(descripciones[nivelActual - 1]);
+
+            porcentaje = (nivelActual - 1) * 100 / 6;
+        }
 
         progressBarGeneral.setMax(100);
         progressBarGeneral.setProgress(porcentaje);
@@ -510,11 +525,11 @@ public class homeActivity extends BaseActivity {
                 break;
 
             case 5:
-                // intent = new Intent(this, ejercicio5_1.class);
+                intent = new Intent(this, ejercicio5_1.class);
                 break;
 
             case 6:
-                // intent = new Intent(this, ejercicio6_1.class);
+                intent = new Intent(this, ejercicio6_1.class);
                 break;
         }
 

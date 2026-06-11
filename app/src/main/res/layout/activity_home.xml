@@ -710,7 +710,7 @@
                   android:id="@+id/level6Description"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:text="Comida"
+                  android:text="Animales"
                   android:textColor="#FFFFFF"
                   android:textSize="13sp"
                   android:alpha="0.9"
