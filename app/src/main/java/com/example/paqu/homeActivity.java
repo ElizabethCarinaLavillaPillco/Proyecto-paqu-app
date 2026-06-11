@@ -484,44 +484,53 @@ public class homeActivity extends BaseActivity {
 
     private void navigateToExercise(int levelNumber) {
 
-        try {
+        SharedPreferences prefs =
+                getSharedPreferences("game_data", MODE_PRIVATE);
 
-            switch (levelNumber) {
+        long vidas = prefs.getLong("vidas", 5);
 
-                case 1:
+        Intent intent = null;
 
-                    SharedPreferences prefs =
-                            getSharedPreferences("game_data", MODE_PRIVATE);
+        switch (levelNumber) {
 
-                    long vidas = prefs.getLong("vidas", 5);
+            case 1:
+                intent = new Intent(this, ejercicio1.class);
+                break;
 
-                    Intent intent = new Intent(this, ejercicio1.class);
-                    intent.putExtra("LEVEL_NUMBER", levelNumber);
-                    intent.putExtra("vidas", vidas);
+            case 2:
+                intent = new Intent(this, ejercicio2_1.class);
+                break;
 
-                    startActivity(intent);
-                    break;
+            case 3:
+                // intent = new Intent(this, ejercicio3_1.class);
+                break;
 
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
+            case 4:
+                // intent = new Intent(this, ejercicio4_1.class);
+                break;
 
-                    Toast.makeText(
-                            this,
-                            "Nivel " + levelNumber + " en desarrollo",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    break;
-            }
+            case 5:
+                // intent = new Intent(this, ejercicio5_1.class);
+                break;
 
-        } catch (Exception e) {
+            case 6:
+                // intent = new Intent(this, ejercicio6_1.class);
+                break;
+        }
+
+        if (intent != null) {
+
+            intent.putExtra("LEVEL_NUMBER", levelNumber);
+            intent.putExtra("vidas", vidas);
+
+            startActivity(intent);
+
+        } else {
 
             Toast.makeText(
                     this,
-                    "Error: " + e.getMessage(),
-                    Toast.LENGTH_LONG
+                    "Nivel " + levelNumber + " en desarrollo",
+                    Toast.LENGTH_SHORT
             ).show();
         }
     }

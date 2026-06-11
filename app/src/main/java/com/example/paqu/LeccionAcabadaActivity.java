@@ -31,14 +31,15 @@ public class LeccionAcabadaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_leccion_acabada);
-        // ===== MARCAR NIVEL 1 COMO COMPLETADO =====
+        // ===== MARCAR NIVEL  COMO COMPLETADO =====
+        int nivelActual =
+                getIntent().getIntExtra("nivel", 1);
+
         SharedPreferences prefs =
                 getSharedPreferences("game_data", MODE_PRIVATE);
 
-        int nivelActual = 1;
-
         prefs.edit()
-                .putBoolean("nivel1", true)
+                .putBoolean("nivel" + nivelActual, true)
                 .putInt("nivel_completado", nivelActual + 1)
                 .apply();
 
