@@ -1,45 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#F5E9FF"> <!-- Fondo lila claro -->
-
+    android:background="#EFE5FD"> <!-- Fondo Lila Pastel Sedoso -->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
+        <!-- Barra Superior Estilizada -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="74dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:layout_marginBottom="32dp">
 
-            <!-- Barra de progreso -->
+            <!-- Botón Cerrar Minimalista -->
+            <ImageButton
+                android:id="@+id/btnBackToMenu"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Regresar al menú"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                app:tint="#1E1E24" />
 
-            <!-- Vidas -->
+            <!-- Barra de Progreso Elegante -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="296dp"
-                android:layout_height="12dp"
-                android:layout_marginBottom="16dp"
+                android:layout_width="0dp"
+                android:layout_height="10dp"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:max="100"
-                android:progress="60"
+                android:progress="40"
                 android:progressDrawable="@drawable/progress_bar_lila" />
 
+            <!-- Indicador de Vidas Tipo Cápsula Flotante -->
             <LinearLayout
-                android:layout_width="34dp"
-                android:layout_height="46dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:background="#FFFFFF"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="6dp"
+                android:elevation="3dp">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:contentDescription="Vidas"
                     android:src="@drawable/corazonicon" />
 
@@ -47,187 +63,195 @@
                     android:id="@+id/livesCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="6dp"
                     android:text="5"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-
+                    android:textColor="#1E1E24"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Título -->
+        <!-- Etiquetas de Texto -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ESCUCHAR - UYARIY"
-            android:textColor="#A259FF"
-            android:textSize="16sp"
+            android:layout_marginBottom="6dp"
+            android:text="ESCUCHAR • UYARIY"
+            android:textColor="#8E44AD"
+            android:textSize="13sp"
             android:textStyle="bold"
-            android:layout_marginBottom="6dp" />
+            android:letterSpacing="0.15" />
 
-        <!-- Instrucción -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Escucha y selecciona las palabras"
-            android:textColor="#000000"
-            android:textSize="22sp"
+            android:textColor="#1E1E24"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:letterSpacing="-0.02"
+            android:layout_marginBottom="32dp" />
 
-        <!-- Botón audio central -->
+        <!-- Botón de Audio Rediseñado Meticulosamente -->
         <LinearLayout
             android:id="@+id/audioButton"
-            android:layout_width="84dp"
-            android:layout_height="71dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="32dp"
+            android:paddingVertical="16dp"
             android:layout_gravity="center"
-            android:layout_marginBottom="24dp"
             android:background="@drawable/audio_button_bg"
-            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:elevation="3dp"
             android:orientation="horizontal"
-            android:padding="12dp">
+            android:gravity="center"
+            android:layout_marginBottom="36dp">
 
             <ImageView
-                android:layout_width="61dp"
-                android:layout_height="27dp"
-                android:src="@drawable/ic_audio" />
-
-
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_audio"
+                app:tint="#8E44AD" />
         </LinearLayout>
 
-        <!-- Línea de oración armada -->
+        <!-- Línea/Contenedor de Oración Armada (Limpio y Minimalista) -->
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/oracionContainer"
             android:layout_width="match_parent"
-            android:layout_height="53dp"
-            android:layout_marginBottom="16dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="32dp"
             android:padding="8dp"
-            android:background="@color/moradit"
+            android:background="@drawable/audio_button_bg"
+            android:elevation="1dp"
             app:alignItems="center"
             app:flexWrap="wrap"
             app:justifyContent="flex_start" />
 
-
-        <!-- Opciones -->
+        <!-- Opciones del Mosaico Balanceadas -->
         <GridLayout
             android:id="@+id/optionsGrid"
-            android:layout_width="374dp"
-            android:layout_height="200dp"
-            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="32dp"
             android:layout_weight="1"
             android:columnCount="2"
             android:rowCount="2">
 
-            <!-- Opción: t’anta wawa -->
+            <!-- Opción 1 -->
             <LinearLayout
                 android:id="@+id/opcion1"
-                android:layout_width="1dp"
-                android:layout_height="70dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_columnWeight="1"
-                android:layout_margin="8dp"
+                android:layout_rowWeight="1"
+                android:layout_margin="10dp"
                 android:background="@drawable/option_background"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:orientation="vertical">
-
+                android:orientation="vertical"
+                android:elevation="4dp">
 
                 <TextView
                     android:id="@+id/tvOpcion1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:text="Allin"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
+                    android:textColor="#1E1E24"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Opción: ch’usaqchakuy -->
+            <!-- Opción 2 -->
             <LinearLayout
                 android:id="@+id/opcion2"
-                android:layout_width="2dp"
-                android:layout_height="70dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_columnWeight="1"
-                android:layout_margin="8dp"
+                android:layout_rowWeight="1"
+                android:layout_margin="10dp"
                 android:background="@drawable/option_background"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:orientation="vertical">
-
+                android:orientation="vertical"
+                android:elevation="4dp">
 
                 <TextView
                     android:id="@+id/tvOpcion2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:text="p'unchay"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
+                    android:textColor="#1E1E24"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Opción: wiñaypaq -->
+            <!-- Opción 3 -->
             <LinearLayout
                 android:id="@+id/opcion3"
-                android:layout_width="4dp"
-                android:layout_height="70dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_columnWeight="1"
-                android:layout_margin="8dp"
+                android:layout_rowWeight="1"
+                android:layout_margin="10dp"
                 android:background="@drawable/option_background"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:orientation="vertical">
-
+                android:orientation="vertical"
+                android:elevation="4dp">
 
                 <TextView
                     android:id="@+id/tvOpcion3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:text="sukha"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
+                    android:textColor="#1E1E24"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Opción: samay -->
+            <!-- Opción 4 -->
             <LinearLayout
                 android:id="@+id/opcion4"
-                android:layout_width="5dp"
-                android:layout_height="70dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_columnWeight="1"
-                android:layout_margin="8dp"
+                android:layout_rowWeight="1"
+                android:layout_margin="10dp"
                 android:background="@drawable/option_background"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:orientation="vertical">
-
+                android:orientation="vertical"
+                android:elevation="4dp">
 
                 <TextView
                     android:id="@+id/tvOpcion4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:text="tuta"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
+                    android:textColor="#1E1E24"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
             </LinearLayout>
         </GridLayout>
 
-
-
-
+        <!-- Botón Comprobar Inteligente (Lila Inactivo / Negro Obsidiana Activo) -->
         <Button
             android:id="@+id/checkButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="58dp"
             android:text="COMPROBAR"
             android:enabled="false"
-            android:backgroundTint="#A259FF"
-            android:textColor="#FFFFFF"
+            android:backgroundTint="#D6C7EB"
+            android:textColor="#A594BF"
             android:textStyle="bold"
+            android:textSize="16sp"
             android:textAllCaps="false"
-            android:padding="16dp" />
+            android:letterSpacing="0.05"
+            android:elevation="4dp" />
     </LinearLayout>
 </RelativeLayout>

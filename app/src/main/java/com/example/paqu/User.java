@@ -1,21 +1,33 @@
 package com.example.paqu;
 
 public class User {
+
     private String nombre;
     private String email;
+    private String role;
+
     private int seguidores;
     private int siguiendo;
     private int avatar;
 
-    // Constructor vacío necesario para Firebase
     public User() {}
 
     public User(String nombre, String email, int seguidores, int siguiendo, int avatar) {
         this.nombre = nombre;
         this.email = email;
+        this.role = "usuario_comun";
+
         this.seguidores = seguidores;
         this.siguiendo = siguiendo;
         this.avatar = avatar;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     // Getters y setters

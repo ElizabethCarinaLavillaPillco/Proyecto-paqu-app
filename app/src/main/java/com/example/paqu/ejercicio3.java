@@ -6,66 +6,51 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.ViewGroup;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.SharedPreferences;
-
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.flexbox.FlexboxLayout;
+public class ejercicio3 extends AppCompatActivity {
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ejercicio2 extends AppCompatActivity {
-
-    FlexboxLayout oracionContainer;
+    EditText oracionConstruida;
     Button checkButton;
     ImageButton btnBackToMenu;
-
-    LinearLayout opcion1, opcion2, opcion3, opcion4;
-    List<String> oracionActual = new ArrayList<>();
-    Map<String, LinearLayout> palabraLayouts = new HashMap<>();
     MediaPlayer audio;
-    AudioManager audioManager;
-
-    String oracionCorrecta = "Allin sukha";
-
     long tiempoInicio;
+    AudioManager audioManager;
     int expAcumulada;
     long tiempoAcumulado;
+
+    String oracionCorrecta = "paqarinkama";
+
     long vidasActuales = 5;
     TextView vidasCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ejercicio2);
+        setContentView(R.layout.activity_ejercicio3);
 
         // Referencias UI
-        oracionContainer = findViewById(R.id.oracionContainer);
+        oracionConstruida = findViewById(R.id.oracionConstruida);
         checkButton = findViewById(R.id.checkButton);
         vidasCount = findViewById(R.id.livesCount);
         btnBackToMenu = findViewById(R.id.btnBackToMenu);
 
         audioManager = AudioManager.getInstance(this);
 
-        // Control de salida interactiva
+        // Control del botón de salida elegante
         btnBackToMenu.setOnClickListener(v -> mostrarDialogoSalir());
 
-        // 🟪 ProgressBar
-        ProgressBar progressBar = findViewById(R.id.progressBar);
-        progressBar.setProgress(2 * 20);
-
-        // Recibir datos del intent
+        // Recuperar información de la sesión
         expAcumulada = getIntent().getIntExtra("exp", 0);
         tiempoAcumulado = getIntent().getLongExtra("tiempo", 0);
         vidasActuales = getIntent().getLongExtra("vidas", 5);
@@ -80,31 +65,63 @@ public class ejercicio2 extends AppCompatActivity {
             return;
         }
 
-        // Tiempo
+        // Configurar Barra de Progreso
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+        progressBar.setProgress(3 * 20);
+
+        // Capturar marca de tiempo
         tiempoInicio = System.currentTimeMillis();
 
-        // Audio Principal
+        // Configuración de Audio
         LinearLayout audioButton = findViewById(R.id.audioButton);
-        audio = MediaPlayer.create(this, R.raw.voz_buenas_tardes);
+        audio = MediaPlayer.create(this, R.raw.voz_pakarinkama);
         audioButton.setOnClickListener(v -> {
             if (audio != null) {
                 audio.start();
             }
         });
 
-        // Opciones del mosaico
-        opcion1 = findViewById(R.id.opcion1);
-        opcion2 = findViewById(R.id.opcion2);
-        opcion3 = findViewById(R.id.opcion3);
-        opcion4 = findViewById(R.id.opcion4);
+        // INTUITIVO: Listener de texto para cambiar dinámicamente el botón a Negro Premium
+        oracionConstruida.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        // Se preparan las opciones de forma silenciosa
-        setupOption(opcion1, "Allin");
-        setupOption(opcion2, "p'unchay");
-        setupOption(opcion3, "sukha");
-        setupOption(opcion4, "tuta");
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().trim().isEmpty()) {
+                    checkButton.setEnabled(false);
+                    checkButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#D6C7EB")));
+                    checkButton.setTextColor(Color.parseColor("#A594BF"));
+                } else {
+                    checkButton.setEnabled(true);
+                    checkButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#1E1E24")));
+                    checkButton.setTextColor(Color.parseColor("#FFFFFF"));
+                }
+            }
 
-        checkButton.setOnClickListener(v -> verificarRespuesta());
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Acción del botón comprobar
+        checkButton.setOnClickListener(v -> {
+            long tiempoFin = System.currentTimeMillis();
+            long duracion = tiempoFin - tiempoInicio;
+
+            String respuestaUsuario = oracionConstruida.getText().toString();
+
+            if (normalize(respuestaUsuario).equals(normalize(oracionCorrecta))) {
+
+                audioManager.reproducirExito();
+                int exp = 10;
+                int expTotal = expAcumulada + exp;
+                long tiempoTotal = tiempoAcumulado + duracion;
+
+                showDialog("✅ ¡Bien hecho!", "¡Buena respuesta!", expTotal, tiempoTotal);
+            } else {
+                restarVida();
+            }
+        });
     }
 
     private void mostrarDialogoSalir() {
@@ -112,10 +129,10 @@ public class ejercicio2 extends AppCompatActivity {
                 .setTitle("¿Quieres salir? 😟")
                 .setMessage("¿Estás seguro de que no quieres seguir con la lección?")
                 .setPositiveButton("Sí, salir", (dialog, which) -> {
+
                     guardarVidas();
 
-
-                    Intent intent = new Intent(ejercicio2.this, homeActivity.class);
+                    Intent intent = new Intent(ejercicio3.this, homeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(intent);
                     finish();
@@ -127,73 +144,7 @@ public class ejercicio2 extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Se remueve el super para evitar cierres abruptos indeseados
         mostrarDialogoSalir();
-    }
-
-    private void setupOption(LinearLayout layout, String palabra) {
-        palabraLayouts.put(palabra, layout);
-        layout.setOnClickListener(v -> {
-            if (!oracionActual.contains(palabra)) {
-                oracionActual.add(palabra);
-                layout.setAlpha(0.3f);
-                añadirPalabraOracion(palabra);
-
-                // El botón cambia a Negro Obsidiana Premium al contener texto
-                checkButton.setEnabled(true);
-                checkButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#1E1E24")));
-                checkButton.setTextColor(Color.parseColor("#FFFFFF"));
-            }
-        });
-    }
-
-    private void añadirPalabraOracion(String palabra) {
-        TextView palabraView = new TextView(this);
-        palabraView.setText(palabra);
-        palabraView.setTextSize(15f);
-        palabraView.setPadding(24, 12, 24, 12);
-        palabraView.setBackgroundResource(R.drawable.option_background);
-        palabraView.setTextColor(Color.parseColor("#1E1E24"));
-        palabraView.setElevation(2f);
-
-        FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(8, 8, 8, 8);
-        palabraView.setLayoutParams(params);
-
-        palabraView.setOnClickListener(v -> {
-            oracionActual.remove(palabra);
-            oracionContainer.removeView(palabraView);
-            palabraLayouts.get(palabra).setAlpha(1f);
-
-            if (oracionActual.isEmpty()) {
-                checkButton.setEnabled(false);
-                checkButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#D6C7EB")));
-                checkButton.setTextColor(Color.parseColor("#A594BF"));
-            }
-        });
-
-        oracionContainer.addView(palabraView);
-    }
-
-    private void verificarRespuesta() {
-        long tiempoFin = System.currentTimeMillis();
-        long duracion = tiempoFin - tiempoInicio;
-
-        String fraseUsuario = TextUtils.join(" ", oracionActual).trim();
-        if (normalize(fraseUsuario).equals(normalize(oracionCorrecta))) {
-
-            audioManager.reproducirExito();
-
-            int exp = 10;
-            int expTotal = expAcumulada + exp;
-            long tiempoTotal = tiempoAcumulado + duracion;
-
-            showDialog("✅ ¡Bien hecho!", "¡Oración correcta!", expTotal, tiempoTotal);
-        } else {
-            restarVida();
-        }
     }
 
     private void restarVida() {
@@ -227,22 +178,25 @@ public class ejercicio2 extends AppCompatActivity {
                 .putLong("vidas", vidasActuales)
                 .apply();
     }
-    // Método optimizado: Ahora procesa y salta al ejercicio 3 de forma fluida
     private void showDialog(String title, String message, int expTotal, long tiempoTotal) {
+
         guardarVidas();
+
         new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton("Continuar", (dialog, which) -> {
-                    Intent intent = new Intent(ejercicio2.this, ejercicio3.class);
+
+                    Intent intent = new Intent(this, ejercicio4.class);
+
                     intent.putExtra("exp", expTotal);
                     intent.putExtra("tiempo", tiempoTotal);
                     intent.putExtra("nivel", 1);
-                    intent.putExtra("ejercicio", 3);
-                    intent.putExtra("vidas", vidasActuales); // Conservar vidas
+                    intent.putExtra("ejercicio", 4);
+                    intent.putExtra("vidas", vidasActuales);
 
                     startActivity(intent);
-                    finish(); // Destruye el ejercicio 2 de la memoria
+                    finish();
                 })
                 .setCancelable(false)
                 .show();
@@ -270,5 +224,4 @@ public class ejercicio2 extends AppCompatActivity {
         }
         super.onDestroy();
     }
-
 }

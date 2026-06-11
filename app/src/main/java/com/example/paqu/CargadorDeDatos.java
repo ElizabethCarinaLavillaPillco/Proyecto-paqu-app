@@ -2,7 +2,7 @@ package com.example.paqu;
 
 import java.util.Arrays;
 
-public class CargadorDeDatos {
+public class  CargadorDeDatos {
 
     public static EjercicioData obtenerDatos(int nivel, int ejercicio) {
         if (nivel == 1) {

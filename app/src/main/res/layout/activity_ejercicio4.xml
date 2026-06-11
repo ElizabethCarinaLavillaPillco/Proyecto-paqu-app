@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EFE5FD">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginBottom="32dp">
+
+            <ImageButton
+                android:id="@+id/btnBackToMenu"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Regresar al menú"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                app:tint="#1E1E24" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:max="100"
+            android:progress="80"
+            android:progressDrawable="@drawable/progress_bar_lila" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:background="#FFFFFF"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="6dp"
+            android:elevation="3dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="Vidas"
+                android:src="@drawable/corazonicon" />
+
+            <TextView
+                android:id="@+id/livesCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="5"
+                android:textColor="#1E1E24"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:text="TRADUCE • TIKRAY"
+        android:textColor="#8E44AD"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.15" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Escribe la traducción correcta"
+        android:textColor="#1E1E24"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:letterSpacing="-0.02"
+        android:layout_marginBottom="32dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/audio_button_bg"
+        android:padding="20dp"
+        android:elevation="2dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/tvPalabra"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Buenos días"
+            android:textColor="#1E1E24"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+        <EditText
+            android:id="@+id/oracionConstruida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/audio_button_bg"
+            android:hint="Escribe la respuesta en quechua..."
+            android:textColorHint="#9CA3AF"
+            android:padding="16dp"
+            android:textColor="#1E1E24"
+            android:textSize="17sp"
+            android:inputType="textLongMessage|textAutoCorrect"
+            android:gravity="start|top"
+            android:elevation="1dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/checkButton"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:text="COMPROBAR"
+        android:enabled="false"
+        android:backgroundTint="#D6C7EB"
+        android:textColor="#A594BF"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        android:letterSpacing="0.05"
+        android:elevation="4dp" />
+</LinearLayout>
+</RelativeLayout>

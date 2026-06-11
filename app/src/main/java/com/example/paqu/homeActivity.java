@@ -14,9 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.os.Bundle;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.app.AlertDialog;
@@ -24,7 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,9 +43,9 @@ public class homeActivity extends BaseActivity {
     private int originalColor;
     private int stickyColor;
     private CardView draggableBubble;
-    private CardView curiositiesBubble; // ✅ NUEVA BURBUJA
+    private CardView curiositiesBubble;
     private float dX, dY;
-    private float dX2, dY2; // ✅ PARA LA SEGUNDA BURBUJA
+    private float dX2, dY2;
     private int lastAction;
     private StreakManager streakManager;
     private TextView streakDays, diamondsCount, livesCount;
@@ -62,6 +59,15 @@ public class homeActivity extends BaseActivity {
         streakDays = findViewById(R.id.streakDays);
         diamondsCount = findViewById(R.id.diamondsCount);
         livesCount = findViewById(R.id.livesCount);
+
+        SharedPreferences prefs =
+                getSharedPreferences("game_data", MODE_PRIVATE);
+
+        if (!prefs.contains("vidas")) {
+            prefs.edit()
+                    .putLong("vidas", 5)
+                    .apply();
+        }
 
         // ✅ INICIALIZAR STREAK MANAGER
         streakManager = new StreakManager();
@@ -91,20 +97,20 @@ public class homeActivity extends BaseActivity {
 
         // ✅ INICIALIZAR BURBUJA DE REPASO
         draggableBubble = findViewById(R.id.draggableBubble);
-        setupDraggableBubble(draggableBubble, true); // true = es burbuja de repaso
+        setupDraggableBubble(draggableBubble, true);
 
         // ✅ INICIALIZAR BURBUJA DE DATOS CURIOSOS
         curiositiesBubble = findViewById(R.id.curiositiesBubble);
-        setupDraggableBubble(curiositiesBubble, false); // false = es burbuja de curiosidades
+        setupDraggableBubble(curiositiesBubble, false);
+
         mostrarToastBienvenida();
     }
 
-    // ✅ NUEVO MÉTODO - Mostrar Toast de bienvenida con el rol
     private void mostrarToastBienvenida() {
         // Obtener el rol del Intent
         String rol = getIntent().getStringExtra("user_role");
 
-        // Si no viene del Intent, obtener de SharedPreferences (para cuando se recrea la activity)
+        // Si no viene del Intent, obtener de SharedPreferences
         if (rol == null || rol.isEmpty()) {
             SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
             rol = prefs.getString("user_role", "usuario_comun");
@@ -137,6 +143,7 @@ public class homeActivity extends BaseActivity {
 
         Log.d("ROL_LOGIN", "Usuario ingresó como: " + rol);
     }
+
     private void setupMapaButton() {
         cardMapaVariantes = findViewById(R.id.cardMapaVariantes);
         ivMapaQuechua = findViewById(R.id.ivMapaQuechua);
@@ -161,7 +168,6 @@ public class homeActivity extends BaseActivity {
             });
         }
     }
-
 
     private void abrirMapaVariantes() {
         try {
@@ -197,7 +203,6 @@ public class homeActivity extends BaseActivity {
         }
     }
 
-    // ✅ MÉTODO UNIFICADO PARA ACTUALIZAR RACHA Y DATOS
     private void updateStreakAndData() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
@@ -205,7 +210,7 @@ public class homeActivity extends BaseActivity {
 
             Log.d("STREAK_FIX", "🎯 ACTUALIZANDO RACHA PARA: " + userId);
 
-            // 1. ACTUALIZAR RACHA (versión simple)
+            // 1. ACTUALIZAR RACHA
             streakManager.updateUserStreak(userId, new StreakManager.StreakUpdateCallback() {
                 @Override
                 public void onStreakUpdated(int newStreak) {
@@ -222,14 +227,13 @@ public class homeActivity extends BaseActivity {
                     Log.e("STREAK_FIX", "💥 ERROR: " + error);
 
                     runOnUiThread(() -> {
-                        // SI HAY ERROR, mostrar 1 igualmente
                         streakDays.setText("1");
                         Toast.makeText(homeActivity.this, "Racha iniciada: 1 día", Toast.LENGTH_SHORT).show();
                     });
                 }
             });
 
-            // 2. CARGAR DATOS EXISTENTES (si los tienes)
+            // 2. CARGAR DATOS EXISTENTES
             loadExistingUserData(userId);
 
         } else {
@@ -238,17 +242,19 @@ public class homeActivity extends BaseActivity {
         }
     }
 
-    // ✅ CARGAR DATOS EXISTENTES (OPCIONAL)
     private void loadExistingUserData(String userId) {
-        // Si tienes datos en otra ubicación, cargarlos aquí
-        // Por ahora, poner valores por defecto
+
+        SharedPreferences prefs =
+                getSharedPreferences("game_data", MODE_PRIVATE);
+
+        long vidas = prefs.getLong("vidas", 5);
+
         runOnUiThread(() -> {
             diamondsCount.setText("0");
-            livesCount.setText("5");
+            livesCount.setText(String.valueOf(vidas));
         });
     }
 
-    // ✅ MÉTODO PARA CARGAR DIAMANTES Y VIDAS
     private void loadUserData(String userId) {
         DatabaseReference userRef = FirebaseDatabase.getInstance()
                 .getReference("users")
@@ -275,7 +281,6 @@ public class homeActivity extends BaseActivity {
         });
     }
 
-    // MÉTODO NUEVO - VERSIÓN SIMPLE Y EFECTIVA
     private void aplicarFuentesAutomaticas() {
         // Header
         aplicarFuente(R.id.streakDays, 16f);
@@ -305,15 +310,18 @@ public class homeActivity extends BaseActivity {
         int[] levelIds = {R.id.level1Card, R.id.level2Card, R.id.level3Card,
                 R.id.level4Card, R.id.level5Card, R.id.level6Card};
 
-        for (int id : levelIds) {
-            View levelView = findViewById(id);
-            if (levelView != null) {
-                TextView title = levelView.findViewById(R.id.levelTitle);
-                TextView desc = levelView.findViewById(R.id.levelDescription);
+        int[] titleIds = {R.id.level1Title, R.id.level2Title, R.id.level3Title,
+                R.id.level4Title, R.id.level5Title, R.id.level6Title};
 
-                if (title != null) configuracionActivity.aplicarTamanioFuente(title, 16f);
-                if (desc != null) configuracionActivity.aplicarTamanioFuente(desc, 14f);
-            }
+        int[] descIds = {R.id.level1Description, R.id.level2Description, R.id.level3Description,
+                R.id.level4Description, R.id.level5Description, R.id.level6Description};
+
+        for (int i = 0; i < levelIds.length; i++) {
+            TextView title = findViewById(titleIds[i]);
+            TextView desc = findViewById(descIds[i]);
+
+            if (title != null) configuracionActivity.aplicarTamanioFuente(title, 16f);
+            if (desc != null) configuracionActivity.aplicarTamanioFuente(desc, 14f);
         }
     }
 
@@ -350,6 +358,18 @@ public class homeActivity extends BaseActivity {
         int[] levelCardIds = {R.id.level1Card, R.id.level2Card, R.id.level3Card,
                 R.id.level4Card, R.id.level5Card, R.id.level6Card};
 
+        int[] titleIds = {R.id.level1Title, R.id.level2Title, R.id.level3Title,
+                R.id.level4Title, R.id.level5Title, R.id.level6Title};
+
+        int[] descIds = {R.id.level1Description, R.id.level2Description, R.id.level3Description,
+                R.id.level4Description, R.id.level5Description, R.id.level6Description};
+
+        int[] progressIds = {R.id.level1Progress, R.id.level2Progress, R.id.level3Progress,
+                R.id.level4Progress, R.id.level5Progress, R.id.level6Progress};
+
+        int[] statusIconIds = {R.id.level1StatusIcon, R.id.level2StatusIcon, R.id.level3StatusIcon,
+                R.id.level4StatusIcon, R.id.level5StatusIcon, R.id.level6StatusIcon};
+
         String[] descriptions = {
                 "Saludos básicos",
                 "Presentaciones",
@@ -369,29 +389,42 @@ public class homeActivity extends BaseActivity {
             final int levelNumber = i + 1;
             boolean completado = prefs.getBoolean("nivel" + levelNumber, false);
 
-            TextView levelTitle = levelCard.findViewById(R.id.levelTitle);
-            TextView levelDesc = levelCard.findViewById(R.id.levelDescription);
-            ProgressBar progressBar = levelCard.findViewById(R.id.levelProgress);
-            ImageView statusIcon = levelCard.findViewById(R.id.levelStatusIcon);
+            TextView levelTitle = findViewById(titleIds[i]);
+            TextView levelDesc = findViewById(descIds[i]);
+            ProgressBar progressBar = findViewById(progressIds[i]);
+            ImageView statusIcon = findViewById(statusIconIds[i]);
 
-            levelTitle.setText(String.format("Nivel %d", levelNumber));
-            levelDesc.setText(descriptions[i]);
+            if (levelTitle != null) {
+                levelTitle.setText(String.format("Nivel %d", levelNumber));
+            }
 
-            if (completado) {
-                progressBar.setProgress(100);
-                progressBar.setAlpha(1f);
-                progressBar.getProgressDrawable().setColorFilter(
-                        ContextCompat.getColor(this, R.color.morado),
-                        PorterDuff.Mode.SRC_IN);
-                statusIcon.setImageResource(R.drawable.ic_check);
-                totalCompletados++;
-            } else {
-                progressBar.setProgress(0);
-                progressBar.setAlpha(0.5f);
-                progressBar.getProgressDrawable().setColorFilter(
-                        ContextCompat.getColor(this, R.color.grey),
-                        PorterDuff.Mode.SRC_IN);
-                statusIcon.setImageResource(R.drawable.ic_cross);
+            if (levelDesc != null) {
+                levelDesc.setText(descriptions[i]);
+            }
+
+            if (progressBar != null) {
+                if (completado) {
+                    progressBar.setProgress(100);
+                    progressBar.setAlpha(1f);
+                    progressBar.getProgressDrawable().setColorFilter(
+                            ContextCompat.getColor(this, R.color.morado),
+                            PorterDuff.Mode.SRC_IN);
+                    totalCompletados++;
+                } else {
+                    progressBar.setProgress(0);
+                    progressBar.setAlpha(0.5f);
+                    progressBar.getProgressDrawable().setColorFilter(
+                            ContextCompat.getColor(this, R.color.grey),
+                            PorterDuff.Mode.SRC_IN);
+                }
+            }
+
+            if (statusIcon != null) {
+                if (completado) {
+                    statusIcon.setImageResource(R.drawable.ic_check);
+                } else {
+                    statusIcon.setImageResource(R.drawable.ic_cross);
+                }
             }
 
             levelCard.setOnClickListener(v -> {
@@ -419,8 +452,16 @@ public class homeActivity extends BaseActivity {
     private void navigateToExercise(int levelNumber) {
         try {
             if (levelNumber == 1) {
+
+                SharedPreferences prefs =
+                        getSharedPreferences("game_data", MODE_PRIVATE);
+
+                long vidas = prefs.getLong("vidas", 5);
+
                 Intent intent = new Intent(this, ejercicio1.class);
                 intent.putExtra("LEVEL_NUMBER", levelNumber);
+                intent.putExtra("vidas", vidas);
+
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Nivel " + levelNumber + " en desarrollo", Toast.LENGTH_SHORT).show();
@@ -430,7 +471,6 @@ public class homeActivity extends BaseActivity {
         }
     }
 
-    // ✅ MÉTODO UNIFICADO PARA HACER BURBUJAS ARRASTRABLES
     private void setupDraggableBubble(final CardView bubble, final boolean isReviewBubble) {
         bubble.setOnTouchListener(new View.OnTouchListener() {
             private boolean isDragging = false;
@@ -487,7 +527,6 @@ public class homeActivity extends BaseActivity {
                         view.setElevation(16f);
 
                         if (!isDragging) {
-                            // ✅ DIFERENCIAR QUÉ BURBUJA FUE CLICKEADA
                             if (isReviewBubble) {
                                 onReviewBubbleClicked();
                             } else {
@@ -504,7 +543,6 @@ public class homeActivity extends BaseActivity {
         });
     }
 
-    // ✅ CLICK EN BURBUJA DE REPASO
     private void onReviewBubbleClicked() {
         try {
             draggableBubble.animate()
@@ -527,7 +565,6 @@ public class homeActivity extends BaseActivity {
         }
     }
 
-    // ✅ CLICK EN BURBUJA DE DATOS CURIOSOS
     private void onCuriositiesBubbleClicked() {
         try {
             curiositiesBubble.animate()
@@ -550,7 +587,6 @@ public class homeActivity extends BaseActivity {
         }
     }
 
-    // ✅ ABRIR ACTIVIDAD DE REPASO
     private void openReviewActivity() {
         try {
             Intent intent = new Intent(this, ReviewActivity.class);
@@ -563,7 +599,6 @@ public class homeActivity extends BaseActivity {
         }
     }
 
-    // ✅ ABRIR ACTIVIDAD DE DATOS CURIOSOS
     private void openCuriositiesActivity() {
         try {
             Intent intent = new Intent(this, CuriositiesActivity.class);
@@ -575,7 +610,6 @@ public class homeActivity extends BaseActivity {
         }
     }
 
-    // ✅ MÉTODO TEMPORAL - Mostrar repaso básico hasta que crees ReviewActivity
     private void showTemporaryReview() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Repaso")
@@ -617,7 +651,6 @@ public class homeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // ✅ ACTUALIZAR RACHA Y DATOS CADA VEZ QUE SE ABRE LA APP
         updateStreakAndData();
         setupLevelCards();
         aplicarFuentesAutomaticas();

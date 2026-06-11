@@ -583,18 +583,27 @@ public class registroActivity extends AppCompatActivity {
      * Guarda los datos del usuario en la base de datos
      */
     private void guardarDatosUsuario(String uid, String nombre, String correo, String dia, String mes, String ano) {
+
         String fechaNacimiento = dia + "/" + mes + "/" + ano;
+
         Usuario usuario = new Usuario(nombre, correo, fechaNacimiento);
 
-        databaseReference.child("Usuarios").child(uid)
+        Log.d("ROLE_TEST", "Role = " + usuario.role);
+
+        databaseReference.child("Usuarios")
+                .child(uid)
                 .setValue(usuario)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        redirigirABienvenida(nombre);
-                    } else {
-                        Toast.makeText(registroActivity.this, "Error al guardar datos", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                .addOnSuccessListener(unused -> {
+
+                    databaseReference.child("Usuarios")
+                            .child(uid)
+                            .child("role")
+                            .setValue("usuario_comun");
+
+                    Toast.makeText(this, "Usuario guardado", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     /**

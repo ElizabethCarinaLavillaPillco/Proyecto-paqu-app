@@ -972,15 +972,27 @@ public class loginFormActivity extends AppCompatActivity {
             this.name = name;
             this.role = role;
             this.createdAt = System.currentTimeMillis();
-            this.userInfo = new UserInfo();
+
+            this.userInfo = new UserInfo(uid, email);
             this.progress = new Progress();
             this.streak = new Streak();
         }
 
         public static class UserInfo {
+            public String uid;
+            public String email;
             public String avatar = "";
             public String language = "es";
             public boolean notificationsEnabled = true;
+
+            public UserInfo(String uid, String email) {
+                this.uid = uid;
+                this.email = email;
+            }
+
+            public UserInfo() {
+                // Firebase necesita constructor vacío
+            }
         }
 
         public static class Progress {
@@ -993,7 +1005,7 @@ public class loginFormActivity extends AppCompatActivity {
         public static class Streak {
             public int currentStreak = 0;
             public int longestStreak = 0;
-            public long lastActiveDate = System.currentTimeMillis();
+            public String lastActiveDate = "";
         }
     }
 }
