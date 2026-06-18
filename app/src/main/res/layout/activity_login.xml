@@ -41,8 +41,8 @@
 
     <Button
         android:id="@+id/bntIngresar"
-        android:layout_width="334dp"
-        android:layout_height="60dp"
+        android:layout_width="313dp"
+        android:layout_height="58dp"
         android:layout_marginTop="4dp"
         android:fontFamily="@font/fredoka_one"
         android:text="Sí, YA TENGO UNA CUENTA"
@@ -113,5 +113,15 @@
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/animationView" />
+
+    <Button
+        android:id="@+id/btnAcerca"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Acerca de"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="689dp"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
