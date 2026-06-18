@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.paqu.DiccionarioActivity;
 import com.google.android.material.card.MaterialCardView;
+import com.example.paqu.utils.FloatingChatManager;
 
 public class HerramientasActivity extends BaseActivity {
 
@@ -214,6 +215,9 @@ public class HerramientasActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        FloatingChatManager.attach(this);
+
         // Reiniciar animaciones Lottie
         lottieTraductor.playAnimation();
         lottieDiccionario.playAnimation();
@@ -227,5 +231,10 @@ public class HerramientasActivity extends BaseActivity {
         lottieTraductor.pauseAnimation();
         lottieDiccionario.pauseAnimation();
         lottiePronunciacion.pauseAnimation();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FloatingChatManager.detach();
     }
 }

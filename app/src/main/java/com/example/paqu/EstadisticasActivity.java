@@ -28,7 +28,7 @@ import com.example.paqu.models.WeeklyStats;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
+import com.example.paqu.utils.FloatingChatManager;
 import java.util.Locale;
 
 /**
@@ -421,6 +421,13 @@ public class EstadisticasActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        FloatingChatManager.attach(this);
+
         loadStatistics();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FloatingChatManager.detach();
     }
 }

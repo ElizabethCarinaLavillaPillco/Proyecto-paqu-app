@@ -9,7 +9,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.example.paqu.utils.FloatingChatManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -370,6 +370,7 @@ public class configuracionActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        FloatingChatManager.attach(this);
         aplicarFuentesAutomaticas();
     }
 
@@ -383,5 +384,10 @@ public class configuracionActivity extends AppCompatActivity {
         float factor = obtenerFactorFuente(textView.getContext());
         float nuevoTamanio = tamanioBase * factor;
         textView.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, nuevoTamanio);
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FloatingChatManager.detach();
     }
 }

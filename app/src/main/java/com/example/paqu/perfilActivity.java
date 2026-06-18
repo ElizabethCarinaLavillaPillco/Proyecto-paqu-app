@@ -9,7 +9,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.example.paqu.utils.FloatingChatManager;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -306,6 +306,7 @@ public class perfilActivity extends BaseActivity {
         super.onResume();
         aplicarFuentesAutomaticas();
         loadFavoritosCount();
+        FloatingChatManager.attach(this);
 
         // ✅ Recargar estadísticas al volver
         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -376,5 +377,10 @@ public class perfilActivity extends BaseActivity {
     @Override
     protected int getSelectedNavItemId() {
         return R.id.nav_profile;
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FloatingChatManager.detach();
     }
 }

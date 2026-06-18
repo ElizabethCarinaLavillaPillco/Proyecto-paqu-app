@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import com.example.paqu.utils.FloatingChatManager;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -730,9 +731,17 @@ public class homeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        FloatingChatManager.attach(this);
+
         setupLevelCards();
         updateStreakAndData();
         actualizarProgresoGeneral();
         aplicarFuentesAutomaticas();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FloatingChatManager.detach();
     }
 }
