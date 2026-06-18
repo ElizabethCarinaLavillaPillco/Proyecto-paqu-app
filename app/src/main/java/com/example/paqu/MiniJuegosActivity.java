@@ -4,10 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.example.paqu.utils.FloatingChatManager;
 import androidx.cardview.widget.CardView;
 
 import com.example.paqu.activities.TimeAttackActivity;
+import com.example.paqu.utils.FloatingChatManager;
 
 public class MiniJuegosActivity extends BaseActivity {
 
@@ -60,6 +61,8 @@ public class MiniJuegosActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        FloatingChatManager.attach(this);
         // NUEVO: Re-aplicar fuentes por si hubo cambios
         aplicarFuentesAutomaticas();
     }
@@ -93,5 +96,10 @@ public class MiniJuegosActivity extends BaseActivity {
     @Override
     protected int getSelectedNavItemId() {
         return R.id.nav_Minijuegos;
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FloatingChatManager.detach();
     }
 }
