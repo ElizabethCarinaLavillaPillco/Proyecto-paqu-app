@@ -1,5 +1,5 @@
 package com.example.paqu.utils;
-
+import android.util.Log;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,7 +10,7 @@ public class VoiceflowClient {
 
     // 🔥 TU API KEY (VF.DM)
     private static final String API_KEY =
-            "VF.DM.6a3390842183b9ddf7d4a502.8ZkZCZntVyycKw8X";
+            "VF.DM.6a341f40c655089184db502a.1nImRIsTNxWFXOYg";
 
     private static final OkHttpClient client = new OkHttpClient();
 
@@ -60,43 +60,46 @@ public class VoiceflowClient {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
 
-                    String responseBody = response.body().string();
+                    String responseBody = response.body() != null
+                            ? response.body().string()
+                            : "";
+
+                    Log.d("VOICEFLOW", "====================");
+                    Log.d("VOICEFLOW", "URL: " + url);
+                    Log.d("VOICEFLOW", "REQUEST: " + body.toString());
+                    Log.d("VOICEFLOW", "HTTP CODE: " + response.code());
+                    Log.d("VOICEFLOW", "RESPONSE: " + responseBody);
+                    Log.d("VOICEFLOW", "====================");
 
                     if (!response.isSuccessful()) {
-                        callback.onError("Error Voiceflow: " + response.code() + " " + responseBody);
+                        callback.onError(
+                                "Error Voiceflow: "
+                                        + response.code()
+                                        + "\n"
+                                        + responseBody
+                        );
                         return;
                     }
+
                     String reply = "";
 
                     try {
-                        JSONObject json = new JSONObject(responseBody);
 
-                        JSONArray trace = json.optJSONArray("trace");
+                        JSONArray trace = new JSONArray(responseBody);
 
-                        if (trace != null) {
+                        for (int i = 0; i < trace.length(); i++) {
 
-                            for (int i = 0; i < trace.length(); i++) {
+                            JSONObject item = trace.getJSONObject(i);
+                            JSONObject payload = item.optJSONObject("payload");
 
-                                JSONObject item = trace.getJSONObject(i);
+                            if (payload == null) continue;
 
-                                JSONObject payload = item.optJSONObject("payload");
+                            if (payload.has("message")) {
+                                reply = payload.getString("message");
+                            }
 
-                                if (payload == null) continue;
-
-                                // CASO 1: message
-                                if (payload.has("message")) {
-                                    reply = payload.getString("message");
-                                }
-
-                                // CASO 2: text (MUY IMPORTANTE)
-                                else if (payload.has("text")) {
-                                    reply = payload.getString("text");
-                                }
-
-                                // CASO 3: card / otros
-                                else if (payload.has("content")) {
-                                    reply = payload.getJSONObject("content").toString();
-                                }
+                            if (payload.has("text")) {
+                                reply = payload.getString("text");
                             }
                         }
 
@@ -107,7 +110,15 @@ public class VoiceflowClient {
                         callback.onResponse(reply);
 
                     } catch (Exception e) {
-                        callback.onError("Parse error: " + e.getMessage());
+
+                        Log.e("VOICEFLOW", "PARSE ERROR", e);
+
+                        callback.onError(
+                                "Parse error: "
+                                        + e.getMessage()
+                                        + "\nRespuesta: "
+                                        + responseBody
+                        );
                     }
                 }
             });
