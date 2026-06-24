@@ -6,8 +6,10 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/white">
+    app:cardElevation="3dp"
+    app:cardBackgroundColor="@color/bg_card"
+    app:strokeColor="@color/border_light"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,97 +17,183 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- ═══════════════════════════════════
+             HEADER DEL EJERCICIO: Número + Tipo + Eliminar
+             ═══════════════════════════════════ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
+            <!-- Icono tipo ejercicio -->
+            <LinearLayout
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_icon_ejercicio_small"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🎵"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+
+            <!-- Label -->
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Ejercicio"
-                android:textSize="16sp"
-                android:fontFamily="@font/fredoka_one"
-                android:textColor="#2196F3"/>
+                android:text="Selección Múltiple"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary"
+                android:layout_marginStart="10dp"/>
 
+            <!-- Botón Eliminar (ROJO) -->
             <ImageButton
                 android:id="@+id/btnEliminar"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_delete"
-                android:tint="#F44336"
-                android:contentDescription="Eliminar"/>
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_delete"
+                android:padding="8dp"
+                android:background="@drawable/bg_btn_delete"
+                android:contentDescription="Eliminar ejercicio"
+                app:tint="@color/danger"/>
 
         </LinearLayout>
 
+        <!-- ═══════════════════════════════════
+             CAMPO: PREGUNTA
+             ═══════════════════════════════════ -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginTop="12dp">
+            android:hint="Pregunta *"
+            app:hintTextColor="@color/primary"
+            app:boxStrokeColor="@color/primary"
+            app:boxCornerRadiusTopStart="10dp"
+            app:boxCornerRadiusTopEnd="10dp"
+            app:boxCornerRadiusBottomStart="10dp"
+            app:boxCornerRadiusBottomEnd="10dp"
+            android:layout_marginTop="14dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPregunta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Pregunta"
-                android:fontFamily="@font/fredoka_one"/>
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:inputType="textMultiLine"
+                android:minLines="2"
+                android:maxLines="3"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- ═══════════════════════════════════
+             CAMPO: RESPUESTA CORRECTA (Verde)
+             ═══════════════════════════════════ -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginTop="8dp">
+            android:hint="✓ Respuesta correcta *"
+            app:hintTextColor="@color/success"
+            app:boxStrokeColor="@color/success"
+            app:boxCornerRadiusTopStart="10dp"
+            app:boxCornerRadiusTopEnd="10dp"
+            app:boxCornerRadiusBottomStart="10dp"
+            app:boxCornerRadiusBottomEnd="10dp"
+            android:layout_marginTop="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etRespuesta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Respuesta correcta"
-                android:fontFamily="@font/fredoka_one"/>
+                android:textColor="@color/text_success"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:inputType="text"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- ═══════════════════════════════════
+             SEPARADOR: OPCIÓNES
+             ═══════════════════════════════════ -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Opciones de respuesta"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_hint"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- ═══════════════════════════════════
+             OPCIONES EN FILA
+             ═══════════════════════════════════ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:orientation="horizontal">
 
+            <!-- Opción 1 -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginEnd="4dp">
+                android:hint="Opción 1"
+                app:hintTextColor="@color/info"
+                app:boxStrokeColor="@color/info"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                android:layout_marginEnd="6dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etOpcion1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Opción 1"
-                    android:fontFamily="@font/fredoka_one"/>
+                    android:textColor="@color/text_primary"
+                    android:textSize="13sp"
+                    android:inputType="text"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Opción 2 -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginStart="4dp">
+                android:hint="Opción 2"
+                app:hintTextColor="@color/info"
+                app:boxStrokeColor="@color/info"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                android:layout_marginStart="6dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etOpcion2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Opción 2"
-                    android:fontFamily="@font/fredoka_one"/>
+                    android:textColor="@color/text_primary"
+                    android:textSize="13sp"
+                    android:inputType="text"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 

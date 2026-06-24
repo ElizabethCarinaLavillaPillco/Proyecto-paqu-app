@@ -4,12 +4,15 @@ import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,11 +20,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DiccionarioActivity extends AppCompatActivity {
+
+    private static final String TAG = "DiccionarioActivity";
 
     // UI Components
     ImageView btnBack;
@@ -31,22 +41,34 @@ public class DiccionarioActivity extends AppCompatActivity {
     LinearLayout tvNoResultados;
     LottieAnimationView lottieSearch;
 
-    // Data
+    // Data - 🔹 IMPORTANTE: Inicializar UNA SOLA VEZ
     private List<PalabraDiccionario> todasLasPalabras;
     private List<PalabraDiccionario> palabrasFiltradas;
     private DiccionarioAdapter adapter;
     private String categoriaSeleccionada = "Todas";
+
+    // Firebase
+    private DatabaseReference dbRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diccionario);
 
+        // 🔹 Inicializar Firebase
+        dbRef = FirebaseDatabase.getInstance().getReference();
+
+        // 🔹 Inicializar listas UNA SOLA VEZ
+        todasLasPalabras = new ArrayList<>();
+        palabrasFiltradas = new ArrayList<>();
+
         initViews();
-        initData();
         setupRecyclerView();
         setupListeners();
         animacionEntrada();
+
+        // 🔹 Cargar palabras desde Firebase
+        cargarPalabrasDesdeFirebase();
     }
 
     private void initViews() {
@@ -58,56 +80,72 @@ public class DiccionarioActivity extends AppCompatActivity {
         lottieSearch = findViewById(R.id.lottieSearch);
     }
 
-    private void initData() {
-        todasLasPalabras = new ArrayList<>();
+    // 🔹 MÉTODO CORREGIDO: Cargar palabras desde Firebase
+    private void cargarPalabrasDesdeFirebase() {
+        dbRef.child("diccionario")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        // 🔹 LIMPIAR las listas existentes (NO crear nuevas)
+                        todasLasPalabras.clear();
 
-        // Saludos y Expresiones Comunes
-        todasLasPalabras.add(new PalabraDiccionario("Allinllachu", "¿Cómo estás?", "Saludos", "a-yin-ya-chu"));
-        todasLasPalabras.add(new PalabraDiccionario("Allillanmi", "Estoy bien", "Saludos", "a-yi-yan-mi"));
-        todasLasPalabras.add(new PalabraDiccionario("Tupananchiskama", "Hasta luego", "Saludos", "tu-pa-nan-chis-ka-ma"));
-        todasLasPalabras.add(new PalabraDiccionario("Sulpayki", "Gracias", "Saludos", "sul-pai-ki"));
-        todasLasPalabras.add(new PalabraDiccionario("Añay", "¡Qué lindo!", "Expresiones", "a-ñai"));
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            String quechua = ds.child("quechua").getValue(String.class);
+                            String espanol = ds.child("espanol").getValue(String.class);
+                            String categoria = ds.child("categoria").getValue(String.class);
+                            String pronunciacion = ds.child("pronunciacion").getValue(String.class);
 
-        // Familia
-        todasLasPalabras.add(new PalabraDiccionario("Tayta", "Padre", "Familia", "tai-ta"));
-        todasLasPalabras.add(new PalabraDiccionario("Mama", "Madre", "Familia", "ma-ma"));
-        todasLasPalabras.add(new PalabraDiccionario("Wawa", "Bebé/Niño", "Familia", "wa-wa"));
-        todasLasPalabras.add(new PalabraDiccionario("Tura", "Hermano", "Familia", "tu-ra"));
-        todasLasPalabras.add(new PalabraDiccionario("Ñaña", "Hermana", "Familia", "ña-ña"));
+                            if (quechua != null && !quechua.isEmpty()) {
+                                todasLasPalabras.add(new PalabraDiccionario(
+                                        quechua,
+                                        espanol != null ? espanol : "",
+                                        categoria != null ? categoria : "Otra",
+                                        pronunciacion != null ? pronunciacion : quechua.toLowerCase()
+                                ));
+                            }
+                        }
 
-        // Naturaleza
-        todasLasPalabras.add(new PalabraDiccionario("Inti", "Sol", "Naturaleza", "in-ti"));
-        todasLasPalabras.add(new PalabraDiccionario("Mama Quilla", "Madre Luna", "Naturaleza", "ma-ma ki-ya"));
-        todasLasPalabras.add(new PalabraDiccionario("Urpi", "Paloma", "Naturaleza", "ur-pi"));
-        todasLasPalabras.add(new PalabraDiccionario("Mayu", "Río", "Naturaleza", "ma-yu"));
-        todasLasPalabras.add(new PalabraDiccionario("Qucha", "Lago", "Naturaleza", "ko-cha"));
+                        // Ordenar alfabéticamente
+                        todasLasPalabras.sort((a, b) -> a.quechua.compareToIgnoreCase(b.quechua));
 
-        // Números
-        todasLasPalabras.add(new PalabraDiccionario("Huk", "Uno", "Números", "juk"));
-        todasLasPalabras.add(new PalabraDiccionario("Iskay", "Dos", "Números", "is-kai"));
-        todasLasPalabras.add(new PalabraDiccionario("Kinsa", "Tres", "Números", "kin-sa"));
-        todasLasPalabras.add(new PalabraDiccionario("Tawa", "Cuatro", "Números", "ta-wa"));
-        todasLasPalabras.add(new PalabraDiccionario("Pichqa", "Cinco", "Números", "pich-ka"));
+                        Log.d(TAG, "✅ Cargadas " + todasLasPalabras.size() + " palabras desde Firebase");
 
-        // Verbos
-        todasLasPalabras.add(new PalabraDiccionario("Yachay", "Aprender/Saber", "Verbos", "ya-chai"));
-        todasLasPalabras.add(new PalabraDiccionario("Munay", "Querer/Amar", "Verbos", "mu-nai"));
-        todasLasPalabras.add(new PalabraDiccionario("Puñuy", "Dormir", "Verbos", "pu-ñui"));
-        todasLasPalabras.add(new PalabraDiccionario("Mikuy", "Comer", "Verbos", "mi-kui"));
-        todasLasPalabras.add(new PalabraDiccionario("Pukllay", "Jugar", "Verbos", "puk-yai"));
+                        // 🔹 Actualizar el filtro con la categoría actual
+                        filtrarPalabras(etBuscar.getText().toString());
+                    }
 
-        // Frases Típicas
-        todasLasPalabras.add(new PalabraDiccionario("Sumaq kawsay", "Buen vivir", "Frases", "su-mak kaw-sai"));
-        todasLasPalabras.add(new PalabraDiccionario("Tukuy sunqu", "Con todo el corazón", "Frases", "tu-kui sun-ku"));
-        todasLasPalabras.add(new PalabraDiccionario("Ñuqanchik", "Nosotros/as", "Frases", "ñu-kan-chik"));
-
-        palabrasFiltradas = new ArrayList<>(todasLasPalabras);
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e(TAG, "❌ Error al cargar palabras: " + error.getMessage());
+                        Toast.makeText(DiccionarioActivity.this,
+                                "Error al cargar el diccionario", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
+    // 🔹 MÉTODO CORREGIDO: Setup RecyclerView (sin crear nuevas listas)
     private void setupRecyclerView() {
         adapter = new DiccionarioAdapter(palabrasFiltradas, this);
         rvPalabras.setLayoutManager(new LinearLayoutManager(this));
         rvPalabras.setAdapter(adapter);
+    }
+
+    // 🔹 AGREGA ESTOS MÉTODOS al final de la clase:
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (adapter != null) {
+            adapter.onDestroy();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Pausar audio si el usuario sale de la pantalla
+        if (adapter != null) {
+            adapter.onDestroy();
+        }
     }
 
     private void setupListeners() {
@@ -132,16 +170,21 @@ public class DiccionarioActivity extends AppCompatActivity {
 
         // Filtros de categoría
         for (int i = 0; i < chipGroupCategorias.getChildCount(); i++) {
-            Chip chip = (Chip) chipGroupCategorias.getChildAt(i);
-            chip.setOnClickListener(v -> {
-                categoriaSeleccionada = chip.getText().toString();
-                filtrarPalabras(etBuscar.getText().toString());
-                animarChip(chip);
-            });
+            View child = chipGroupCategorias.getChildAt(i);
+            if (child instanceof Chip) {
+                Chip chip = (Chip) child;
+                chip.setOnClickListener(v -> {
+                    categoriaSeleccionada = chip.getText().toString();
+                    filtrarPalabras(etBuscar.getText().toString());
+                    animarChip(chip);
+                });
+            }
         }
     }
 
+    // 🔹 MÉTODO CORREGIDO: Filtrar palabras
     private void filtrarPalabras(String query) {
+        // 🔹 LIMPIAR la lista filtrada (NO crear nueva)
         palabrasFiltradas.clear();
 
         for (PalabraDiccionario palabra : todasLasPalabras) {
@@ -157,6 +200,9 @@ public class DiccionarioActivity extends AppCompatActivity {
             }
         }
 
+        Log.d(TAG, "🔍 Filtradas: " + palabrasFiltradas.size() + " palabras (query: '" + query + "', categoría: '" + categoriaSeleccionada + "')");
+
+        // 🔹 Notificar al adapter
         adapter.notifyDataSetChanged();
 
         // Mostrar mensaje si no hay resultados
@@ -174,6 +220,7 @@ public class DiccionarioActivity extends AppCompatActivity {
             }
         }
     }
+
 
     // ============= ANIMACIONES =============
 

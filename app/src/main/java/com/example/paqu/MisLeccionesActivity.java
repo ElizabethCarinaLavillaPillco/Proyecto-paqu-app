@@ -1,117 +1,168 @@
 package com.example.paqu;
 
+import android.graphics.Color;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.util.Log;
+import android.view.*;
+import android.view.animation.AnimationUtils;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;  // 🔹 IMPORT AGREGADO
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class MisLeccionesActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerLecciones;
-    private LeccionesAdapter adapter;
-    private List<LeccionItem> listaLecciones;
-    private DatabaseReference lessonsRef;
-    private String userId;
-    private TextView tvEmpty;
+    private static final String TAG = "MisLecciones";
+
+    private RecyclerView     rvLecciones;
+    private LeccionAdapter   adapter;
+    private List<LeccionItem> todasLasLecciones;
+    private List<LeccionItem> leccionesFiltradas;
+
+    private EditText etBuscarLeccion;
+    private ChipGroup chipGroupFiltros;
+    private TextView tvContadorLecciones;
+    private LinearLayout layoutVacio;
+    private FloatingActionButton fabCrearLeccion;
+    private ImageView btnBack;
+
+    private DatabaseReference dbRef;
+    private String docenteUid;
+    private String filtroActual = "todas";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mis_lecciones2);
 
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        lessonsRef = FirebaseDatabase.getInstance().getReference("lessons");
+        docenteUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        dbRef = FirebaseDatabase.getInstance().getReference();
 
         initViews();
         setupRecycler();
+        setupListeners();
         cargarLecciones();
     }
 
+    // ─────────────────────────────────────────────
+    // VISTAS
+    // ─────────────────────────────────────────────
     private void initViews() {
-        recyclerLecciones = findViewById(R.id.recyclerLecciones);
-        tvEmpty = findViewById(R.id.tvEmpty);
+        rvLecciones        = findViewById(R.id.rvMisLecciones);
+        etBuscarLeccion    = findViewById(R.id.etBuscarLeccion);
+        chipGroupFiltros   = findViewById(R.id.chipGroupFiltrosLecciones);
+        tvContadorLecciones = findViewById(R.id.tvContadorMisLecciones);
+        layoutVacio        = findViewById(R.id.layoutVacioLecciones);
+        fabCrearLeccion    = findViewById(R.id.fabCrearLeccion);
+        btnBack            = findViewById(R.id.btnBack);
+    }
 
-        ImageButton btnBack = findViewById(R.id.btnBack);
+    // ─────────────────────────────────────────────
+    // RECYCLER
+    // ─────────────────────────────────────────────
+    private void setupRecycler() {
+        todasLasLecciones  = new ArrayList<>();
+        leccionesFiltradas = new ArrayList<>();
+        adapter = new LeccionAdapter(leccionesFiltradas, this);
+        rvLecciones.setLayoutManager(new LinearLayoutManager(this));
+        rvLecciones.setAdapter(adapter);
+    }
+
+    // ─────────────────────────────────────────────
+    // LISTENERS
+    // ─────────────────────────────────────────────
+    private void setupListeners() {
         btnBack.setOnClickListener(v -> finish());
 
-        FloatingActionButton fabNueva = findViewById(R.id.fabNueva);
-        fabNueva.setOnClickListener(v -> {
+        fabCrearLeccion.setOnClickListener(v -> {
             startActivity(new Intent(this, CrearLeccionActivity.class));
         });
-    }
 
-    private void setupRecycler() {
-        listaLecciones = new ArrayList<>();
-        adapter = new LeccionesAdapter(listaLecciones, new LeccionesAdapter.OnLeccionClickListener() {
+        // Búsqueda en tiempo real
+        etBuscarLeccion.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+            @Override public void afterTextChanged(android.text.Editable s) {}
             @Override
-            public void onEditClick(LeccionItem leccion) {
-                editarLeccion(leccion);
-            }
-
-            @Override
-            public void onDeleteClick(LeccionItem leccion) {
-                confirmarEliminar(leccion);
-            }
-
-            @Override
-            public void onStatsClick(LeccionItem leccion) {
-                verEstadisticas(leccion);
+            public void onTextChanged(CharSequence s, int st, int b, int c) {
+                filtrar(s.toString());
             }
         });
 
-        recyclerLecciones.setLayoutManager(new LinearLayoutManager(this));
-        recyclerLecciones.setAdapter(adapter);
+        // Chips de filtro
+        for (int i = 0; i < chipGroupFiltros.getChildCount(); i++) {
+            View child = chipGroupFiltros.getChildAt(i);
+            if (child instanceof Chip) {
+                Chip chip = (Chip) child;
+                chip.setOnClickListener(v -> {
+                    filtroActual = chip.getTag() != null ? chip.getTag().toString() : "todas";
+                    filtrar(etBuscarLeccion.getText().toString());
+                });
+            }
+        }
     }
 
+    // ─────────────────────────────────────────────
+    // CARGAR LECCIONES DESDE FIREBASE
+    // ─────────────────────────────────────────────
     private void cargarLecciones() {
-        lessonsRef.orderByChild("lessonInfo/createdBy").equalTo(userId)
+        dbRef.child("lessons")
+                .orderByChild("lessonInfo/createdBy")
+                .equalTo(docenteUid)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        listaLecciones.clear();
+                        todasLasLecciones.clear();
 
-                        for (DataSnapshot lessonSnap : snapshot.getChildren()) {
-                            String id = lessonSnap.getKey();
-                            String title = lessonSnap.child("lessonInfo/title").getValue(String.class);
-                            String description = lessonSnap.child("lessonInfo/description").getValue(String.class);
-                            String level = lessonSnap.child("lessonInfo/level").getValue(String.class);
-                            Long createdAt = lessonSnap.child("lessonInfo/createdAt").getValue(Long.class);
-                            String status = lessonSnap.child("lessonInfo/status").getValue(String.class);
-                            Long totalExercises = lessonSnap.child("lessonInfo/totalExercises").getValue(Long.class);
+                        for (DataSnapshot ls : snapshot.getChildren()) {
+                            try {
+                                LeccionItem item = new LeccionItem();
+                                item.id = ls.getKey();
 
-                            if (title == null) title = "Sin título";
+                                DataSnapshot info = ls.child("lessonInfo");
+                                item.titulo      = getString(info, "title",       "Sin título");
+                                item.descripcion = getString(info, "description", "");
+                                item.nivel       = getString(info, "nivel",       "Básico");
+                                item.categoria   = getString(info, "categoria",   "Otra");
+                                item.activa      = Boolean.TRUE.equals(info.child("activa").getValue(Boolean.class));
 
-                            listaLecciones.add(new LeccionItem(
-                                    id, title, description, level,
-                                    createdAt != null ? createdAt : 0,
-                                    status != null ? status : "draft",
-                                    totalExercises != null ? totalExercises.intValue() : 0
-                            ));
+                                Long ts = info.child("createdAt").getValue(Long.class);
+                                item.fechaCreacion = ts != null ? ts : 0L;
+
+                                // Contar ejercicios
+                                item.numEjercicios = (int) ls.child("content/ejercicios")
+                                        .getChildrenCount();
+
+                                // Recompensas
+                                Long exp = ls.child("rewards/exp").getValue(Long.class);
+                                item.exp = exp != null ? exp.intValue() : 30;
+
+                                todasLasLecciones.add(item);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error parsing: " + e.getMessage());
+                            }
                         }
 
-                        adapter.notifyDataSetChanged();
-                        tvEmpty.setVisibility(listaLecciones.isEmpty() ? View.VISIBLE : View.GONE);
+                        // Ordenar por fecha descendente
+                        todasLasLecciones.sort((a, b) -> Long.compare(b.fechaCreacion, a.fechaCreacion));
+
+                        filtrar(etBuscarLeccion.getText().toString());
+                        actualizarContador();
                     }
 
                     @Override
@@ -122,136 +173,204 @@ public class MisLeccionesActivity extends AppCompatActivity {
                 });
     }
 
-    private void editarLeccion(LeccionItem leccion) {
-        Intent intent = new Intent(this, EditarLeccionActivity.class);
-        intent.putExtra("lessonId", leccion.id);
-        startActivity(intent);
+    private String getString(DataSnapshot snap, String key, String def) {
+        String val = snap.child(key).getValue(String.class);
+        return val != null ? val : def;
     }
 
-    private void confirmarEliminar(LeccionItem leccion) {
+    // ─────────────────────────────────────────────
+    // FILTRAR
+    // ─────────────────────────────────────────────
+    private void filtrar(String query) {
+        leccionesFiltradas.clear();
+
+        for (LeccionItem item : todasLasLecciones) {
+            boolean matchQuery = query.isEmpty()
+                    || item.titulo.toLowerCase().contains(query.toLowerCase())
+                    || item.categoria.toLowerCase().contains(query.toLowerCase());
+
+            boolean matchFiltro = filtroActual.equals("todas")
+                    || (filtroActual.equals("activas") && item.activa)
+                    || (filtroActual.equals("inactivas") && !item.activa)
+                    || filtroActual.equalsIgnoreCase(item.nivel)
+                    || filtroActual.equalsIgnoreCase(item.categoria);
+
+            if (matchQuery && matchFiltro) {
+                leccionesFiltradas.add(item);
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+        layoutVacio.setVisibility(leccionesFiltradas.isEmpty() ? View.VISIBLE : View.GONE);
+        rvLecciones.setVisibility(leccionesFiltradas.isEmpty() ? View.GONE : View.VISIBLE);
+        actualizarContador();
+    }
+
+    private void actualizarContador() {
+        runOnUiThread(() ->
+                tvContadorLecciones.setText(
+                        leccionesFiltradas.size() + " / " + todasLasLecciones.size() + " lecciones"
+                )
+        );
+    }
+
+    // ─────────────────────────────────────────────
+    // ACCIONES SOBRE UNA LECCIÓN
+    // ─────────────────────────────────────────────
+    public void toggleActivarLeccion(LeccionItem item) {
+        boolean nuevoEstado = !item.activa;
+        dbRef.child("lessons").child(item.id)
+                .child("lessonInfo/activa").setValue(nuevoEstado)
+                .addOnSuccessListener(a ->
+                        Toast.makeText(this,
+                                nuevoEstado ? "✅ Lección activada" : "⏸ Lección desactivada",
+                                Toast.LENGTH_SHORT).show()
+                );
+    }
+
+    public void confirmarEliminar(LeccionItem item, int pos) {
         new AlertDialog.Builder(this)
                 .setTitle("¿Eliminar lección?")
-                .setMessage("'" + leccion.title + "' se eliminará permanentemente")
-                .setPositiveButton("Eliminar", (dialog, which) -> {
-                    lessonsRef.child(leccion.id).removeValue()
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(this, "Lección eliminada", Toast.LENGTH_SHORT).show();
-                            });
-                })
+                .setMessage("\"" + item.titulo + "\" se eliminará permanentemente.")
+                .setPositiveButton("Eliminar", (d, w) -> eliminarLeccion(item, pos))
                 .setNegativeButton("Cancelar", null)
                 .show();
     }
 
-    private void verEstadisticas(LeccionItem leccion) {
-        // Ver cuántos usuarios completaron la lección
-        DatabaseReference userLessonsRef = FirebaseDatabase.getInstance().getReference("user_lessons");
-        userLessonsRef.orderByChild("lessonId").equalTo(leccion.id)
-                .get().addOnSuccessListener(snapshot -> {
-                    int completados = 0;
-                    int enProgreso = 0;
-
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-                        Boolean completed = snap.child("completed").getValue(Boolean.class);
-                        if (completed != null && completed) {
-                            completados++;
-                        } else {
-                            enProgreso++;
-                        }
-                    }
-
-                    new AlertDialog.Builder(this)
-                            .setTitle("Estadísticas: " + leccion.title)
-                            .setMessage("Completados: " + completados +
-                                    "\nEn progreso: " + enProgreso +
-                                    "\nTotal ejercicios: " + leccion.totalExercises)
-                            .setPositiveButton("OK", null)
-                            .show();
-                });
+    private void eliminarLeccion(LeccionItem item, int pos) {
+        dbRef.child("lessons").child(item.id).removeValue()
+                .addOnSuccessListener(a -> {
+                    Toast.makeText(this, "Lección eliminada", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error al eliminar", Toast.LENGTH_SHORT).show()
+                );
     }
 
-    // ===== CLASES INTERNAS =====
-
+    // ─────────────────────────────────────────────
+    // MODELO DE DATOS
+    // ─────────────────────────────────────────────
     public static class LeccionItem {
-        String id, title, description, level, status;
-        long createdAt;
-        int totalExercises;
-
-        public LeccionItem(String id, String title, String description, String level,
-                           long createdAt, String status, int totalExercises) {
-            this.id = id;
-            this.title = title;
-            this.description = description;
-            this.level = level;
-            this.createdAt = createdAt;
-            this.status = status;
-            this.totalExercises = totalExercises;
-        }
+        public String id;
+        public String titulo;
+        public String descripcion;
+        public String nivel;
+        public String categoria;
+        public boolean activa;
+        public long fechaCreacion;
+        public int numEjercicios;
+        public int exp;
     }
 
-    public static class LeccionesAdapter extends RecyclerView.Adapter<LeccionesAdapter.ViewHolder> {
+    // ─────────────────────────────────────────────
+    // ADAPTER
+    // ─────────────────────────────────────────────
+    public static class LeccionAdapter
+            extends RecyclerView.Adapter<LeccionAdapter.VH> {
 
-        private List<LeccionItem> lecciones;
-        private OnLeccionClickListener listener;
+        private final List<LeccionItem>  lista;
+        private final MisLeccionesActivity ctx;
+        private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
-        public interface OnLeccionClickListener {
-            void onEditClick(LeccionItem leccion);
-            void onDeleteClick(LeccionItem leccion);
-            void onStatsClick(LeccionItem leccion);
-        }
-
-        public LeccionesAdapter(List<LeccionItem> lecciones, OnLeccionClickListener listener) {
-            this.lecciones = lecciones;
-            this.listener = listener;
+        LeccionAdapter(List<LeccionItem> lista, MisLeccionesActivity ctx) {
+            this.lista = lista;
+            this.ctx   = ctx;
         }
 
         @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_mis_lecciones, parent, false);
-            return new ViewHolder(view);
+        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_leccion_docente, parent, false);
+            return new VH(v);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            LeccionItem l = lecciones.get(position);
-            holder.tvTitulo.setText(l.title);
-            holder.tvDescripcion.setText(l.description != null ? l.description : "Sin descripción");
-            holder.tvNivel.setText("Nivel: " + l.level);
-            holder.tvEjercicios.setText(l.totalExercises + " ejercicios");
+        public void onBindViewHolder(@NonNull VH h, int pos) {
+            LeccionItem item = lista.get(pos);
 
-            // Estado con color
-            if (l.status.equals("published")) {
-                holder.tvEstado.setText("Publicada");
-                holder.tvEstado.setTextColor(0xFF4CAF50); // Verde
-            } else {
-                holder.tvEstado.setText("Borrador");
-                holder.tvEstado.setTextColor(0xFFFF9800); // Naranja
+            h.tvTitulo.setText(item.titulo);
+            h.tvDescripcion.setText(item.descripcion.isEmpty() ? "Sin descripción" : item.descripcion);
+            h.tvNivel.setText(item.nivel);
+            h.tvCategoria.setText(item.categoria);
+            h.tvEjercicios.setText(item.numEjercicios + " ejercicios • " + item.exp + " EXP");
+            h.tvFecha.setText(item.fechaCreacion > 0
+                    ? sdf.format(new Date(item.fechaCreacion)) : "—");
+
+            // Estado activa/inactiva
+            h.switchActiva.setChecked(item.activa);
+            h.tvEstado.setText(item.activa ? "✅ Activa" : "⏸ Inactiva");
+            h.tvEstado.setTextColor(item.activa
+                    ? Color.parseColor("#2ECC71")
+                    : Color.parseColor("#95A5A6"));
+
+            // Color del nivel
+            int nivelColor;
+            switch (item.nivel) {
+                case "Intermedio": nivelColor = Color.parseColor("#F39C12"); break;
+                case "Avanzado":   nivelColor = Color.parseColor("#E74C3C"); break;
+                default:           nivelColor = Color.parseColor("#27AE60"); break;
             }
+            h.tvNivel.setBackgroundColor(nivelColor);
 
-            holder.btnEditar.setOnClickListener(v -> listener.onEditClick(l));
-            holder.btnEliminar.setOnClickListener(v -> listener.onDeleteClick(l));
-            holder.btnStats.setOnClickListener(v -> listener.onStatsClick(l));
+            // Switch toggle activa/inactiva
+            h.switchActiva.setOnCheckedChangeListener(null);
+            h.switchActiva.setOnCheckedChangeListener((btn, isChecked) -> {
+                item.activa = isChecked;
+                h.tvEstado.setText(isChecked ? "✅ Activa" : "⏸ Inactiva");
+                h.tvEstado.setTextColor(isChecked
+                        ? Color.parseColor("#2ECC71")
+                        : Color.parseColor("#95A5A6"));
+                ctx.toggleActivarLeccion(item);
+            });
+
+            // Eliminar
+            h.btnEliminar.setOnClickListener(v -> ctx.confirmarEliminar(item, pos));
+
+            // Ver detalles / editar (futuro)
+            h.cardLeccion.setOnClickListener(v -> {
+                Toast.makeText(ctx, "Vista previa: " + item.titulo, Toast.LENGTH_SHORT).show();
+            });
+
+            // Animación entrada
+            h.itemView.setAlpha(0f);
+            h.itemView.animate().alpha(1f)
+                    .setDuration(300)
+                    .setStartDelay(pos * 50L)
+                    .start();
         }
 
         @Override
-        public int getItemCount() { return lecciones.size(); }
+        public int getItemCount() { return lista.size(); }
 
-        public static class ViewHolder extends RecyclerView.ViewHolder {
-            TextView tvTitulo, tvDescripcion, tvNivel, tvEjercicios, tvEstado;
-            ImageButton btnEditar, btnEliminar, btnStats;
+        static class VH extends RecyclerView.ViewHolder {
+            CardView  cardLeccion;
+            TextView  tvTitulo, tvDescripcion, tvNivel, tvCategoria,
+                    tvEjercicios, tvFecha, tvEstado;
+            // 🔹 CAMBIO: Ahora es SwitchCompat en lugar de Switch
+            SwitchCompat switchActiva;
+            ImageView btnEliminar;
 
-            public ViewHolder(View itemView) {
-                super(itemView);
-                tvTitulo = itemView.findViewById(R.id.tvTitulo);
-                tvDescripcion = itemView.findViewById(R.id.tvDescripcion);
-                tvNivel = itemView.findViewById(R.id.tvNivel);
-                tvEjercicios = itemView.findViewById(R.id.tvEjercicios);
-                tvEstado = itemView.findViewById(R.id.tvEstado);
-                btnEditar = itemView.findViewById(R.id.btnEditar);
-                btnEliminar = itemView.findViewById(R.id.btnEliminar);
-                btnStats = itemView.findViewById(R.id.btnStats);
+            VH(View v) {
+                super(v);
+                cardLeccion   = v.findViewById(R.id.cardLeccionDocente);
+                tvTitulo      = v.findViewById(R.id.tvTituloLeccion);
+                tvDescripcion = v.findViewById(R.id.tvDescripcionLeccion);
+                tvNivel       = v.findViewById(R.id.tvNivelLeccion);
+                tvCategoria   = v.findViewById(R.id.tvCategoriaLeccion);
+                tvEjercicios  = v.findViewById(R.id.tvEjerciciosLeccion);
+                tvFecha       = v.findViewById(R.id.tvFechaLeccion);
+                tvEstado      = v.findViewById(R.id.tvEstadoLeccion);
+                // 🔹 CAMBIO: SwitchCompat
+                switchActiva  = v.findViewById(R.id.switchActivaLeccion);
+                btnEliminar   = v.findViewById(R.id.btnEliminarLeccion);
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarLecciones();
     }
 }

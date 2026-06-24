@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.paqu.managers.FavoritosManager;
 import com.example.paqu.DiccionarioActivity;
+import com.example.paqu.utils.QuechuaTTSManager;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.HashSet;
@@ -28,7 +29,11 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
     private Context context;
     private int lastPosition = -1;
     private FavoritosManager favoritosManager;
-    private Set<String> palabrasFavoritas;  // Cache de favoritos
+    private Set<String> palabrasFavoritas;
+
+    // 🔹 TTS Manager - UNA SOLA INSTANCIA para toda la lista
+    private QuechuaTTSManager ttsManager;
+    private ViewHolder holderReproduciendo = null;  // Para saber qué botón está sonando
 
     public DiccionarioAdapter(List<DiccionarioActivity.PalabraDiccionario> palabras, Context context) {
         this.palabras = palabras;
@@ -36,7 +41,9 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
         this.favoritosManager = new FavoritosManager();
         this.palabrasFavoritas = new HashSet<>();
 
-        // Cargar favoritos al inicializar
+        // 🔹 Inicializar TTS Manager UNA SOLA VEZ
+        this.ttsManager = new QuechuaTTSManager(context);
+
         cargarFavoritos();
     }
 
@@ -83,11 +90,55 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
         boolean esFavorito = palabrasFavoritas.contains(palabra.quechua);
         actualizarEstrellaFavorito(holder.btnFavorito, esFavorito);
 
-        // Audio
+        // 🔹 🔊 AUDIO TTS - Integración completa
         holder.btnAudio.setOnClickListener(v -> {
             animarClick(v);
-            Toast.makeText(context, "🔊 " + palabra.quechua, Toast.LENGTH_SHORT).show();
-            // TODO: Implementar TTS
+
+            // Si ya se está reproduciendo esta palabra, detener
+            if (holderReproduciendo == holder) {
+                ttsManager.detener();
+                restaurarBotonAudio(holder);
+                holderReproduciendo = null;
+                return;
+            }
+
+            // Restaurar botón anterior si existe
+            if (holderReproduciendo != null) {
+                restaurarBotonAudio(holderReproduciendo);
+            }
+
+            holderReproduciendo = holder;
+
+            // Reproducir con callback
+            ttsManager.reproducir(palabra.quechua, new QuechuaTTSManager.TTSCallback() {
+                @Override
+                public void onInicio() {
+                    // Feedback visual: cambiar icono a "reproduciendo"
+                    holder.btnAudio.setImageResource(R.drawable.ic_audio_playing);
+                    holder.btnAudio.setColorFilter(
+                            ContextCompat.getColor(context, R.color.morado)
+                    );
+                    holder.btnAudio.animate()
+                            .scaleX(1.2f).scaleY(1.2f)
+                            .setDuration(200)
+                            .start();
+                }
+
+                @Override
+                public void onFin() {
+                    restaurarBotonAudio(holder);
+                    if (holderReproduciendo == holder) {
+                        holderReproduciendo = null;
+                    }
+                }
+
+                @Override
+                public void onError(String mensaje) {
+                    restaurarBotonAudio(holder);
+                    holderReproduciendo = null;
+                    Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
         // Favoritos con animación
@@ -100,9 +151,28 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
         setAnimation(holder.itemView, position);
     }
 
+    // 🔹 Método auxiliar para restaurar el botón de audio
+    private void restaurarBotonAudio(ViewHolder holder) {
+        holder.btnAudio.setImageResource(R.drawable.ic_audio);
+        holder.btnAudio.setColorFilter(
+                ContextCompat.getColor(context, R.color.gris_claro)
+        );
+        holder.btnAudio.animate()
+                .scaleX(1f).scaleY(1f)
+                .setDuration(200)
+                .start();
+    }
+
     @Override
     public int getItemCount() {
         return palabras.size();
+    }
+
+    // 🔹 IMPORTANTE: Detener audio cuando el adapter se destruye
+    public void onDestroy() {
+        if (ttsManager != null) {
+            ttsManager.detener();
+        }
     }
 
     /**
@@ -119,7 +189,6 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
                 new FavoritosManager.FavoritoCallback() {
                     @Override
                     public void onSuccess() {
-                        // Actualizar cache local
                         if (eraFavorito) {
                             palabrasFavoritas.remove(palabra.quechua);
                             Toast.makeText(context, "⭐ Eliminado de favoritos", Toast.LENGTH_SHORT).show();
@@ -128,8 +197,6 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
                             Toast.makeText(context, "⭐ Agregado a favoritos", Toast.LENGTH_SHORT).show();
                             animarEstrella(btnFavorito);
                         }
-
-                        // Actualizar UI
                         actualizarEstrellaFavorito(btnFavorito, !eraFavorito);
                     }
 
@@ -141,9 +208,6 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
         );
     }
 
-    /**
-     * Actualizar apariencia de la estrella
-     */
     private void actualizarEstrellaFavorito(ImageView btnFavorito, boolean esFavorito) {
         if (esFavorito) {
             btnFavorito.setImageResource(R.drawable.ic_star);
@@ -158,9 +222,6 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
         }
     }
 
-    /**
-     * Animación especial para la estrella
-     */
     private void animarEstrella(ImageView estrella) {
         estrella.animate()
                 .scaleX(1.5f)
@@ -178,20 +239,13 @@ public class DiccionarioAdapter extends RecyclerView.Adapter<DiccionarioAdapter.
 
     private int getColorForCategory(String categoria) {
         switch (categoria) {
-            case "Saludos":
-                return R.color.morado;
-            case "Familia":
-                return R.color.rosado;
-            case "Naturaleza":
-                return R.color.verde;
-            case "Números":
-                return R.color.celeste;
-            case "Verbos":
-                return R.color.naranja;
-            case "Frases":
-                return R.color.lila;
-            default:
-                return R.color.gris;
+            case "Saludos": return R.color.morado;
+            case "Familia": return R.color.rosado;
+            case "Naturaleza": return R.color.verde;
+            case "Números": return R.color.celeste;
+            case "Verbos": return R.color.naranja;
+            case "Frases": return R.color.lila;
+            default: return R.color.gris;
         }
     }
 

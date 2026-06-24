@@ -1,18 +1,16 @@
 plugins {
     alias(libs.plugins.android.application)
-    id("com.google.gms.google-services")
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.services)
 }
 
 android {
     namespace = "com.example.paqu"
-    // 🚨 CAMBIO IMPORTANTE: Subimos a 36 para cumplir con las librerías nuevas
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.paqu"
         minSdk = 24
-        // Mantén el targetSdk en 35 para que no cambie el comportamiento de tu app
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -30,81 +28,75 @@ android {
         }
     }
 
-    compileOptions { // Sets the Java compiler target
+    compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        // Sets the Kotlin compiler target
         jvmTarget = "21"
+    }
+
+    // Esta sección soluciona los 14 conflictos de versiones forzando las estables
+    configurations.all {
+        resolutionStrategy {
+            force("androidx.activity:activity:1.9.3")
+            force("androidx.activity:activity-ktx:1.9.3")
+            force("androidx.core:core:1.13.1")
+            force("androidx.core:core-ktx:1.13.1")
+            // Evita que navigation-event pida SDK 36
+            force("androidx.navigation:navigation-common:2.8.3")
+            force("androidx.navigation:navigation-runtime:2.8.3")
+        }
     }
 }
 
 dependencies {
-    // Hemos removido las restricciones problemáticas para dejar tu catálogo limpio
-    implementation(libs.activity.ktx)
+    implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
+    implementation(libs.activity.ktx)
     implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
+    
+    // Firebase (Usamos una versión de BoM estable para API 35)
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.firestore)
+    implementation("com.google.firebase:firebase-analytics")
+    
+    // Google & Auth
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
-    implementation(libs.firebase.database)
-    implementation(libs.firebase.firestore)
-    implementation(libs.recyclerview)
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
+    // UI & Animaciones
+    implementation("com.airbnb.android:lottie:6.4.0")
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation("com.tbuonomo:dotsindicator:5.0")
+    
+    // Ciclo de vida y Corrutinas
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Facebook (Versión estable)
+    implementation("com.facebook.android:facebook-android-sdk:17.0.0")
+
+    // Networking
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    
+    implementation("androidx.work:work-runtime:2.9.1")
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // lottiefiles
-    implementation("com.airbnb.android:lottie:6.4.0")
-
-    // nasa
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
-
-    // Lifecycle components
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
-
-    // facebook
-    implementation("com.facebook.android:facebook-android-sdk:12.3.0")
-    implementation("com.facebook.android:facebook-login:latest.release")
-
-    // Firebase platform auth
-    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
-    implementation("com.google.firebase:firebase-auth:22.3.1")
-    implementation("com.google.firebase:firebase-database:20.3.0")
-    implementation("com.google.firebase:firebase-analytics")
-
-    // Google Sign-In
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
-
-    // Dependencia para core library desugaring
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.3")
-
-    // recuardros flex
-    implementation("com.google.android.flexbox:flexbox:3.0.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
-
-    // para el audio
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-
-    // indicadores y tareas en segundo plano
-    implementation("com.tbuonomo:dotsindicator:5.0")
-    implementation("androidx.work:work-runtime:2.9.0")
-
-    // Voiceflow
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
-
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
 }

@@ -2,621 +2,497 @@ package com.example.paqu;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
-import com.example.paqu.utils.FloatingChatManager;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
+import android.view.ViewTreeObserver;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.paqu.utils.FloatingChatManager;
+import com.example.paqu.utils.QuechuaTTSManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 
 import com.example.paqu.utils.StreakManager;
 
-public class homeActivity extends BaseActivity {
-    private TextView tvSectionNumber;
-    private TextView tvSectionTitle;
-    private TextView tvSectionDescription;
-    private ProgressBar progressBarGeneral;
-    private TextView tvPorcentajeCompletado;
+import java.util.ArrayList;
+import java.util.List;
 
-    private CardView cardMapaVariantes;
-    private ImageView ivMapaQuechua;
-    private CardView stickySection;
-    private LinearLayout sectionContent;
-    private int stickySectionTop;
-    private int originalColor;
-    private int stickyColor;
-    private CardView draggableBubble;
-    private CardView curiositiesBubble;
-    private float dX, dY;
-    private float dX2, dY2;
-    private int lastAction;
-    private StreakManager streakManager;
+/**
+ * Home del ESTUDIANTE — versión actualizada.
+ *
+ * Cambios respecto a la versión anterior:
+ *  - Las 6 lecciones hardcodeadas se REEMPLAZAN por lecciones dinámicas de Firebase.
+ *  - Cada lección tiene un LeccionDinamicaCard que muestra título, categoría, nivel,
+ *    número de ejercicios, EXP y estado (completada / bloqueada / disponible).
+ *  - El progreso general se calcula sobre las lecciones de Firebase.
+ *  - Al tocar una lección disponible abre LeccionDinamicaActivity (nueva).
+ *  - Las burbujas de repaso y curiosidades se mantienen.
+ *  - El TTS Quechua está integrado vía QuechuaTTSManager.
+ */
+public class homeActivity extends BaseActivity {
+
+    private static final String TAG = "homeActivity";
+
+    // ── Header stats ──
     private TextView streakDays, diamondsCount, livesCount;
+
+    // ── Sección sticky ──
+    private CardView       stickySection;
+    private LinearLayout   sectionContent;
+    private TextView       tvSectionNumber, tvSectionTitle, tvSectionDescription;
+    private ProgressBar    progressBarGeneral;
+    private TextView       tvPorcentajeCompletado;
+    private int            stickySectionTop;
+
+    // ── RecyclerView de lecciones dinámicas ──
+    private RecyclerView       rvLecciones;
+    private LeccionesAdapter   leccionesAdapter;
+    private List<LeccionCard>  listaLecciones;
+
+    // ── Burbujas flotantes ──
+    private CardView draggableBubble, curiositiesBubble;
+
+    // ── Firebase ──
+    private DatabaseReference dbRef;
+    private String            userId;
+
+    // ── Managers ──
+    private StreakManager     streakManager;
+    private QuechuaTTSManager ttsManager;
+
+    // ── Mapa / variantes ──
+    private CardView  cardMapaVariantes;
+    private ImageView ivMapaQuechua;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // ✅ INICIALIZAR PRIMERO LAS VISTAS
-        streakDays = findViewById(R.id.streakDays);
-        diamondsCount = findViewById(R.id.diamondsCount);
-        livesCount = findViewById(R.id.livesCount);
-
-        tvSectionNumber = findViewById(R.id.tvSectionNumber);
-        tvSectionTitle = findViewById(R.id.tvSectionTitle);
-        progressBarGeneral = findViewById(R.id.sectionProgressBar);
-        tvSectionDescription = findViewById(R.id.tvSectionDescription);
-        tvPorcentajeCompletado = findViewById(R.id.tvPorcentajeCompletado);
-
-        SharedPreferences prefs =
-                getSharedPreferences("game_data", MODE_PRIVATE);
-
-        if (!prefs.contains("vidas")) {
-            prefs.edit()
-                    .putLong("vidas", 5)
-                    .apply();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            startActivity(new Intent(this, loginFormActivity.class));
+            finish();
+            return;
         }
+        userId  = user.getUid();
+        dbRef   = FirebaseDatabase.getInstance().getReference();
 
-        // ✅ INICIALIZAR STREAK MANAGER
+        // Managers
         streakManager = new StreakManager();
+        ttsManager    = new QuechuaTTSManager(this);
 
-        // Configurar barra de navegación inferior
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
-        bottomNav.setOnNavigationItemSelectedListener(navListener);
-
-        // Referencias a las vistas sticky
-        stickySection = findViewById(R.id.stickySection);
-        sectionContent = findViewById(R.id.sectionContent);
-
-        // Obtener colores
-        stickyColor = ContextCompat.getColor(this, R.color.rosado);
-
-        // Configurar el efecto sticky con cambio de color
+        initViews();
+        setupBottomNav();
         setupStickyHeader();
-
-        // ✅ PRIMERO ACTUALIZAR RACHA, LUEGO CARGAR DATOS
-        updateStreakAndData();
-        actualizarProgresoGeneral();
-        setupLevelCards();
+        setupBurbujas();
         setupMapaButton();
-        // Configurar niveles clickeables
-
-        setupMapaButton();
-
         aplicarFuentesAutomaticas();
 
-        // ✅ INICIALIZAR BURBUJA DE REPASO
-        draggableBubble = findViewById(R.id.draggableBubble);
-        setupDraggableBubble(draggableBubble, true);
+        // Inicializar vidas si es primera vez
+        SharedPreferences prefs = getSharedPreferences("game_data", MODE_PRIVATE);
+        if (!prefs.contains("vidas")) {
+            prefs.edit().putLong("vidas", 5).apply();
+        }
 
-        // ✅ INICIALIZAR BURBUJA DE DATOS CURIOSOS
-        curiositiesBubble = findViewById(R.id.curiositiesBubble);
-        setupDraggableBubble(curiositiesBubble, false);
+        // Cargar datos
+        updateStreakAndData();
+        cargarLeccionesFirebase();
 
         mostrarToastBienvenida();
     }
 
-    private void mostrarToastBienvenida() {
-        // Obtener el rol del Intent
-        String rol = getIntent().getStringExtra("user_role");
+    // ══════════════════════════════════════════════════════════════
+    // INICIALIZAR VISTAS
+    // ══════════════════════════════════════════════════════════════
+    private void initViews() {
+        streakDays   = findViewById(R.id.streakDays);
+        diamondsCount = findViewById(R.id.diamondsCount);
+        livesCount   = findViewById(R.id.livesCount);
 
-        // Si no viene del Intent, obtener de SharedPreferences
-        if (rol == null || rol.isEmpty()) {
-            SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-            rol = prefs.getString("user_role", "usuario_comun");
-        }
+        tvSectionNumber      = findViewById(R.id.tvSectionNumber);
+        tvSectionTitle       = findViewById(R.id.tvSectionTitle);
+        tvSectionDescription = findViewById(R.id.tvSectionDescription);
+        progressBarGeneral   = findViewById(R.id.sectionProgressBar);
+        tvPorcentajeCompletado = findViewById(R.id.tvPorcentajeCompletado);
 
-        // Formatear el mensaje según el rol
-        String mensaje;
-        int colorToast;
+        stickySection  = findViewById(R.id.stickySection);
+        sectionContent = findViewById(R.id.sectionContent);
 
-        switch (rol) {
-            case "administrador":
-                mensaje = "👑 Bienvenido, Administrador";
-                colorToast = android.R.color.holo_red_light;
-                break;
-            case "docente":
-                mensaje = "📚 Bienvenido, Docente";
-                colorToast = android.R.color.holo_blue_light;
-                break;
-            case "usuario_comun":
-            default:
-                mensaje = "👋 Bienvenido, Aprendiz";
-                colorToast = android.R.color.holo_green_light;
-                break;
-        }
+        // RecyclerView — reemplaza los level1Card..level6Card del layout anterior
+        rvLecciones    = findViewById(R.id.rvLeccionesDinamicas);
+        listaLecciones = new ArrayList<>();
+        leccionesAdapter = new LeccionesAdapter(listaLecciones, this);
+        rvLecciones.setLayoutManager(new LinearLayoutManager(this));
+        rvLecciones.setAdapter(leccionesAdapter);
+        rvLecciones.setNestedScrollingEnabled(false);
 
-        // Mostrar Toast personalizado
-        Toast toast = Toast.makeText(this, mensaje, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 200);
-        toast.show();
+        draggableBubble  = findViewById(R.id.draggableBubble);
+        curiositiesBubble = findViewById(R.id.curiositiesBubble);
 
-        Log.d("ROL_LOGIN", "Usuario ingresó como: " + rol);
-    }
-
-    private void setupMapaButton() {
         cardMapaVariantes = findViewById(R.id.cardMapaVariantes);
-        ivMapaQuechua = findViewById(R.id.ivMapaQuechua);
-
-        // Hacer clickeable el CardView completo
-        if (cardMapaVariantes != null) {
-            cardMapaVariantes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    abrirMapaVariantes();
-                }
-            });
-        }
-
-        // También hacer clickeable el ImageView
-        if (ivMapaQuechua != null) {
-            ivMapaQuechua.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    abrirMapaVariantes();
-                }
-            });
-        }
+        ivMapaQuechua     = findViewById(R.id.ivMapaQuechua);
     }
 
-    private void abrirMapaVariantes() {
-        try {
-            // Animación de feedback visual
-            if (cardMapaVariantes != null) {
-                cardMapaVariantes.animate()
-                        .scaleX(0.95f)
-                        .scaleY(0.95f)
-                        .setDuration(100)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                cardMapaVariantes.animate()
-                                        .scaleX(1.0f)
-                                        .scaleY(1.0f)
-                                        .setDuration(100)
-                                        .start();
+    // ══════════════════════════════════════════════════════════════
+    // CARGAR LECCIONES DESDE FIREBASE  ← NÚCLEO DEL CAMBIO
+    // ══════════════════════════════════════════════════════════════
+    private void cargarLeccionesFirebase() {
+        // Mostrar skeleton/loader
+        mostrarLoader(true);
+
+        dbRef.child("lessons")
+                .orderByChild("lessonInfo/activa")
+                .equalTo(true)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        listaLecciones.clear();
+
+                        // Obtener lecciones completadas del estudiante
+                        obtenerProgreso(snapshot);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e(TAG, "Error cargando lecciones: " + error.getMessage());
+                        mostrarLoader(false);
+                        mostrarErrorLecciones();
+                    }
+                });
+    }
+
+    /**
+     * Primero obtiene el progreso del estudiante (lecciones completadas),
+     * luego cruza con las lecciones activas de Firebase.
+     */
+    private void obtenerProgreso(DataSnapshot leccionesSnapshot) {
+        dbRef.child("user_lessons")
+                .orderByChild("userId")
+                .equalTo(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot progresoSnapshot) {
+                        // Construir set de lessonIds completadas
+                        java.util.Set<String> completadas = new java.util.HashSet<>();
+                        for (DataSnapshot up : progresoSnapshot.getChildren()) {
+                            Boolean comp = up.child("completed").getValue(Boolean.class);
+                            if (Boolean.TRUE.equals(comp)) {
+                                String lid = up.child("lessonId").getValue(String.class);
+                                if (lid != null) completadas.add(lid);
                             }
-                        })
-                        .start();
-            }
+                        }
 
-            // Abrir MapaVariantesActivity
-            Intent intent = new Intent(homeActivity.this, MapaVariantesActivity.class);
-            startActivity(intent);
+                        // Parsear lecciones activas
+                        List<LeccionCard> nuevas = new ArrayList<>();
+                        for (DataSnapshot ls : leccionesSnapshot.getChildren()) {
+                            try {
+                                LeccionCard card = parsearLeccion(ls, completadas);
+                                if (card != null) nuevas.add(card);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error parseando lección: " + e.getMessage());
+                            }
+                        }
 
-            // Animación de transición suave
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                        // Ordenar: completadas → disponibles → bloqueadas
+                        // y dentro de cada grupo por fecha de creación
+                        nuevas.sort((a, b) -> {
+                            int prioA = prioridadOrden(a);
+                            int prioB = prioridadOrden(b);
+                            if (prioA != prioB) return Integer.compare(prioA, prioB);
+                            return Long.compare(a.createdAt, b.createdAt);
+                        });
 
-        } catch (Exception e) {
-            Log.e("MAPA_ERROR", "Error al abrir mapa: " + e.getMessage());
-            Toast.makeText(this, "Error al abrir el mapa de variantes", Toast.LENGTH_SHORT).show();
+                        // Aplicar lógica de bloqueo secuencial:
+                        // la primera no completada está disponible, las siguientes bloqueadas
+                        boolean encontroPrimera = false;
+                        for (LeccionCard c : nuevas) {
+                            if (!c.completada && !encontroPrimera) {
+                                c.disponible   = true;
+                                encontroPrimera = true;
+                            } else if (!c.completada) {
+                                c.disponible = false; // bloqueada
+                            } else {
+                                c.disponible = true;  // completada = siempre accesible
+                            }
+                        }
+
+                        runOnUiThread(() -> {
+                            listaLecciones.clear();
+                            listaLecciones.addAll(nuevas);
+                            leccionesAdapter.notifyDataSetChanged();
+                            actualizarProgresoGeneral(nuevas, completadas.size());
+                            mostrarLoader(false);
+
+                            if (nuevas.isEmpty()) mostrarEstadoVacio();
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e(TAG, "Error progreso: " + error.getMessage());
+                        mostrarLoader(false);
+                    }
+                });
+    }
+
+    private LeccionCard parsearLeccion(DataSnapshot ls,
+                                       java.util.Set<String> completadas) {
+        DataSnapshot info = ls.child("lessonInfo");
+        LeccionCard card = new LeccionCard();
+        card.id          = ls.getKey();
+        card.titulo      = getStr(info, "title",       "Sin título");
+        card.descripcion = getStr(info, "description", "");
+        card.nivel       = getStr(info, "nivel",       "Básico");
+        card.categoria   = getStr(info, "categoria",   "Otra");
+
+        Long ts = info.child("createdAt").getValue(Long.class);
+        card.createdAt = ts != null ? ts : 0L;
+
+        card.numEjercicios = (int) ls.child("content/ejercicios").getChildrenCount();
+
+        Long exp = ls.child("rewards/exp").getValue(Long.class);
+        card.exp = exp != null ? exp.intValue() : 30;
+
+        card.completada = completadas.contains(card.id);
+        card.disponible = false; // se calcula después
+
+        if (card.id == null || card.titulo.isEmpty()) return null;
+        return card;
+    }
+
+    private int prioridadOrden(LeccionCard c) {
+        if (c.completada) return 0;
+        if (c.disponible) return 1;
+        return 2;
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // PROGRESO GENERAL (barra + texto de sección sticky)
+    // ══════════════════════════════════════════════════════════════
+    private void actualizarProgresoGeneral(List<LeccionCard> todas, int numCompletadas) {
+        int total = todas.size();
+        if (total == 0) {
+            tvSectionNumber.setText("Sin lecciones");
+            tvSectionTitle.setText("El docente aún no publicó lecciones");
+            tvSectionDescription.setText("Vuelve pronto 📚");
+            progressBarGeneral.setProgress(0);
+            tvPorcentajeCompletado.setText("0% completado");
+            return;
         }
-    }
 
-    private void updateStreakAndData() {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid();
+        int porcentaje = (numCompletadas * 100) / total;
 
-            Log.d("STREAK_FIX", "🎯 ACTUALIZANDO RACHA PARA: " + userId);
-
-            // 1. ACTUALIZAR RACHA
-            streakManager.updateUserStreak(userId, new StreakManager.StreakUpdateCallback() {
-                @Override
-                public void onStreakUpdated(int newStreak) {
-                    Log.d("STREAK_FIX", "🎉 RACHA ACTUALIZADA: " + newStreak);
-
-                    runOnUiThread(() -> {
-                        streakDays.setText(String.valueOf(newStreak));
-                        Toast.makeText(homeActivity.this, "🔥 Racha: " + newStreak + " días", Toast.LENGTH_SHORT).show();
-                    });
-                }
-
-                @Override
-                public void onError(String error) {
-                    Log.e("STREAK_FIX", "💥 ERROR: " + error);
-
-                    runOnUiThread(() -> {
-                        streakDays.setText("1");
-                        Toast.makeText(homeActivity.this, "Racha iniciada: 1 día", Toast.LENGTH_SHORT).show();
-                    });
-                }
-            });
-
-            // 2. CARGAR DATOS EXISTENTES
-            loadExistingUserData(userId);
-
-        } else {
-            Log.e("STREAK_FIX", "❌ Usuario no logueado");
-            streakDays.setText("1");
-        }
-    }
-
-    private void loadExistingUserData(String userId) {
-
-        SharedPreferences prefs =
-                getSharedPreferences("game_data", MODE_PRIVATE);
-
-        long vidas = prefs.getLong("vidas", 5);
-
-        runOnUiThread(() -> {
-            diamondsCount.setText("0");
-            livesCount.setText(String.valueOf(vidas));
-        });
-    }
-    private void actualizarProgresoGeneral() {
-
-
-        SharedPreferences prefs =
-                getSharedPreferences("game_data", MODE_PRIVATE);
-
-        int nivelActual =
-                prefs.getInt("nivel_completado", 1);
-        Log.d("PROGRESO", "nivelActual = " + nivelActual);
-
-        String[] nombresLecciones = {
-                "Saludos",
-                "Presentaciones",
-                "Familia",
-                "Números",
-                "Colores",
-                "Animales"
-        };
-
-        String[] descripciones = {
-                "Aprende los saludos básicos en Quechua",
-                "Aprende a presentarte",
-                "Aprende vocabulario de familia",
-                "Aprende los números",
-                "Aprende los colores",
-                "Aprende nombres de animales"
-        };
-
-        if (nivelActual < 1) nivelActual = 1;
-
-        int porcentaje;
-
-        if (nivelActual > 6) {
-
-            porcentaje = 100;
-            tvSectionNumber.setVisibility(View.GONE);
-
-            tvSectionNumber.setText("🏆 CURSO COMPLETADO");
+        if (numCompletadas >= total) {
+            tvSectionNumber.setText("🏆 COMPLETADO");
             tvSectionTitle.setText("¡Felicitaciones!");
-            tvSectionDescription.setText(
-                    "Has completado todas las lecciones de Quechua"
-            );
-
+            tvSectionDescription.setText("Has completado todas las lecciones disponibles");
         } else {
-
-            tvSectionNumber.setText("Sección " + nivelActual);
-            tvSectionTitle.setText(nombresLecciones[nivelActual - 1]);
-            tvSectionDescription.setText(descripciones[nivelActual - 1]);
-
-            porcentaje = (nivelActual - 1) * 100 / 6;
+            // Mostrar la primera lección disponible en la sticky
+            LeccionCard proxima = null;
+            for (LeccionCard c : todas) {
+                if (!c.completada && c.disponible) { proxima = c; break; }
+            }
+            if (proxima != null) {
+                tvSectionNumber.setText("Siguiente");
+                tvSectionTitle.setText(proxima.titulo);
+                tvSectionDescription.setText(
+                        proxima.categoria + " · " + proxima.nivel
+                                + " · " + proxima.numEjercicios + " ejercicios"
+                );
+            }
         }
 
         progressBarGeneral.setMax(100);
         progressBarGeneral.setProgress(porcentaje);
-
-        tvPorcentajeCompletado.setText(
-                porcentaje + "% completado"
-        );
-
-    }
-    private void setupLevelCards() {
-
-        int[] cards = {
-                R.id.level1Card,
-                R.id.level2Card,
-                R.id.level3Card,
-                R.id.level4Card,
-                R.id.level5Card,
-                R.id.level6Card
-        };
-
-        int[] statusIcons = {
-                R.id.level1StatusIcon,
-                R.id.level2StatusIcon,
-                R.id.level3StatusIcon,
-                R.id.level4StatusIcon,
-                R.id.level5StatusIcon,
-                R.id.level6StatusIcon
-        };
-
-        SharedPreferences prefs =
-                getSharedPreferences("game_data", MODE_PRIVATE);
-
-        int nivelActual =
-                prefs.getInt("nivel_completado", 1);
-
-        for (int i = 0; i < cards.length; i++) {
-
-            CardView card = findViewById(cards[i]);
-            ImageView icon = findViewById(statusIcons[i]);
-
-            final int nivel = i + 1;
-
-            // ===== CHECK O CRUZ =====
-            boolean completado =
-                    prefs.getBoolean("nivel" + nivel, false);
-
-            if (icon != null) {
-
-                if (completado) {
-                    icon.setImageResource(R.drawable.ic_check);
-                } else {
-                    icon.setImageResource(R.drawable.ic_cross);
-                }
-            }
-
-            // ===== CLICK DEL NIVEL =====
-            if (card != null) {
-
-                card.setOnClickListener(v -> {
-
-                    if (nivel > nivelActual) {
-
-                        Toast.makeText(
-                                homeActivity.this,
-                                "Debes completar el nivel anterior",
-                                Toast.LENGTH_SHORT
-                        ).show();
-
-                        return;
-                    }
-
-                    navigateToExercise(nivel);
-
-                });
-            }
-        }
-    }
-    private void loadUserData(String userId) {
-        DatabaseReference userRef = FirebaseDatabase.getInstance()
-                .getReference("users")
-                .child(userId);
-
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Long diamantes = snapshot.child("diamantes").getValue(Long.class);
-                    Long vidas = snapshot.child("vidas").getValue(Long.class);
-
-                    runOnUiThread(() -> {
-                        diamondsCount.setText(diamantes != null ? String.valueOf(diamantes) : "0");
-                        livesCount.setText(vidas != null ? String.valueOf(vidas) : "0");
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("DATA_DEBUG", "Error datos: " + error.getMessage());
-            }
-        });
+        tvPorcentajeCompletado.setText(porcentaje + "% completado");
     }
 
-    private void aplicarFuentesAutomaticas() {
-        // Header
-        aplicarFuente(R.id.streakDays, 16f);
-        aplicarFuente(R.id.diamondsCount, 16f);
-        aplicarFuente(R.id.livesCount, 16f);
-
-        // Sección sticky
-        CardView stickyCard = findViewById(R.id.stickySection);
-        if (stickyCard != null) {
-            LinearLayout content = findViewById(R.id.sectionContent);
-            if (content != null && content.getChildCount() >= 2) {
-                View child1 = content.getChildAt(0);
-                View child2 = content.getChildAt(1);
-
-                if (child1 instanceof TextView)
-                    configuracionActivity.aplicarTamanioFuente((TextView) child1, 20f);
-                if (child2 instanceof TextView)
-                    configuracionActivity.aplicarTamanioFuente((TextView) child2, 16f);
-            }
-        }
-
-        // Niveles
-        aplicarFuentesNiveles();
+    // ══════════════════════════════════════════════════════════════
+    // ESTADOS DE UI
+    // ══════════════════════════════════════════════════════════════
+    private void mostrarLoader(boolean show) {
+        View loader = findViewById(R.id.progressBarLecciones);
+        if (loader != null) loader.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (rvLecciones != null) rvLecciones.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
-    private void aplicarFuentesNiveles() {
-        int[] levelIds = {R.id.level1Card, R.id.level2Card, R.id.level3Card,
-                R.id.level4Card, R.id.level5Card, R.id.level6Card};
-
-        int[] titleIds = {R.id.level1Title, R.id.level2Title, R.id.level3Title,
-                R.id.level4Title, R.id.level5Title, R.id.level6Title};
-
-        int[] descIds = {R.id.level1Description, R.id.level2Description, R.id.level3Description,
-                R.id.level4Description, R.id.level5Description, R.id.level6Description};
-
-        for (int i = 0; i < levelIds.length; i++) {
-            TextView title = findViewById(titleIds[i]);
-            TextView desc = findViewById(descIds[i]);
-
-            if (title != null) configuracionActivity.aplicarTamanioFuente(title, 16f);
-            if (desc != null) configuracionActivity.aplicarTamanioFuente(desc, 14f);
+    private void mostrarEstadoVacio() {
+        View vacio = findViewById(R.id.layoutSinLecciones);
+        if (vacio != null) {
+            vacio.setVisibility(View.VISIBLE);
+            rvLecciones.setVisibility(View.GONE);
         }
     }
 
-    private void aplicarFuente(int textViewId, float tamanioBase) {
-        TextView textView = findViewById(textViewId);
-        if (textView != null) {
-            configuracionActivity.aplicarTamanioFuente(textView, tamanioBase);
+    private void mostrarErrorLecciones() {
+        Toast.makeText(this,
+                "No se pudieron cargar las lecciones. Verifica tu conexión.",
+                Toast.LENGTH_LONG).show();
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ABRIR LECCIÓN DINÁMICA
+    // ══════════════════════════════════════════════════════════════
+    public void abrirLeccion(LeccionCard leccion) {
+        if (!leccion.disponible && !leccion.completada) {
+            Toast.makeText(this,
+                    "🔒 Completa la lección anterior primero",
+                    Toast.LENGTH_SHORT).show();
+            return;
         }
-    }
 
-    private void setupStickyHeader() {
-        final ViewTreeObserver observer = stickySection.getViewTreeObserver();
-        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                stickySectionTop = stickySection.getTop();
-                stickySection.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                findViewById(R.id.mainScrollView).getViewTreeObserver()
-                        .addOnScrollChangedListener(() -> {
-                            int scrollY = findViewById(R.id.mainScrollView).getScrollY();
-                            if (scrollY >= stickySectionTop) {
-                                sectionContent.setBackgroundColor(stickyColor);
-                            } else {
-                                stickySection.setTranslationY(0);
-                                sectionContent.setBackgroundColor(originalColor);
-                            }
-                        });
-            }
-        });
-    }
-
-
-
-    private void navigateToExercise(int levelNumber) {
-
-        SharedPreferences prefs =
-                getSharedPreferences("game_data", MODE_PRIVATE);
-
+        SharedPreferences prefs = getSharedPreferences("game_data", MODE_PRIVATE);
         long vidas = prefs.getLong("vidas", 5);
 
-        Intent intent = null;
-
-        switch (levelNumber) {
-
-            case 1:
-                intent = new Intent(this, ejercicio1.class);
-                break;
-
-            case 2:
-                intent = new Intent(this, ejercicio2_1.class);
-                break;
-
-            case 3:
-                intent = new Intent(this, ejercicio3_1.class);
-                break;
-
-            case 4:
-                intent = new Intent(this, ejercicio4_1.class);
-                break;
-
-            case 5:
-                intent = new Intent(this, ejercicio5_1.class);
-                break;
-
-            case 6:
-                intent = new Intent(this, ejercicio6_1.class);
-                break;
+        if (vidas <= 0) {
+            mostrarDialogoSinVidas();
+            return;
         }
 
-        if (intent != null) {
-
-            intent.putExtra("LEVEL_NUMBER", levelNumber);
-            intent.putExtra("vidas", vidas);
-
-            startActivity(intent);
-
-        } else {
-
-            Toast.makeText(
-                    this,
-                    "Nivel " + levelNumber + " en desarrollo",
-                    Toast.LENGTH_SHORT
-            ).show();
-        }
+        Intent intent = new Intent(this, LeccionDinamicaActivity.class);
+        intent.putExtra("LECCION_ID",    leccion.id);
+        intent.putExtra("LECCION_TITLE", leccion.titulo);
+        intent.putExtra("vidas",         vidas);
+        startActivity(intent);
     }
 
-    private void setupDraggableBubble(final CardView bubble, final boolean isReviewBubble) {
+    private void mostrarDialogoSinVidas() {
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("💔 Sin vidas")
+                .setMessage("Espera 24 horas para que se recarguen tus vidas, o continúa mañana.")
+                .setPositiveButton("Entendido", null)
+                .show();
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // STREAK Y DATOS DE USUARIO
+    // ══════════════════════════════════════════════════════════════
+    private void updateStreakAndData() {
+        streakManager.updateUserStreak(userId, new StreakManager.StreakUpdateCallback() {
+            @Override
+            public void onStreakUpdated(int newStreak) {
+                runOnUiThread(() -> streakDays.setText(String.valueOf(newStreak)));
+            }
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> streakDays.setText("1"));
+            }
+        });
+
+        SharedPreferences prefs = getSharedPreferences("game_data", MODE_PRIVATE);
+        long vidas = prefs.getLong("vidas", 5);
+        livesCount.setText(String.valueOf(vidas));
+        diamondsCount.setText("0");
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // STICKY HEADER
+    // ══════════════════════════════════════════════════════════════
+    private void setupStickyHeader() {
+        if (stickySection == null) return;
+        int stickyColor = ContextCompat.getColor(this, R.color.rosado);
+
+        stickySection.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        stickySectionTop = stickySection.getTop();
+                        stickySection.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                        View scroll = findViewById(R.id.mainScrollView);
+                        if (scroll != null) {
+                            scroll.getViewTreeObserver().addOnScrollChangedListener(() -> {
+                                int scrollY = scroll.getScrollY();
+                                if (sectionContent != null) {
+                                    sectionContent.setBackgroundColor(
+                                            scrollY >= stickySectionTop ? stickyColor : 0x00000000
+                                    );
+                                }
+                            });
+                        }
+                    }
+                });
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // MAPA DE VARIANTES
+    // ══════════════════════════════════════════════════════════════
+    private void setupMapaButton() {
+        View.OnClickListener abrirMapa = v -> {
+            if (cardMapaVariantes != null) {
+                cardMapaVariantes.animate()
+                        .scaleX(0.95f).scaleY(0.95f).setDuration(100)
+                        .withEndAction(() -> cardMapaVariantes.animate()
+                                .scaleX(1f).scaleY(1f).setDuration(100).start())
+                        .start();
+            }
+            startActivity(new Intent(this, MapaVariantesActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        };
+
+        if (cardMapaVariantes != null) cardMapaVariantes.setOnClickListener(abrirMapa);
+        if (ivMapaQuechua     != null) ivMapaQuechua.setOnClickListener(abrirMapa);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // BURBUJAS FLOTANTES
+    // ══════════════════════════════════════════════════════════════
+    private void setupBurbujas() {
+        if (draggableBubble  != null) setupDraggableBubble(draggableBubble,  true);
+        if (curiositiesBubble != null) setupDraggableBubble(curiositiesBubble, false);
+    }
+
+    private void setupDraggableBubble(CardView bubble, boolean isReview) {
         bubble.setOnTouchListener(new View.OnTouchListener() {
             private boolean isDragging = false;
-            private final int DRAG_THRESHOLD = 10;
-            private float localDX = 0, localDY = 0;
+            private float localDX, localDY;
+            private static final int THRESHOLD = 10;
 
             @Override
-            public boolean onTouch(View view, MotionEvent event) {
+            public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
-                        localDX = view.getX() - event.getRawX();
-                        localDY = view.getY() - event.getRawY();
+                        localDX = v.getX() - event.getRawX();
+                        localDY = v.getY() - event.getRawY();
                         isDragging = false;
-                        view.setElevation(20f);
+                        v.setElevation(20f);
                         break;
-
                     case MotionEvent.ACTION_MOVE:
-                        float deltaX = Math.abs(event.getRawX() + localDX - view.getX());
-                        float deltaY = Math.abs(event.getRawY() + localDY - view.getY());
-
-                        if (deltaX > DRAG_THRESHOLD || deltaY > DRAG_THRESHOLD) {
-                            isDragging = true;
-                        }
+                        float dx = Math.abs(event.getRawX() + localDX - v.getX());
+                        float dy = Math.abs(event.getRawY() + localDY - v.getY());
+                        if (dx > THRESHOLD || dy > THRESHOLD) isDragging = true;
 
                         float newX = event.getRawX() + localDX;
                         float newY = event.getRawY() + localDY;
-
-                        ViewGroup parent = (ViewGroup) view.getParent();
-                        int parentWidth = parent.getWidth();
-                        int parentHeight = parent.getHeight();
-                        int viewWidth = view.getWidth();
-                        int viewHeight = view.getHeight();
-
-                        if (newX < 0) {
-                            newX = 0;
-                        } else if (newX + viewWidth > parentWidth) {
-                            newX = parentWidth - viewWidth;
-                        }
-
-                        if (newY < 0) {
-                            newY = 0;
-                        } else if (newY + viewHeight > parentHeight) {
-                            newY = parentHeight - viewHeight;
-                        }
-
-                        view.animate()
-                                .x(newX)
-                                .y(newY)
-                                .setDuration(0)
-                                .start();
+                        ViewGroup parent = (ViewGroup) v.getParent();
+                        newX = Math.max(0, Math.min(newX, parent.getWidth()  - v.getWidth()));
+                        newY = Math.max(0, Math.min(newY, parent.getHeight() - v.getHeight()));
+                        v.animate().x(newX).y(newY).setDuration(0).start();
                         break;
-
                     case MotionEvent.ACTION_UP:
-                        view.setElevation(16f);
-
+                        v.setElevation(16f);
                         if (!isDragging) {
-                            if (isReviewBubble) {
-                                onReviewBubbleClicked();
-                            } else {
-                                onCuriositiesBubbleClicked();
-                            }
+                            if (isReview) onReviewBubbleClicked();
+                            else          onCuriositiesBubbleClicked();
                         }
                         break;
-
-                    default:
-                        return false;
+                    default: return false;
                 }
                 return true;
             }
@@ -625,123 +501,219 @@ public class homeActivity extends BaseActivity {
 
     private void onReviewBubbleClicked() {
         try {
-            draggableBubble.animate()
-                    .scaleX(0.9f)
-                    .scaleY(0.9f)
-                    .setDuration(100)
-                    .withEndAction(() -> {
-                        draggableBubble.animate()
-                                .scaleX(1.0f)
-                                .scaleY(1.0f)
-                                .setDuration(100)
-                                .start();
-
-                        openReviewActivity();
-                    })
-                    .start();
+            startActivity(new Intent(this, ReviewActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } catch (Exception e) {
-            Log.e("REVIEW_ERROR", "Error al abrir repaso: " + e.getMessage());
-            Toast.makeText(this, "Error al abrir repaso", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Función próximamente", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void onCuriositiesBubbleClicked() {
         try {
-            curiositiesBubble.animate()
-                    .scaleX(0.9f)
-                    .scaleY(0.9f)
-                    .setDuration(100)
-                    .withEndAction(() -> {
-                        curiositiesBubble.animate()
-                                .scaleX(1.0f)
-                                .scaleY(1.0f)
-                                .setDuration(100)
-                                .start();
-
-                        openCuriositiesActivity();
-                    })
-                    .start();
-        } catch (Exception e) {
-            Log.e("CURIOSITIES_ERROR", "Error al abrir curiosidades: " + e.getMessage());
-            Toast.makeText(this, "Error al abrir datos curiosos", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void openReviewActivity() {
-        try {
-            Intent intent = new Intent(this, ReviewActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, CuriositiesActivity.class));
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } catch (Exception e) {
-            Log.e("REVIEW_ERROR", "No se pudo abrir ReviewActivity: " + e.getMessage());
-            Toast.makeText(this, "Función de repaso no disponible aún", Toast.LENGTH_SHORT).show();
-            showTemporaryReview();
+            Toast.makeText(this, "Función próximamente", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void openCuriositiesActivity() {
-        try {
-            Intent intent = new Intent(this, CuriositiesActivity.class);
-            startActivity(intent);
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        } catch (Exception e) {
-            Log.e("CURIOSITIES_ERROR", "No se pudo abrir CuriositiesActivity: " + e.getMessage());
-            Toast.makeText(this, "Función de datos curiosos no disponible aún", Toast.LENGTH_SHORT).show();
+    // ══════════════════════════════════════════════════════════════
+    // TOAST BIENVENIDA
+    // ══════════════════════════════════════════════════════════════
+    private void mostrarToastBienvenida() {
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String rol = getIntent().getStringExtra("user_role");
+        if (rol == null) rol = prefs.getString("user_role", "usuario_comun");
+
+        String msg;
+        switch (rol) {
+            case "administrador": msg = "👑 Bienvenido, Administrador"; break;
+            case "docente":       msg = "📚 Bienvenido, Docente";       break;
+            default:              msg = "👋 Bienvenido, Aprendiz";      break;
         }
+
+        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 200);
+        toast.show();
     }
 
-    private void showTemporaryReview() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Repaso")
-                .setMessage("La función de repaso estará disponible pronto")
-                .setPositiveButton("OK", null)
-                .show();
+    // ══════════════════════════════════════════════════════════════
+    // FUENTES
+    // ══════════════════════════════════════════════════════════════
+    private void aplicarFuentesAutomaticas() {
+        aplicarFuente(R.id.streakDays,    16f);
+        aplicarFuente(R.id.diamondsCount, 16f);
+        aplicarFuente(R.id.livesCount,    16f);
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    int id = item.getItemId();
+    private void aplicarFuente(int id, float size) {
+        TextView tv = findViewById(id);
+        if (tv != null) configuracionActivity.aplicarTamanioFuente(tv, size);
+    }
 
-                    if (id == R.id.nav_home) {
-                        return true;
-                    } else if (id == R.id.nav_dictionary) {
-                        startActivity(new Intent(homeActivity.this, HerramientasActivity.class));
-                        finish();
-                        return true;
-                    } else if (id == R.id.nav_Minijuegos) {
-                        startActivity(new Intent(homeActivity.this, MiniJuegosActivity.class));
-                        finish();
-                        return true;
-                    } else if (id == R.id.nav_profile) {
-                        startActivity(new Intent(homeActivity.this, perfilActivity.class));
-                        finish();
-                        return true;
-                    }
-                    return false;
-                }
-            };
+    // ══════════════════════════════════════════════════════════════
+    // BOTTOM NAV
+    // ══════════════════════════════════════════════════════════════
+    private void setupBottomNav() {
+        BottomNavigationView nav = findViewById(R.id.bottomNavigation);
+        if (nav == null) return;
+        nav.setOnNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home)       return true;
+            if (id == R.id.nav_dictionary) { startActivity(new Intent(this, HerramientasActivity.class)); finish(); return true; }
+            if (id == R.id.nav_Minijuegos) { startActivity(new Intent(this, MiniJuegosActivity.class));   finish(); return true; }
+            if (id == R.id.nav_profile)    { startActivity(new Intent(this, perfilActivity.class));        finish(); return true; }
+            return false;
+        });
+    }
 
     @Override
-    protected int getSelectedNavItemId() {
-        return R.id.nav_home;
-    }
+    protected int getSelectedNavItemId() { return R.id.nav_home; }
 
+    // ══════════════════════════════════════════════════════════════
+    // LIFECYCLE
+    // ══════════════════════════════════════════════════════════════
     @Override
     protected void onResume() {
         super.onResume();
-
         FloatingChatManager.attach(this);
-
-        setupLevelCards();
         updateStreakAndData();
-        actualizarProgresoGeneral();
         aplicarFuentesAutomaticas();
+        // Las lecciones se actualizan solas por el listener en tiempo real
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         FloatingChatManager.detach();
+        if (ttsManager != null) ttsManager.detener();
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // HELPERS
+    // ══════════════════════════════════════════════════════════════
+    private String getStr(DataSnapshot ds, String key, String def) {
+        String v = ds.child(key).getValue(String.class);
+        return v != null ? v : def;
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // MODELO DE DATOS
+    // ══════════════════════════════════════════════════════════════
+    public static class LeccionCard {
+        public String  id;
+        public String  titulo;
+        public String  descripcion;
+        public String  nivel;
+        public String  categoria;
+        public int     numEjercicios;
+        public int     exp;
+        public long    createdAt;
+        public boolean completada;
+        public boolean disponible;
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ADAPTER DE LECCIONES
+    // ══════════════════════════════════════════════════════════════
+    public static class LeccionesAdapter
+            extends RecyclerView.Adapter<LeccionesAdapter.VH> {
+
+        private final List<LeccionCard> lista;
+        private final homeActivity      ctx;
+
+        LeccionesAdapter(List<LeccionCard> lista, homeActivity ctx) {
+            this.lista = lista;
+            this.ctx   = ctx;
+        }
+
+        @NonNull
+        @Override
+        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = android.view.LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_leccion_estudiante, parent, false);
+            return new VH(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull VH h, int pos) {
+            LeccionCard c = lista.get(pos);
+
+            h.tvTitulo.setText(c.titulo);
+            h.tvCategoria.setText(c.categoria);
+            h.tvNivel.setText(c.nivel);
+            h.tvEjercicios.setText(c.numEjercicios + " ejercicios");
+            h.tvExp.setText("+" + c.exp + " EXP");
+
+            // Estado visual
+            if (c.completada) {
+                h.tvEstado.setText("✅ Completada");
+                h.tvEstado.setTextColor(Color.parseColor("#27AE60"));
+                h.ivCandado.setVisibility(View.GONE);
+                h.cardLeccion.setAlpha(1f);
+                h.cardLeccion.setCardBackgroundColor(Color.parseColor("#F1F8E9"));
+                h.indicadorEstado.setBackgroundColor(Color.parseColor("#27AE60"));
+
+            } else if (c.disponible) {
+                h.tvEstado.setText("▶ Disponible");
+                h.tvEstado.setTextColor(Color.parseColor("#FF6F00"));
+                h.ivCandado.setVisibility(View.GONE);
+                h.cardLeccion.setAlpha(1f);
+                h.cardLeccion.setCardBackgroundColor(Color.WHITE);
+                h.indicadorEstado.setBackgroundColor(Color.parseColor("#FF6F00"));
+
+            } else {
+                h.tvEstado.setText("🔒 Bloqueada");
+                h.tvEstado.setTextColor(Color.parseColor("#9E9E9E"));
+                h.ivCandado.setVisibility(View.VISIBLE);
+                h.cardLeccion.setAlpha(0.6f);
+                h.cardLeccion.setCardBackgroundColor(Color.parseColor("#F5F5F5"));
+                h.indicadorEstado.setBackgroundColor(Color.parseColor("#BDBDBD"));
+            }
+
+            // Color del nivel
+            int nivelColor;
+            switch (c.nivel) {
+                case "Intermedio": nivelColor = Color.parseColor("#F39C12"); break;
+                case "Avanzado":   nivelColor = Color.parseColor("#E74C3C"); break;
+                default:           nivelColor = Color.parseColor("#27AE60"); break;
+            }
+            h.tvNivel.setBackgroundColor(nivelColor);
+
+            // Click
+            h.cardLeccion.setOnClickListener(v -> ctx.abrirLeccion(c));
+
+            // Animación entrada
+            h.itemView.setAlpha(0f);
+            h.itemView.setTranslationX(40f);
+            h.itemView.animate()
+                    .alpha(1f).translationX(0f)
+                    .setDuration(350)
+                    .setStartDelay(pos * 60L)
+                    .start();
+        }
+
+        @Override
+        public int getItemCount() { return lista.size(); }
+
+        static class VH extends RecyclerView.ViewHolder {
+            CardView  cardLeccion;
+            TextView  tvTitulo, tvCategoria, tvNivel, tvEjercicios, tvExp, tvEstado;
+            ImageView ivCandado;
+            View      indicadorEstado;
+
+            VH(View v) {
+                super(v);
+                cardLeccion     = v.findViewById(R.id.cardLeccionEstudiante);
+                tvTitulo        = v.findViewById(R.id.tvTituloLeccionEst);
+                tvCategoria     = v.findViewById(R.id.tvCategoriaLeccionEst);
+                tvNivel         = v.findViewById(R.id.tvNivelLeccionEst);
+                tvEjercicios    = v.findViewById(R.id.tvEjerciciosLeccionEst);
+                tvExp           = v.findViewById(R.id.tvExpLeccionEst);
+                tvEstado        = v.findViewById(R.id.tvEstadoLeccionEst);
+                ivCandado       = v.findViewById(R.id.ivCandadoLeccion);
+                indicadorEstado = v.findViewById(R.id.indicadorEstadoLeccion);
+            }
+        }
     }
 }

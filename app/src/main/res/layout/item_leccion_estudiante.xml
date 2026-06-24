@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    item_leccion_estudiante.xml
+    Card de lección que aparece en el home del estudiante.
+    Reemplaza los level1Card..level6Card del layout original.
+-->
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardLeccionEstudiante"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Barra de estado lateral -->
+        <View
+            android:id="@+id/indicadorEstadoLeccion"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:background="#FF6F00"/>
+
+        <!-- Contenido -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Fila: título + candado -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvTituloLeccionEst"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Título de la lección"
+                    android:textColor="#1E1E24"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+
+                <ImageView
+                    android:id="@+id/ivCandadoLeccion"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_lock"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+            <!-- Chips: categoría + nivel -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="6dp">  <!-- ✅ CORREGIDO -->
+
+                <TextView
+                    android:id="@+id/tvCategoriaLeccionEst"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Categoría"
+                    android:textColor="#FF6F00"
+                    android:textSize="11sp"
+                    android:background="@drawable/bg_chip_categoria"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:layout_marginEnd="6dp"/>  <!-- ✅ CORREGIDO -->
+
+                <TextView
+                    android:id="@+id/tvNivelLeccionEst"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Básico"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"/>
+            </LinearLayout>
+
+            <!-- Fila: ejercicios + EXP + estado -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="10dp">  <!-- ✅ CORREGIDO -->
+
+                <TextView
+                    android:id="@+id/tvEjerciciosLeccionEst"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="3 ejercicios"
+                    android:textColor="#757575"
+                    android:textSize="12sp"
+                    android:drawablePadding="4dp"/>
+
+                <TextView
+                    android:id="@+id/tvExpLeccionEst"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+30 EXP"
+                    android:textColor="#FF8F00"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="12dp"/>  <!-- ✅ CORREGIDO -->
+
+                <TextView
+                    android:id="@+id/tvEstadoLeccionEst"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="▶ Disponible"
+                    android:textColor="#FF6F00"
+                    android:textSize="12sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

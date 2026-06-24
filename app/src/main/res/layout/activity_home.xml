@@ -369,371 +369,71 @@
           android:layout_height="wrap_content"
           android:orientation="vertical">
 
-        <!-- Nivel 1 -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/level1Card"
+
+        <!-- Título de sección -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📚 Lecciones"
+            android:textColor="#BF360C"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Loader mientras carga Firebase -->
+        <ProgressBar
+            android:id="@+id/progressBarLecciones"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"/>
+
+        <!-- Estado vacío (sin lecciones publicadas) -->
+        <LinearLayout
+            android:id="@+id/layoutSinLecciones"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="#F59E0B">
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp"
+            android:visibility="gone">
 
-          <LinearLayout
-              android:layout_width="match_parent"
+          <TextView
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:padding="20dp"
-              android:gravity="center_vertical">
+              android:text="📭"
+              android:textSize="48sp"/>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="El docente aún no publicó lecciones"
+              android:textColor="#9E9E9E"
+              android:textSize="15sp"
+              android:gravity="center"
+              android:layout_marginTop="12dp"/>
 
-              <TextView
-                  android:id="@+id/level1Title"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Nivel 1"
-                  android:textColor="#FFFFFF"
-                  android:textSize="18sp"
-                  android:textStyle="bold" />
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Vuelve pronto 🌟"
+              android:textColor="#BCAAA4"
+              android:textSize="13sp"
+              android:gravity="center"
+              android:layout_marginTop="6dp"/>
+        </LinearLayout>
 
-              <TextView
-                  android:id="@+id/level1Description"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Saludos básicos"
-                  android:textColor="#FFFFFF"
-                  android:textSize="13sp"
-                  android:alpha="0.9"
-                  android:layout_marginTop="4dp" />
-
-              <ProgressBar
-                  android:id="@+id/level1Progress"
-                  style="?android:attr/progressBarStyleHorizontal"
-                  android:layout_width="match_parent"
-                  android:layout_height="6dp"
-                  android:progress="0"
-                  android:layout_marginTop="8dp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/level1StatusIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_cross"
-                android:contentDescription="Estado"
-                android:layout_marginStart="16dp" />
-          </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Nivel 2 -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/level2Card"
+        <!-- RecyclerView de lecciones dinámicas -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvLeccionesDinamicas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="#F59E0B">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:padding="20dp"
-              android:gravity="center_vertical">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-              <TextView
-                  android:id="@+id/level2Title"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Nivel 2"
-                  android:textColor="#FFFFFF"
-                  android:textSize="18sp"
-                  android:textStyle="bold" />
-
-              <TextView
-                  android:id="@+id/level2Description"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Presentaciones"
-                  android:textColor="#FFFFFF"
-                  android:textSize="13sp"
-                  android:alpha="0.9"
-                  android:layout_marginTop="4dp" />
-
-              <ProgressBar
-                  android:id="@+id/level2Progress"
-                  style="?android:attr/progressBarStyleHorizontal"
-                  android:layout_width="match_parent"
-                  android:layout_height="6dp"
-                  android:progress="0"
-                  android:layout_marginTop="8dp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/level2StatusIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_cross"
-                android:contentDescription="Estado"
-                android:layout_marginStart="16dp" />
-          </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Nivel 3 -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/level3Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="#F59E0B">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:padding="20dp"
-              android:gravity="center_vertical">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-              <TextView
-                  android:id="@+id/level3Title"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Nivel 3"
-                  android:textColor="#FFFFFF"
-                  android:textSize="18sp"
-                  android:textStyle="bold" />
-
-              <TextView
-                  android:id="@+id/level3Description"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Familia"
-                  android:textColor="#FFFFFF"
-                  android:textSize="13sp"
-                  android:alpha="0.9"
-                  android:layout_marginTop="4dp" />
-
-              <ProgressBar
-                  android:id="@+id/level3Progress"
-                  style="?android:attr/progressBarStyleHorizontal"
-                  android:layout_width="match_parent"
-                  android:layout_height="6dp"
-                  android:progress="0"
-                  android:layout_marginTop="8dp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/level3StatusIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_cross"
-                android:contentDescription="Estado"
-                android:layout_marginStart="16dp" />
-          </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Nivel 4 -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/level4Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="#F59E0B">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:padding="20dp"
-              android:gravity="center_vertical">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-              <TextView
-                  android:id="@+id/level4Title"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Nivel 4"
-                  android:textColor="#FFFFFF"
-                  android:textSize="18sp"
-                  android:textStyle="bold" />
-
-              <TextView
-                  android:id="@+id/level4Description"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Números"
-                  android:textColor="#FFFFFF"
-                  android:textSize="13sp"
-                  android:alpha="0.9"
-                  android:layout_marginTop="4dp" />
-
-              <ProgressBar
-                  android:id="@+id/level4Progress"
-                  style="?android:attr/progressBarStyleHorizontal"
-                  android:layout_width="match_parent"
-                  android:layout_height="6dp"
-                  android:progress="0"
-                  android:layout_marginTop="8dp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/level4StatusIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_cross"
-                android:contentDescription="Estado"
-                android:layout_marginStart="16dp" />
-          </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Nivel 5 -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/level5Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="#F59E0B">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:padding="20dp"
-              android:gravity="center_vertical">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-              <TextView
-                  android:id="@+id/level5Title"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Nivel 5"
-                  android:textColor="#FFFFFF"
-                  android:textSize="18sp"
-                  android:textStyle="bold" />
-
-              <TextView
-                  android:id="@+id/level5Description"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Colores"
-                  android:textColor="#FFFFFF"
-                  android:textSize="13sp"
-                  android:alpha="0.9"
-                  android:layout_marginTop="4dp" />
-
-              <ProgressBar
-                  android:id="@+id/level5Progress"
-                  style="?android:attr/progressBarStyleHorizontal"
-                  android:layout_width="match_parent"
-                  android:layout_height="6dp"
-                  android:progress="0"
-                  android:layout_marginTop="8dp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/level5StatusIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_cross"
-                android:contentDescription="Estado"
-                android:layout_marginStart="16dp" />
-          </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Nivel 6 -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/level6Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="#F59E0B">
-
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:padding="20dp"
-              android:gravity="center_vertical">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-              <TextView
-                  android:id="@+id/level6Title"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Nivel 6"
-                  android:textColor="#FFFFFF"
-                  android:textSize="18sp"
-                  android:textStyle="bold" />
-
-              <TextView
-                  android:id="@+id/level6Description"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Animales"
-                  android:textColor="#FFFFFF"
-                  android:textSize="13sp"
-                  android:alpha="0.9"
-                  android:layout_marginTop="4dp" />
-
-              <ProgressBar
-                  android:id="@+id/level6Progress"
-                  style="?android:attr/progressBarStyleHorizontal"
-                  android:layout_width="match_parent"
-                  android:layout_height="6dp"
-                  android:progress="0"
-                  android:layout_marginTop="8dp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/level6StatusIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_cross"
-                android:contentDescription="Estado"
-                android:layout_marginStart="16dp" />
-          </LinearLayout>
-        </androidx.cardview.widget.CardView>
+            android:paddingHorizontal="16dp"
+            android:nestedScrollingEnabled="false"
+            android:clipToPadding="false"/>
       </LinearLayout>
 
       <!-- Mensaje motivacional final -->

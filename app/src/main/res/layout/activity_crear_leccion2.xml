@@ -1,112 +1,219 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/fondo_app">
+    android:background="@color/bg_main">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <!-- Header -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="16dp"
-            android:background="#2196F3"
-            android:elevation="4dp">
-
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:tint="@color/white"
-                android:contentDescription="Volver"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Crear Lección"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:fontFamily="@font/fredoka_one"
-                android:layout_marginStart="16dp"/>
-
-        </LinearLayout>
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
 
-            <!-- Info básica -->
-            <androidx.cardview.widget.CardView
+            <!-- ═══════════════════════════════════
+                 TOOLBAR SUPERIOR
+                 ═══════════════════════════════════ -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/white"
-                android:layout_marginBottom="16dp">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:background="@color/bg_main">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_arrow_back"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_btn_icon_rounded"
+                    android:contentDescription="Volver"
+                    app:tint="@color/primary_dark"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Crear Lección"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginStart="8dp"/>
+
+            </LinearLayout>
+
+            <!-- ═══════════════════════════════════
+                 FORMULARIO PRINCIPAL
+                 ═══════════════════════════════════ -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardFormLeccion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/bg_card">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
+                    <!-- Sección: Información -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📋 Información de la lección"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary_dark"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Campo: Título -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_marginBottom="12dp">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etTitulo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Título de la lección"
-                            android:fontFamily="@font/fredoka_one"/>
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_marginBottom="12dp">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etDescripcion"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Descripción"
-                            android:fontFamily="@font/fredoka_one"
-                            android:minLines="2"
-                            android:gravity="top"/>
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:hint="Título de la lección"
+                        app:hintTextColor="@color/primary"
+                        app:boxStrokeColor="@color/primary"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etNivel"
+                            android:id="@+id/etTituloLeccion"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Nivel (1, 2, 3...)"
-                            android:fontFamily="@font/fredoka_one"
-                            android:inputType="number"/>
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp"
+                            android:inputType="textCapSentences"
+                            android:maxLines="2"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Campo: Descripción -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Descripción (opcional)"
+                        app:hintTextColor="@color/primary"
+                        app:boxStrokeColor="@color/primary"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        android:layout_marginTop="12dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etDescripcionLeccion"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:inputType="textMultiLine"
+                            android:minLines="2"
+                            android:maxLines="4"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Fila: Nivel + Categoría -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp">
+
+                        <!-- Spinner Nivel -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Nivel"
+                            app:hintTextColor="@color/primary"
+                            app:boxStrokeColor="@color/primary"
+                            app:boxCornerRadiusTopStart="12dp"
+                            app:boxCornerRadiusTopEnd="12dp"
+                            app:boxCornerRadiusBottomStart="12dp"
+                            app:boxCornerRadiusBottomEnd="12dp"
+                            android:layout_marginEnd="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/spinnerNivel"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Spinner Categoría -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Categoría"
+                            app:hintTextColor="@color/primary"
+                            app:boxStrokeColor="@color/primary"
+                            app:boxCornerRadiusTopStart="12dp"
+                            app:boxCornerRadiusTopEnd="12dp"
+                            app:boxCornerRadiusBottomStart="12dp"
+                            app:boxCornerRadiusBottomEnd="12dp"
+                            android:layout_marginStart="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/spinnerCategoria"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <!-- Campo: EXP Recompensa -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Experiencia de recompensa (default: 30)"
+                        app:hintTextColor="@color/primary"
+                        app:boxStrokeColor="@color/primary"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        android:layout_marginTop="12dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etExpRecompensa"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:inputType="number"
+                            android:maxLength="4"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -114,66 +221,119 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Ejercicios -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📝 Ejercicios"
-                android:textSize="18sp"
-                android:fontFamily="@font/fredoka_one"
-                android:textColor="@color/negro"
-                android:layout_marginBottom="12dp"/>
-
-            <LinearLayout
-                android:id="@+id/containerEjercicios"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAgregarEjercicio"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="8dp"
-                android:text="➕ Agregar Ejercicio"
-                android:fontFamily="@font/fredoka_one"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                app:strokeColor="#2196F3"
-                android:textColor="#2196F3"/>
-
-            <!-- Botones acción -->
+            <!-- ═══════════════════════════════════
+                 SECCIÓN: EJERCICIOS
+                 ═══════════════════════════════════ -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="24dp">
+                android:gravity="center_vertical"
+                android:paddingStart="24dp"
+                android:paddingEnd="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnPreview"
+                <TextView
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:text="👁️ Vista Previa"
-                    android:fontFamily="@font/fredoka_one"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    app:strokeColor="#2196F3"
-                    android:textColor="#2196F3"/>
+                    android:text="📝 Ejercicios"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"/>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnGuardar"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="💾 Guardar"
-                    android:fontFamily="@font/fredoka_one"
-                    android:backgroundTint="#2196F3"/>
+                <TextView
+                    android:id="@+id/tvContadorEjercicios"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 ejercicio(s)"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_tertiary"
+                    android:background="@drawable/bg_counter_badge"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"/>
 
             </LinearLayout>
 
+            <!-- RecyclerView de ejercicios -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEjerciciosCreados"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Card: Agregar Ejercicio -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardAgregarEjercicio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="20dp"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/card_create_bg"
+                app:strokeColor="@color/card_create_accent"
+                app:strokeWidth="1.5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_add_circle_outline"
+                        app:tint="@color/card_create_accent"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Agregar Ejercicio"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/card_create_accent"
+                        android:layout_marginStart="10dp"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- ═══════════════════════════════════
+                 BOTÓN GUARDAR
+                 ═══════════════════════════════════ -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGuardarLeccion"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="32dp"
+                android:text="Guardar Lección"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:icon="@drawable/ic_save"
+                app:iconGravity="textStart"
+                app:iconSize="22dp"
+                app:iconTint="@color/white"
+                app:backgroundTint="@color/primary"
+                app:cornerRadius="16dp"
+                app:elevation="6dp"
+                app:rippleColor="@color/ripple_color"/>
+
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

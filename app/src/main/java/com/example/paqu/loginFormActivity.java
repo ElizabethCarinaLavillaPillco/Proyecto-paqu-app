@@ -1,8 +1,6 @@
 package com.example.paqu;
 
 import androidx.appcompat.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -117,7 +115,7 @@ public class loginFormActivity extends AppCompatActivity {
     }
 
     // -------------------------------
-    // 🔹 LOGIN CON CORREO Y CONTRASEÑA (CON VERIFICACIÓN DE ROL)
+    // 🔹 LOGIN CON CORREO Y CONTRASEÑA (CON VERIFICACIÓN DE USUARIO EN BD)
     // -------------------------------
     private void loginConCorreo() {
         String correo = tvEmail.getText().toString().trim();
@@ -136,8 +134,8 @@ public class loginFormActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = firebaseAuth.getCurrentUser();
                         if (user != null) {
-                            // Verificar el rol del usuario en la base de datos
-                            verificarRolYRedirigir(user.getUid(), progressDialog);
+                            // 🔹 VERIFICAR SI EL USUARIO EXISTE EN LA BD
+                            verificarOCrearUsuario(user, progressDialog);
                         } else {
                             progressDialog.dismiss();
                             Toast.makeText(this, "Error al obtener datos del usuario", Toast.LENGTH_SHORT).show();
@@ -200,7 +198,7 @@ public class loginFormActivity extends AppCompatActivity {
     }
 
     // -------------------------------
-    // 🔹 VERIFICAR O CREAR USUARIO EN BD (PARA GOOGLE)
+    // 🔹 VERIFICAR O CREAR USUARIO EN BD (PARA AMBOS MÉTODOS)
     // -------------------------------
     private void verificarOCrearUsuario(FirebaseUser usuario, AlertDialog progressDialog) {
         String uid = usuario.getUid();
@@ -209,8 +207,8 @@ public class loginFormActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
-                    // Usuario nuevo con Google, crear en BD con rol usuario_comun
-                    crearUsuarioGoogleEnBD(usuario, progressDialog);
+                    // Usuario no existe en BD, crearlo
+                    crearUsuarioEnBD(usuario, progressDialog);
                 } else {
                     // Usuario ya existe, verificar rol
                     verificarRolYRedirigir(uid, progressDialog);
@@ -227,9 +225,9 @@ public class loginFormActivity extends AppCompatActivity {
     }
 
     // -------------------------------
-    // 🔹 CREAR USUARIO NUEVO DE GOOGLE EN BD
+    // 🔹 CREAR USUARIO NUEVO EN BD
     // -------------------------------
-    private void crearUsuarioGoogleEnBD(FirebaseUser usuario, AlertDialog progressDialog) {
+    private void crearUsuarioEnBD(FirebaseUser usuario, AlertDialog progressDialog) {
         String uid = usuario.getUid();
         String email = usuario.getEmail() != null ? usuario.getEmail() : "";
         String name = usuario.getDisplayName() != null ? usuario.getDisplayName() : "Usuario";
@@ -239,7 +237,7 @@ public class loginFormActivity extends AppCompatActivity {
 
         databaseReference.child("users").child(uid).setValue(userData)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("DB", "Usuario Google creado en BD con rol usuario_comun");
+                    Log.d("DB", "Usuario creado en BD con rol usuario_comun");
                     verificarRolYRedirigir(uid, progressDialog);
                 })
                 .addOnFailureListener(e -> {
@@ -256,7 +254,7 @@ public class loginFormActivity extends AppCompatActivity {
         databaseReference.child("users").child(uid).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                progressDialog.dismiss();
+                if (progressDialog != null) progressDialog.dismiss();
 
                 String rol = snapshot.getValue(String.class);
 
@@ -275,7 +273,7 @@ public class loginFormActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                progressDialog.dismiss();
+                if (progressDialog != null) progressDialog.dismiss();
                 Log.e("ROL_ERROR", "Error al obtener rol: " + error.getMessage());
                 Toast.makeText(loginFormActivity.this, "Error al verificar permisos", Toast.LENGTH_SHORT).show();
             }
@@ -302,19 +300,22 @@ public class loginFormActivity extends AppCompatActivity {
         Log.d("ROL", "Rol guardado: " + rol);
     }
 
-    // -------------------------------s
-// 🔹 REDIRIGIR SEGÚN EL ROL
-// -------------------------------s
+    // -------------------------------
+    // 🔹 REDIRIGIR SEGÚN EL ROL
+    // -------------------------------
     private void redirigirSegunRol(String rol) {
         Intent intent;
 
         if (rol.equals("administrador")) {
             intent = new Intent(this, homeActivity.class);
+        } else if (rol.equals("docente")) {
+            intent = new Intent(this, DocenteHomeActivity.class);
         } else {
             intent = new Intent(this, homeActivity.class);
         }
 
-        intent.putExtra("user_role", rol);  // ✅ AGREGAR ESTA LÍNEA
+        intent.putExtra("user_role", rol);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
@@ -398,9 +399,9 @@ public class loginFormActivity extends AppCompatActivity {
         GradientDrawable headerGradient = new GradientDrawable(
                 GradientDrawable.Orientation.TL_BR,
                 new int[]{
-                        Color.parseColor("#667eea"),  // Púrpura claro
-                        Color.parseColor("#764ba2"),  // Púrpura medio
-                        Color.parseColor("#f093fb")   // Rosa suave
+                        Color.parseColor("#667eea"),
+                        Color.parseColor("#764ba2"),
+                        Color.parseColor("#f093fb")
                 }
         );
         headerGradient.setCornerRadii(new float[]{60f, 60f, 60f, 60f, 0f, 0f, 0f, 0f});
@@ -683,9 +684,9 @@ public class loginFormActivity extends AppCompatActivity {
         GradientDrawable headerGradient = new GradientDrawable(
                 GradientDrawable.Orientation.TL_BR,
                 new int[]{
-                        Color.parseColor("#11998e"),  // Verde azulado
-                        Color.parseColor("#38ef7d"),  // Verde brillante
-                        Color.parseColor("#b2fefa")   // Cyan claro
+                        Color.parseColor("#11998e"),
+                        Color.parseColor("#38ef7d"),
+                        Color.parseColor("#b2fefa")
                 }
         );
         headerGradient.setCornerRadii(new float[]{60f, 60f, 60f, 60f, 0f, 0f, 0f, 0f});
@@ -813,9 +814,9 @@ public class loginFormActivity extends AppCompatActivity {
         GradientDrawable headerGradient = new GradientDrawable(
                 GradientDrawable.Orientation.TL_BR,
                 new int[]{
-                        Color.parseColor("#ee0979"),  // Rosa fuerte
-                        Color.parseColor("#ff6a00"),  // Naranja
-                        Color.parseColor("#ffd89b")   // Amarillo suave
+                        Color.parseColor("#ee0979"),
+                        Color.parseColor("#ff6a00"),
+                        Color.parseColor("#ffd89b")
                 }
         );
         headerGradient.setCornerRadii(new float[]{60f, 60f, 60f, 60f, 0f, 0f, 0f, 0f});
