@@ -49,7 +49,8 @@ public class QuechuaTTSManager {
     // Emulador Android → host es 10.0.2.2
     // Dispositivo físico en la misma red → IP local de tu PC, ej: 192.168.1.X
     // Producción → tu dominio o ngrok URL
-    private static final String SERVER_URL = "http://10.0.2.2:5000/tts";
+    // ✅ AHORA (Hugging Face Cloud)
+    private static final String SERVER_URL = "https://kawazzzaki-tts-quechua-cusquito.hf.space/tts";
 
     private final Context          context;
     private final ExecutorService  executor;
