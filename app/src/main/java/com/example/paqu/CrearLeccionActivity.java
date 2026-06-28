@@ -1,5 +1,6 @@
 package com.example.paqu;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -74,6 +75,7 @@ public class CrearLeccionActivity extends AppCompatActivity {
     // ─────────────────────────────────────────────
     // INICIALIZAR VISTAS
     // ─────────────────────────────────────────────
+    @SuppressLint("WrongViewCast")
     private void initViews() {
         etTituloLeccion      = findViewById(R.id.etTituloLeccion);
         etDescripcionLeccion = findViewById(R.id.etDescripcionLeccion);
