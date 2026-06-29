@@ -64,6 +64,7 @@ public class loginFormActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
+
         // Referencias UI (mismos IDs que tu XML)
         tvEmail = findViewById(R.id.tvEmail);
         tvPassword = findViewById(R.id.tvPassword);
@@ -307,7 +308,7 @@ public class loginFormActivity extends AppCompatActivity {
         Intent intent;
 
         if (rol.equals("administrador")) {
-            intent = new Intent(this, homeActivity.class);
+            intent = new Intent(this, AdminHomeActivity.class);
         } else if (rol.equals("docente")) {
             intent = new Intent(this, DocenteHomeActivity.class);
         } else {

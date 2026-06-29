@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    activity_admin_home.xml
+    Dashboard del Administrador PAQU.
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollAdmin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF8E1"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ══════════════════════════════════════
+             HEADER  rojo oscuro → rojo medio
+        ══════════════════════════════════════ -->
+        <LinearLayout
+            android:id="@+id/headerAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_header_admin"
+            android:orientation="vertical"
+            android:paddingTop="48dp"
+            android:paddingBottom="24dp"
+            android:paddingHorizontal="20dp">
+
+            <!-- Fila: avatar + info + logout -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Avatar circular con inicial -->
+                <FrameLayout
+                    android:layout_width="64dp"
+                    android:layout_height="64dp">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        app:cardCornerRadius="32dp"
+                        app:cardElevation="4dp"
+                        app:cardBackgroundColor="#FFCDD2">
+
+                        <TextView
+                            android:id="@+id/tvInicialAdmin"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="A"
+                            android:textColor="#B71C1C"
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            android:gravity="center"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Badge corona -->
+                    <TextView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:text="👑"
+                        android:textSize="14sp"
+                        android:gravity="center"
+                        android:layout_gravity="top|end"/>
+                </FrameLayout>
+
+                <!-- Nombre y email -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="14dp">
+
+                    <TextView
+                        android:id="@+id/tvAdminNombre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="👑 Administrador"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvAdminEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="admin@paqu.edu"
+                        android:textColor="#FFCDD2"
+                        android:textSize="12sp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Panel de control"
+                        android:textColor="#FFCDD2"
+                        android:textSize="11sp"
+                        android:alpha="0.8"/>
+                </LinearLayout>
+
+                <!-- Botón logout -->
+                <ImageView
+                    android:id="@+id/btnLogoutAdmin"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_logout"
+                    android:padding="6dp"
+                    android:background="@drawable/bg_circle_alpha"
+                    app:tint="#FFFFFF" />
+            </LinearLayout>
+
+            <!-- ── Estadísticas 2×2 ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="20dp">
+
+                <!-- Fila 1 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <!-- Estudiantes -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_stat_card_admin"
+                        android:layout_marginEnd="6dp"
+                        android:padding="14dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="👤"
+                            android:textSize="22sp"/>
+                        <TextView
+                            android:id="@+id/tvStatUsuarios"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#FFFFFF"
+                            android:textSize="26sp"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Estudiantes"
+                            android:textColor="#FFCDD2"
+                            android:textSize="10sp"/>
+                    </LinearLayout>
+
+                    <!-- Docentes -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_stat_card_admin"
+                        android:layout_marginStart="6dp"
+                        android:padding="14dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📚"
+                            android:textSize="22sp"/>
+                        <TextView
+                            android:id="@+id/tvStatDocentes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#FFFFFF"
+                            android:textSize="26sp"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Docentes"
+                            android:textColor="#FFCDD2"
+                            android:textSize="10sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Fila 2 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Lecciones -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_stat_card_admin"
+                        android:layout_marginEnd="6dp"
+                        android:padding="14dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📝"
+                            android:textSize="22sp"/>
+                        <TextView
+                            android:id="@+id/tvStatLecciones"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#FFFFFF"
+                            android:textSize="26sp"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Lecciones"
+                            android:textColor="#FFCDD2"
+                            android:textSize="10sp"/>
+                    </LinearLayout>
+
+                    <!-- Palabras -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_stat_card_admin"
+                        android:layout_marginStart="6dp"
+                        android:padding="14dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📖"
+                            android:textSize="22sp"/>
+                        <TextView
+                            android:id="@+id/tvStatPalabras"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#FFFFFF"
+                            android:textSize="26sp"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Palabras"
+                            android:textColor="#FFCDD2"
+                            android:textSize="10sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ══════════════════════════════════════
+             ACCESOS RÁPIDOS (grid 2×2)
+        ══════════════════════════════════════ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Acciones rápidas"
+            android:textColor="#B71C1C"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <!-- Card: Gestión de Usuarios -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardAdminUsuarios"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_admin_card_rojo"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="👥"
+                            android:textSize="34sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Usuarios"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="6dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ver y gestionar"
+                            android:textColor="#FFCDD2"
+                            android:textSize="10sp"
+                            android:gravity="center"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card: Asignar Roles -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardAdminRoles"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_admin_card_naranja"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔑"
+                            android:textSize="34sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Roles"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="6dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Asignar y cambiar"
+                            android:textColor="#FFF3E0"
+                            android:textSize="10sp"
+                            android:gravity="center"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <!-- Card: Lecciones -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardAdminLecciones"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_admin_card_azul"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📝"
+                            android:textSize="34sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Lecciones"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="6dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ver todas las lecciones"
+                            android:textColor="#BBDEFB"
+                            android:textSize="10sp"
+                            android:gravity="center"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card: Palabras diccionario -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardAdminPalabras"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_admin_card_verde"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📖"
+                            android:textSize="34sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Diccionario"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="6dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Gestionar palabras"
+                            android:textColor="#C8E6C9"
+                            android:textSize="10sp"
+                            android:gravity="center"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ══════════════════════════════════════
+             PANEL DE GESTIÓN DE USUARIOS (inline)
+        ══════════════════════════════════════ -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/panelGestionUsuarios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="28dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Cabecera del panel -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_panel_header_admin"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="16dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="👥 Gestión de Usuarios"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvContadorUsuariosAdmin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 usuario(s)"
+                        android:textColor="#FFCDD2"
+                        android:textSize="12sp"/>
+                </LinearLayout>
+
+                <!-- Buscador + Filtro -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Buscador -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:background="@drawable/bg_search_admin"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="4dp"
+                        android:layout_marginBottom="10dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_search"
+                            android:layout_marginEnd="8dp"
+                            app:tint="#B71C1C" />
+
+                        <EditText
+                            android:id="@+id/etBuscarUsuario"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Buscar por nombre o email..."
+                            android:background="@null"
+                            android:textSize="14sp"
+                            android:inputType="text"
+                            android:imeOptions="actionSearch"
+                            android:maxLines="1"/>
+                    </LinearLayout>
+
+                    <!-- Spinner de filtro -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Filtrar: "
+                            android:textColor="#B71C1C"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:layout_marginEnd="8dp"/>
+
+                        <Spinner
+                            android:id="@+id/spinnerFiltroRolAdmin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_spinner_admin"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Loader -->
+                <LinearLayout
+                    android:id="@+id/layoutCargandoUsuarios"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="32dp"
+                    android:visibility="visible">
+
+                    <ProgressBar
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:indeterminateTint="#B71C1C"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cargando usuarios..."
+                        android:textColor="#9E9E9E"
+                        android:textSize="13sp"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+
+                <!-- Lista de usuarios -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvUsuariosAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 🔹 FAB dentro del LinearLayout (NO como hijo directo del ScrollView) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabCrearUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="16dp"
+            android:src="@android:drawable/ic_input_add"
+            android:contentDescription="Crear usuario"
+            app:backgroundTint="#B71C1C"
+            app:tint="#FFFFFF"
+            app:elevation="6dp"/>
+
+    </LinearLayout>
+</ScrollView>

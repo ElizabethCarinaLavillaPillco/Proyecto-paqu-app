@@ -2,12 +2,12 @@ package com.example.paqu;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.Button;
@@ -20,12 +20,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import com.example.paqu.utils.DiccionarioQuechuaLocal;
+import com.example.paqu.utils.QuechuaTTSManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
-// ⭐ IMPORTAR DICCIONARIO LOCAL ⭐
-import com.example.paqu.utils.DiccionarioQuechuaLocal;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -35,6 +35,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class TraductorActivity extends AppCompatActivity {
+
+    private static final String TAG = "TraductorActivity";
 
     // UI Components
     EditText etTextoOrigen;
@@ -46,86 +48,80 @@ public class TraductorActivity extends AppCompatActivity {
     View indicadorIdioma;
 
     // Estado
-    private boolean esQuechuaAEspanol = true; // true = Quechua→Español, false = Español→Quechua
+    private boolean esQuechuaAEspanol = true;
     private String ultimaTraduccion = "";
-    private boolean modoOffline = false;
 
-    // Audio
-    AudioManager audioManager;
-    MediaPlayer audioTraduccion;
+    // 🔊 TTS Manager
+    private QuechuaTTSManager ttsManager;
 
     // Threading
     Handler mainHandler;
 
-    // ⭐ DICCIONARIO LOCAL ⭐
+    // Diccionario local
     DiccionarioQuechuaLocal diccionarioLocal;
 
-    // API Configuration
-    private static final String API_URL = "http://127.0.0.1:5000/traducir";
+    // 🔑 API Configuration - HUGGING FACE
+    // ⚠️ IMPORTANTE: Verifica esta URL en tu navegador primero
+    private static final String HF_SPACE_URL = "https://kawazzzaki-traductor-qu-es.hf.space";
+
+    // 🔍 Endpoint correcto para Gradio 4.x/5.x
+    private static final String API_ENDPOINT = HF_SPACE_URL + "/api/predict";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_traductor);
 
-        // Inicializar
         initViews();
         setupListeners();
         animacionEntrada();
 
-        // Threading
         mainHandler = new Handler(Looper.getMainLooper());
 
-        // Audio
-        audioManager = AudioManager.getInstance(this);
+        // 🔊 Inicializar TTS Manager
+        ttsManager = new QuechuaTTSManager(this);
 
-        // ⭐ INICIALIZAR DICCIONARIO LOCAL ⭐
         diccionarioLocal = DiccionarioQuechuaLocal.getInstance();
 
-        // Mostrar mensaje informativo
         Toast.makeText(this,
-                "📚 Diccionario local: " + diccionarioLocal.getTamanoDiccionario() + " palabras básicas",
+                "📚 Diccionario: " + diccionarioLocal.getTamanoDiccionario() + " palabras\n🔊 TTS listo",
                 Toast.LENGTH_SHORT).show();
+
+        // 🔍 Verificar conexión
+        verificarConexionServidor();
     }
 
     private void initViews() {
-        // EditText y TextViews
         etTextoOrigen = findViewById(R.id.etTextoOrigen);
         tvTextoTraducido = findViewById(R.id.tvTextoTraducido);
         tvContadorCaracteres = findViewById(R.id.tvContadorCaracteres);
         tvIdiomaSalida = findViewById(R.id.tvIdiomaSalida);
-        //tvEstadoConexion = findViewById(R.id.tvEstadoConexion); // ⭐ NUEVO ⭐
+        tvEstadoConexion = findViewById(R.id.tvEstadoLeccion);
 
-        // Botones
         btnTraducir = findViewById(R.id.btnTraducir);
         btnIntercambiar = findViewById(R.id.btnIntercambiar);
         btnLimpiar = findViewById(R.id.btnLimpiar);
         btnCopiar = findViewById(R.id.btnCopiar);
 
-        // ImageViews
         btnAudioOrigen = findViewById(R.id.btnAudioOrigen);
         btnAudioTraducido = findViewById(R.id.btnAudioTraducido);
         iconAtras = findViewById(R.id.iconAtras);
         iconMicrofono = findViewById(R.id.iconMicrofono);
 
-        // Otros
         progressBar = findViewById(R.id.progressBar);
         cardOrigen = findViewById(R.id.cardOrigen);
         cardTraducido = findViewById(R.id.cardTraducido);
         indicadorIdioma = findViewById(R.id.indicadorIdioma);
 
-        // Estado inicial
         actualizarUIIdioma();
     }
 
     private void setupListeners() {
-        // Botón Atrás
         iconAtras.setOnClickListener(v -> {
             animarClick(v);
             finish();
         });
 
-        // Contador de caracteres
         etTextoOrigen.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -135,13 +131,11 @@ public class TraductorActivity extends AppCompatActivity {
                 int longitud = s.length();
                 tvContadorCaracteres.setText(longitud + "/500");
 
-                // Habilitar/deshabilitar botones
                 boolean hayTexto = longitud > 0;
                 btnTraducir.setEnabled(hayTexto);
                 btnLimpiar.setEnabled(hayTexto);
                 btnAudioOrigen.setEnabled(hayTexto);
 
-                // Cambiar color según límite
                 if (longitud > 450) {
                     tvContadorCaracteres.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
                 } else if (longitud > 350) {
@@ -155,47 +149,43 @@ public class TraductorActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // Botón Traducir
         btnTraducir.setOnClickListener(v -> {
             animarClick(v);
-            audioManager.reproducirClic();
             traducirTexto();
         });
 
-        // Botón Intercambiar Idiomas
         btnIntercambiar.setOnClickListener(v -> {
             animarRotacion(v);
-            audioManager.reproducirClic();
             intercambiarIdiomas();
         });
 
-        // Botón Limpiar
         btnLimpiar.setOnClickListener(v -> {
             animarClick(v);
-            audioManager.reproducirClic();
             limpiarCampos();
         });
 
-        // Botón Copiar
         btnCopiar.setOnClickListener(v -> {
             animarClick(v);
-            audioManager.reproducirClic();
             copiarTraduccion();
         });
 
-        // Audio Origen
+        // 🔊 Botón Audio Origen
         btnAudioOrigen.setOnClickListener(v -> {
             animarClick(v);
-            reproducirAudioOrigen();
+            String texto = etTextoOrigen.getText().toString().trim();
+            if (!texto.isEmpty()) {
+                reproducirConTTS(texto, esQuechuaAEspanol ? "qu" : "es");
+            }
         });
 
-        // Audio Traducido
+        // 🔊 Botón Audio Traducido
         btnAudioTraducido.setOnClickListener(v -> {
             animarClick(v);
-            reproducirAudioTraducido();
+            if (!ultimaTraduccion.isEmpty()) {
+                reproducirConTTS(ultimaTraduccion, esQuechuaAEspanol ? "es" : "qu");
+            }
         });
 
-        // Micrófono (Voice Input) - Próxima implementación
         iconMicrofono.setOnClickListener(v -> {
             animarClick(v);
             Toast.makeText(this, "🎤 Función de voz próximamente", Toast.LENGTH_SHORT).show();
@@ -208,11 +198,10 @@ public class TraductorActivity extends AppCompatActivity {
         String textoOrigen = etTextoOrigen.getText().toString().trim();
 
         if (textoOrigen.isEmpty()) {
-            Toast.makeText(this, "⚠️ Ingresa un texto para traducir", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "⚠️ Ingresa un texto", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Mostrar loading
         progressBar.setVisibility(View.VISIBLE);
         btnTraducir.setEnabled(false);
         tvTextoTraducido.setText("Traduciendo...");
@@ -221,8 +210,7 @@ public class TraductorActivity extends AppCompatActivity {
         // ⭐ INTENTAR PRIMERO CON DICCIONARIO LOCAL ⭐
         String traduccionLocal = diccionarioLocal.traducirFrase(textoOrigen, esQuechuaAEspanol);
 
-        if (traduccionLocal != null) {
-            // ✅ Traducción exitosa con diccionario local
+        if (traduccionLocal != null && !traduccionLocal.isEmpty()) {
             progressBar.setVisibility(View.GONE);
             btnTraducir.setEnabled(true);
             ultimaTraduccion = traduccionLocal;
@@ -230,99 +218,88 @@ public class TraductorActivity extends AppCompatActivity {
             btnCopiar.setEnabled(true);
             btnAudioTraducido.setEnabled(true);
             animarTextoTraducido();
-            audioManager.reproducirExito();
 
-            // Mostrar badge de modo offline
             if (tvEstadoConexion != null) {
                 tvEstadoConexion.setText("📚 Diccionario local");
                 tvEstadoConexion.setVisibility(View.VISIBLE);
             }
 
-            Toast.makeText(this, "✅ Traducción local", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "✅ Traducción offline", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // ⭐ SI NO SE ENCUENTRA EN DICCIONARIO LOCAL, INTENTAR API ⭐
+        // ⭐ LLAMAR A LA API DE HUGGING FACE ⭐
         new Thread(() -> {
             try {
-                String traduccion = llamarAPITraduccion(textoOrigen, esQuechuaAEspanol);
+                Log.d(TAG, "🌐 Llamando API: " + API_ENDPOINT);
+                String traduccion = llamarAPIHuggingFace(textoOrigen, esQuechuaAEspanol);
 
                 mainHandler.post(() -> {
                     progressBar.setVisibility(View.GONE);
                     btnTraducir.setEnabled(true);
 
-                    if (traduccion != null && !traduccion.isEmpty()) {
+                    if (traduccion != null && !traduccion.isEmpty() && !traduccion.startsWith("Error")) {
                         ultimaTraduccion = traduccion;
                         tvTextoTraducido.setText(traduccion);
                         btnCopiar.setEnabled(true);
                         btnAudioTraducido.setEnabled(true);
                         animarTextoTraducido();
-                        audioManager.reproducirExito();
 
                         if (tvEstadoConexion != null) {
-                            tvEstadoConexion.setText("🌐 API en línea");
+                            tvEstadoConexion.setText("🌐 NLLB (Hugging Face)");
                             tvEstadoConexion.setVisibility(View.VISIBLE);
                         }
+
+                        Toast.makeText(this, "✅ Traducción online", Toast.LENGTH_SHORT).show();
                     } else {
-                        mostrarErrorSinTraduccion();
+                        mostrarErrorSinTraduccion("Error: " + traduccion);
                     }
                 });
 
             } catch (Exception e) {
+                Log.e(TAG, "❌ Error API: " + e.getMessage(), e);
                 e.printStackTrace();
                 mainHandler.post(() -> {
                     progressBar.setVisibility(View.GONE);
                     btnTraducir.setEnabled(true);
-                    mostrarErrorConexion();
+                    mostrarErrorConexion(e.getMessage());
                 });
             }
         }).start();
     }
 
-    private void mostrarErrorSinTraduccion() {
-        tvTextoTraducido.setText("❌ Palabra no encontrada\n\n💡 Intenta con palabras básicas del diccionario local");
-        audioManager.reproducirError();
-
-        if (tvEstadoConexion != null) {
-            tvEstadoConexion.setText("📚 " + diccionarioLocal.getTamanoDiccionario() + " palabras disponibles");
-            tvEstadoConexion.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void mostrarErrorConexion() {
-        tvTextoTraducido.setText("❌ Sin conexión\n\n📚 Usa el diccionario local con palabras básicas");
-        audioManager.reproducirError();
-
-        if (tvEstadoConexion != null) {
-            tvEstadoConexion.setText("📚 Modo offline - " + diccionarioLocal.getTamanoDiccionario() + " palabras");
-            tvEstadoConexion.setVisibility(View.VISIBLE);
-        }
-
-        Toast.makeText(this, "💡 Diccionario local disponible", Toast.LENGTH_LONG).show();
-    }
-
-    private String llamarAPITraduccion(String texto, boolean quechuaAEspanol) throws Exception {
-        URL url = new URL(API_URL);
+    // 🔑 LLAMAR API HUGGING FACE
+    private String llamarAPIHuggingFace(String texto, boolean quechuaAEspanol) throws Exception {
+        URL url = new URL(API_ENDPOINT);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Accept", "application/json");
         conn.setDoOutput(true);
-        conn.setConnectTimeout(5000); // 5 segundos (reducido para fallar más rápido)
-        conn.setReadTimeout(5000);
+        conn.setConnectTimeout(15000);
+        conn.setReadTimeout(60000);
 
-        // Crear JSON request
+        // Formato Gradio 4.x/5.x
         JSONObject jsonRequest = new JSONObject();
-        jsonRequest.put("texto", texto);
-        jsonRequest.put("de", quechuaAEspanol ? "qu" : "es");
-        jsonRequest.put("a", quechuaAEspanol ? "es" : "qu");
+        JSONArray dataArray = new JSONArray();
+        dataArray.put(texto);
+        dataArray.put(quechuaAEspanol ? "qu" : "es");
+        dataArray.put(quechuaAEspanol ? "es" : "qu");
+        jsonRequest.put("data", dataArray);
+        jsonRequest.put("fn_index", 0);
 
-        // Enviar request
+        Log.d(TAG, "📤 Request: " + jsonRequest.toString());
+
+        // Enviar
         OutputStream os = conn.getOutputStream();
         os.write(jsonRequest.toString().getBytes("UTF-8"));
+        os.flush();
         os.close();
 
         // Leer respuesta
         int responseCode = conn.getResponseCode();
+        Log.d(TAG, "📥 Response code: " + responseCode);
+
         if (responseCode == HttpURLConnection.HTTP_OK) {
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             StringBuilder response = new StringBuilder();
@@ -331,19 +308,135 @@ public class TraductorActivity extends AppCompatActivity {
                 response.append(line);
             }
             br.close();
+            conn.disconnect();
+
+            Log.d(TAG, "📥 Response: " + response.toString());
 
             JSONObject jsonResponse = new JSONObject(response.toString());
-            return jsonResponse.getString("traduccion");
+
+            if (jsonResponse.has("error") && !jsonResponse.isNull("error")) {
+                return "Error: " + jsonResponse.getString("error");
+            }
+
+            if (jsonResponse.has("data")) {
+                JSONArray data = jsonResponse.getJSONArray("data");
+                if (data.length() > 0) {
+                    return data.getString(0);
+                }
+            }
+
+            return "Error: Respuesta vacía";
         } else {
-            throw new Exception("Error HTTP: " + responseCode);
+            // Leer error
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "UTF-8"));
+            StringBuilder errorResponse = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                errorResponse.append(line);
+            }
+            br.close();
+            conn.disconnect();
+
+            throw new Exception("HTTP " + responseCode + ": " + errorResponse.toString());
         }
+    }
+
+    // 🔊 REPRODUCIR CON TTS
+    private void reproducirConTTS(String texto, String idioma) {
+        // Determinar si es Quechua o Español
+        boolean esQuechua = idioma.equals("qu");
+
+        // Cambiar icono a "reproduciendo"
+        ImageView btnAudio = esQuechua == esQuechuaAEspanol ? btnAudioOrigen : btnAudioTraducido;
+        btnAudio.setImageResource(android.R.drawable.ic_media_pause);
+
+        ttsManager.reproducir(texto, new QuechuaTTSManager.TTSCallback() {
+            @Override
+            public void onInicio() {
+                runOnUiThread(() -> {
+                    btnAudio.setEnabled(false);
+                    btnAudio.setAlpha(0.5f);
+                });
+            }
+
+            @Override
+            public void onFin() {
+                runOnUiThread(() -> {
+                    btnAudio.setImageResource(esQuechua ? R.drawable.ic_audio : R.drawable.ic_audio);
+                    btnAudio.setEnabled(true);
+                    btnAudio.setAlpha(1.0f);
+                });
+            }
+
+            @Override
+            public void onError(String mensaje) {
+                runOnUiThread(() -> {
+                    btnAudio.setImageResource(esQuechua ? R.drawable.ic_audio : R.drawable.ic_audio);
+                    btnAudio.setEnabled(true);
+                    btnAudio.setAlpha(1.0f);
+                    Toast.makeText(TraductorActivity.this, "❌ " + mensaje, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
+    // 🔍 VERIFICAR CONEXIÓN
+    private void verificarConexionServidor() {
+        new Thread(() -> {
+            try {
+                Log.d(TAG, "🔍 Verificando: " + HF_SPACE_URL);
+                URL url = new URL(HF_SPACE_URL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(5000);
+                int code = conn.getResponseCode();
+                conn.disconnect();
+
+                Log.d(TAG, "✅ Servidor respondió: " + code);
+
+                mainHandler.post(() -> {
+                    if (code == 200) {
+                        tvEstadoConexion.setText("🌐 Servidor online");
+                        tvEstadoConexion.setVisibility(View.VISIBLE);
+                    } else {
+                        tvEstadoConexion.setText("⚠️ Código: " + code);
+                        tvEstadoConexion.setVisibility(View.VISIBLE);
+                    }
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "❌ Servidor offline: " + e.getMessage());
+                mainHandler.post(() -> {
+                    tvEstadoConexion.setText("❌ Sin conexión al servidor");
+                    tvEstadoConexion.setVisibility(View.VISIBLE);
+                });
+            }
+        }).start();
+    }
+
+    private void mostrarErrorSinTraduccion(String detalle) {
+        tvTextoTraducido.setText("❌ No se pudo traducir\n\n" + detalle);
+
+        if (tvEstadoConexion != null) {
+            tvEstadoConexion.setText("📚 " + diccionarioLocal.getTamanoDiccionario() + " palabras offline");
+            tvEstadoConexion.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void mostrarErrorConexion(String mensaje) {
+        tvTextoTraducido.setText("❌ Error de conexión\n\n💡 Usa el diccionario local");
+
+        if (tvEstadoConexion != null) {
+            tvEstadoConexion.setText("❌ Offline");
+            tvEstadoConexion.setVisibility(View.VISIBLE);
+        }
+
+        Toast.makeText(this, "💡 Error: " + mensaje, Toast.LENGTH_LONG).show();
     }
 
     private void intercambiarIdiomas() {
         esQuechuaAEspanol = !esQuechuaAEspanol;
         actualizarUIIdioma();
 
-        // Intercambiar textos
         String temp = etTextoOrigen.getText().toString();
         etTextoOrigen.setText(ultimaTraduccion);
         ultimaTraduccion = temp;
@@ -355,11 +448,11 @@ public class TraductorActivity extends AppCompatActivity {
         if (esQuechuaAEspanol) {
             etTextoOrigen.setHint("Escribe en Quechua...");
             tvIdiomaSalida.setText("🇵🇪 Español");
-            animarIndicador(0); // Izquierda
+            animarIndicador(0);
         } else {
             etTextoOrigen.setHint("Escribe en Español...");
             tvIdiomaSalida.setText("🏔️ Quechua");
-            animarIndicador(1); // Derecha
+            animarIndicador(1);
         }
     }
 
@@ -386,35 +479,14 @@ public class TraductorActivity extends AppCompatActivity {
         }
     }
 
-    // ============= AUDIO =============
-
-    private void reproducirAudioOrigen() {
-        String texto = etTextoOrigen.getText().toString();
-        if (!texto.isEmpty()) {
-            // TODO: Implementar TTS para Quechua/Español
-            Toast.makeText(this, "🔊 Reproduciendo: " + texto, Toast.LENGTH_SHORT).show();
-            audioManager.reproducirClic();
-        }
-    }
-
-    private void reproducirAudioTraducido() {
-        if (!ultimaTraduccion.isEmpty()) {
-            // TODO: Implementar TTS
-            Toast.makeText(this, "🔊 Reproduciendo: " + ultimaTraduccion, Toast.LENGTH_SHORT).show();
-            audioManager.reproducirClic();
-        }
-    }
-
     // ============= ANIMACIONES =============
 
     private void animacionEntrada() {
         View[] vistas = {cardOrigen, cardTraducido, btnTraducir, btnIntercambiar};
-
         for (int i = 0; i < vistas.length; i++) {
             View vista = vistas[i];
             vista.setAlpha(0f);
             vista.setTranslationY(100f);
-
             vista.animate()
                     .alpha(1f)
                     .translationY(0f)
@@ -436,24 +508,16 @@ public class TraductorActivity extends AppCompatActivity {
     }
 
     private void animarRotacion(View view) {
-        view.animate()
-                .rotationBy(180f)
-                .setDuration(400)
-                .start();
+        view.animate().rotationBy(180f).setDuration(400).start();
     }
 
     private void animarCard(View card) {
-        ObjectAnimator.ofFloat(card, "elevation", 4f, 12f, 4f)
-                .setDuration(500)
-                .start();
+        ObjectAnimator.ofFloat(card, "elevation", 4f, 12f, 4f).setDuration(500).start();
     }
 
     private void animarTextoTraducido() {
         tvTextoTraducido.setAlpha(0f);
-        tvTextoTraducido.animate()
-                .alpha(1f)
-                .setDuration(400)
-                .start();
+        tvTextoTraducido.animate().alpha(1f).setDuration(400).start();
     }
 
     private void animarBoton(Button btn) {
@@ -468,17 +532,14 @@ public class TraductorActivity extends AppCompatActivity {
 
     private void animarIndicador(int posicion) {
         float translationX = posicion == 0 ? 0f : indicadorIdioma.getWidth();
-        indicadorIdioma.animate()
-                .translationX(translationX)
-                .setDuration(300)
-                .start();
+        indicadorIdioma.animate().translationX(translationX).setDuration(300).start();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (audioTraduccion != null) {
-            audioTraduccion.release();
+        if (ttsManager != null) {
+            ttsManager.detener();
         }
     }
 }

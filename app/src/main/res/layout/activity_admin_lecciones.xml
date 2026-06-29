@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- ═══════════════════════════════════
+             TOOLBAR
+             ═══════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="4dp"
+            android:background="@color/bg_main"
+            android:elevation="2dp">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:src="@drawable/ic_arrow_back"
+                android:padding="10dp"
+                android:background="@drawable/bg_btn_icon_rounded"
+                android:contentDescription="Volver"
+                app:tint="@color/primary_dark"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mis Lecciones"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginStart="8dp"/>
+
+            <TextView
+                android:id="@+id/tvContadorMisLecciones"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 / 0 lecciones"
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
+                android:background="@drawable/bg_counter_badge"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"/>
+
+        </LinearLayout>
+
+        <!-- ═══════════════════════════════════
+             BARRA DE BÚSQUEDA
+             ═══════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Buscar por título o categoría..."
+                app:hintTextColor="@color/primary"
+                app:boxStrokeColor="@color/primary"
+                app:boxCornerRadiusTopStart="14dp"
+                app:boxCornerRadiusTopEnd="14dp"
+                app:boxCornerRadiusBottomStart="14dp"
+                app:boxCornerRadiusBottomEnd="14dp"
+                app:startIconDrawable="@drawable/ic_search"
+                app:startIconTint="@color/text_hint"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etBuscarLeccion"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    android:inputType="text"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <!-- ═══════════════════════════════════
+             CHIPS DE FILTRO (Scroll horizontal)
+             ═══════════════════════════════════ -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:clipToPadding="false">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupFiltrosLecciones"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:chipSpacingHorizontal="8dp">
+
+                <!-- Chip: Todas -->
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Todas"
+                    android:tag="todas"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:minHeight="48dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    app:chipBackgroundColor="@color/primary"
+                    app:chipCornerRadius="24dp"
+                    app:chipMinHeight="36dp"
+                    app:chipStartPadding="16dp"
+                    app:chipEndPadding="16dp"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+                <!-- Chip: Activas -->
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✅ Activas"
+                    android:tag="activas"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_primary"
+                    android:minHeight="48dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    app:chipBackgroundColor="@color/accent_yellow_light"
+                    app:chipCornerRadius="24dp"
+                    app:chipMinHeight="36dp"
+                    app:chipStartPadding="16dp"
+                    app:chipEndPadding="16dp"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+                <!-- Chip: Inactivas -->
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⏸ Inactivas"
+                    android:tag="inactivas"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_primary"
+                    android:minHeight="48dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    app:chipBackgroundColor="@color/accent_yellow_light"
+                    app:chipCornerRadius="24dp"
+                    app:chipMinHeight="36dp"
+                    app:chipStartPadding="16dp"
+                    app:chipEndPadding="16dp"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+                <!-- Chip: Básico -->
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Básico"
+                    android:tag="Básico"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:minHeight="48dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    app:chipBackgroundColor="@color/success"
+                    app:chipCornerRadius="24dp"
+                    app:chipMinHeight="36dp"
+                    app:chipStartPadding="16dp"
+                    app:chipEndPadding="16dp"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+                <!-- Chip: Intermedio -->
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Intermedio"
+                    android:tag="Intermedio"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:minHeight="48dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    app:chipBackgroundColor="@color/accent_yellow_dark"
+                    app:chipCornerRadius="24dp"
+                    app:chipMinHeight="36dp"
+                    app:chipStartPadding="16dp"
+                    app:chipEndPadding="16dp"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+                <!-- Chip: Avanzado -->
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Avanzado"
+                    android:tag="Avanzado"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:minHeight="48dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    app:chipBackgroundColor="@color/accent_red"
+                    app:chipCornerRadius="24dp"
+                    app:chipMinHeight="36dp"
+                    app:chipStartPadding="16dp"
+                    app:chipEndPadding="16dp"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+                <!-- Chip: Saludos -->
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Saludos"
+                    android:tag="Saludos"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_primary"
+                    android:minHeight="48dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    app:chipBackgroundColor="@color/accent_yellow_light"
+                    app:chipCornerRadius="24dp"
+                    app:chipMinHeight="36dp"
+                    app:chipStartPadding="16dp"
+                    app:chipEndPadding="16dp"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+                <!-- Chip: Verbos -->
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Verbos"
+                    android:tag="Verbos"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_primary"
+                    android:minHeight="48dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    app:chipBackgroundColor="@color/accent_yellow_light"
+                    app:chipCornerRadius="24dp"
+                    app:chipMinHeight="36dp"
+                    app:chipStartPadding="16dp"
+                    app:chipEndPadding="16dp"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+            </com.google.android.material.chip.ChipGroup>
+
+        </HorizontalScrollView>
+
+        <!-- Línea divisora sutil -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"/>
+
+        <!-- ═══════════════════════════════════
+             RECYCLER VIEW
+             ═══════════════════════════════════ -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvMisLecciones"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="80dp"/>
+
+        <!-- ═══════════════════════════════════
+             ESTADO VACÍO
+             ═══════════════════════════════════ -->
+        <LinearLayout
+            android:id="@+id/layoutVacioLecciones"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp">
+
+            <!-- Ilustración vacía -->
+            <LinearLayout
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/bg_empty_state_circle"
+                android:gravity="center"
+                android:layout_marginBottom="20dp">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_library_books"
+                    app:tint="@color/primary_light"
+                    android:alpha="0.7"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sin lecciones aún"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Crea tu primera lección con el botón +\ny tus estudiantes podrán comenzar a aprender"
+                android:textSize="14sp"
+                android:textColor="@color/text_hint"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="4dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- ═══════════════════════════════════
+         FAB: CREAR LECCIÓN
+         ═══════════════════════════════════ -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCrearLeccion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_add_circle"
+        android:contentDescription="Crear lección"
+        app:backgroundTint="@color/primary"
+        app:tint="@color/white"
+        app:elevation="8dp"
+        app:fabSize="normal"
+        app:rippleColor="@color/ripple_color"
+        app:borderWidth="0dp"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
